@@ -28,7 +28,7 @@ class _Header extends Component {
       <Header
         style={{
           width: wp(100),
-          height: hp(7),
+          height: hp(7.5),
           paddingVertical: Platform.OS === 'ios' ? hp(2) : 2,
           backgroundColor: '#FFFFFF',
         }}>

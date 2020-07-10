@@ -3,9 +3,9 @@ import * as React from 'react';
 import Scene from '@navigation/Scene'
 import { Root } from 'native-base';
 import { View } from 'react-native'
-// import { Provider } from "react-redux";
-//import configureStore from "@redux/store";
-//const store = configureStore();
+import { Provider } from "react-redux";
+import configureStore from "@redux/store";
+const store = configureStore();
 
 class App extends React.Component {
   componentDidMount = () => {
@@ -16,12 +16,12 @@ class App extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
-        {/* <Root>
+        <Root>
           <Provider store={store}>
             <Scene />
           </Provider>
-        </Root> */}
-        <Scene />
+        </Root>
+        {/* <Scene /> */}
 
       </View>
     );

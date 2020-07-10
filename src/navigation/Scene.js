@@ -2,14 +2,12 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-//mport Register from '@register/Register';
-// import Login from '@login/Login';
-
-import SignIn from '@loginNew/SignIn';
-import Register from '@loginNew/Register';
-import ForgetPassword from '@loginNew/ForgetPassword';
-
 import Container from '@homepage/Container';
+import SignIn from '@login/SignIn';
+import Register from '@register/Register';
+import ForgotPassword from '@forgotPassword/ForgotPassword';
+import VerifyOtp from '@forgotPassword/VerifyOtp';
+
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -50,15 +48,20 @@ class Scene extends React.Component {
         <Stack.Screen name="SignIn"
           component={SignIn} options={{ headerShown: false }}
         />
-        <Stack.Screen name="Register"
-          component={Register} options={{ headerShown: false }}
-        />
-        <Stack.Screen name="ForgetPassword"
-          component={ForgetPassword} options={{ headerShown: false }}
-        />
         <Stack.Screen name="Container"
           component={Container} options={{ headerShown: false }}
         />
+        <Stack.Screen name="Register"
+          component={Register} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="ForgotPassword"
+          component={ForgotPassword} options={{ headerShown: false }}
+        />
+
+        <Stack.Screen name="VerifyOtp"
+          component={VerifyOtp} options={{ headerShown: false }}
+        />
+
 
       </Stack.Navigator>
 
@@ -71,16 +74,19 @@ class Scene extends React.Component {
         <Stack.Screen name="SignIn"
           component={SignIn} options={{ headerShown: false }}
         />
-        <Stack.Screen name="Register"
-          component={Register} options={{ headerShown: false }}
-        />
-        <Stack.Screen name="ForgetPassword"
-          component={ForgetPassword} options={{ headerShown: false }}
-        />
         <Stack.Screen name="Container"
           component={Container} options={{ headerShown: false }}
         />
+        <Stack.Screen name="Register"
+          component={Register} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="ForgotPassword"
+          component={ForgotPassword} options={{ headerShown: false }}
+        />
 
+        <Stack.Screen name="VerifyOtp"
+          component={VerifyOtp} options={{ headerShown: false }}
+        />
       </Stack.Navigator>
 
     );
