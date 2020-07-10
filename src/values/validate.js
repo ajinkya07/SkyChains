@@ -57,7 +57,7 @@ export function validatePassword(password) {
   if (password.length < 6) {
     return false
   }
-  var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,20}$/;
+  var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,10}$/;
     return pass.test(password) ? true :true;
 }
 
@@ -73,13 +73,7 @@ export const validateMobNum = number => {
 
 
 export const validateName =text => {
- 
   var regex = new RegExp(`^[a-zA-z]`);
-
   return regex.test(text) ? true :false;
 };
 
-export const validateUserName = text => {
-  var regex = new RegExp(`^[a-zA-z0-9]`);
-  return regex.test(text)? true :false;
-};
