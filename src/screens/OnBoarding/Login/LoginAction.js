@@ -55,7 +55,10 @@ export function setLoginData(data) {
   AsyncStorage.setItem('userId', data.data.user_id.toString())
   AsyncStorage.setItem('fullName', data.data.full_name.toString())
   AsyncStorage.setItem('userStatus', data.data.user_status.toString())
+  AsyncStorage.setItem('mobileNumber', data.data.mobile_number.toString())
+  AsyncStorage.setItem('emailId', data.data.email_id.toString())
 
+  
   
 }
 
