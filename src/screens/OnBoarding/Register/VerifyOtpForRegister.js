@@ -12,7 +12,7 @@ import {
 import { Body, Container, Content, Header, Left, Right, Toast } from 'native-base';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { connect } from 'react-redux';
-import { registerAfterOtpRequest, OTPregisterRequest } from "@register/RegisterReducer";
+import { registerAfterOtpRequest, OTPregisterRequest } from "@register/RegisterAction";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { color } from '@values/colors';
 
@@ -95,7 +95,7 @@ class VerifyOtpForRegister extends React.Component {
     if (this.state.successOTPRegisterVersion > prevState.successOTPRegisterVersion) {
       if (registerData.ack === '1') {
         this.props.navigation.navigate('SignIn')
-        this.showToast('"User registered successfully', 'success')
+        this.showToast('User registered successfully', 'success')
       }
       else {
         this.showToast('Please contact admin', 'danger')

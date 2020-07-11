@@ -51,14 +51,17 @@ export function validateEmail(emailId) {
 
 
 export function validatePassword(password) {
-   // 6 to 20 length
-  // 1 special  includeing !@#$%^&*
-  // 1 digit
   if (password.length < 4) {
     return false
   }
-  var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,10}$/;
-    return pass.test(password) ? true :true;
+  if (password.length > 10) {
+    return false
+  }
+  else{
+    return true
+  }
+  // var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,10}$/;
+    //return pass.test(password) ? true :true;
 }
 
 export const validateMobNum = number => {

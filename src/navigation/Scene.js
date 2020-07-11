@@ -24,12 +24,13 @@ class Scene extends React.Component {
   }
 
   componentDidMount() {
-    // this.getItem();
+    this.getItem();
   }
 
   async getItem() {
     let value = await AsyncStorage.getItem('userId');
-
+    console.log("value",value);
+    
     if (value) {
       let parsed = JSON.parse(value);
       if (parsed) {
@@ -65,8 +66,6 @@ class Scene extends React.Component {
           component={VerifyOtpForRegister} options={{ headerShown: false }}
         />
 
-
-
       </Stack.Navigator>
 
     );
@@ -74,13 +73,14 @@ class Scene extends React.Component {
 
   getHomeScene() {
     return (
-      <Stack.Navigator initialRouteName={SignIn}>
-        <Stack.Screen name="SignIn"
-          component={SignIn} options={{ headerShown: false }}
-        />
+      <Stack.Navigator initialRouteName={Container}>
         <Stack.Screen name="Container"
           component={Container} options={{ headerShown: false }}
         />
+        <Stack.Screen name="SignIn"
+          component={SignIn} options={{ headerShown: false }}
+        />
+        
         <Stack.Screen name="Register"
           component={Register} options={{ headerShown: false }}
         />
@@ -104,7 +104,7 @@ class Scene extends React.Component {
     return (
       <NavigationContainer>
         {/* {isLoginValue !== ''
-          ? isLoginValue == true
+          ? isLoginValue === true
             ? this.getHomeScene()
             : this.getLoginScene()
           : null} */}
@@ -116,3 +116,7 @@ class Scene extends React.Component {
 }
 
 export default Scene;
+
+// FOR LOG OUT
+// global.userId =  "";
+// AsyncStorage.setItem('userId', "")
