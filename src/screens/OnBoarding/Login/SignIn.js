@@ -230,7 +230,8 @@ class SignIn extends React.Component {
 
                   <ActionButtonRounded
                     title="Login"
-                    onButonPress={() => this.loginRequest()}
+                    //onButonPress={() => this.loginRequest()}
+                    onButonPress={() => this.props.navigation.navigate('Container')}
 
                     containerStyle={styles.buttonStyle}
                   />

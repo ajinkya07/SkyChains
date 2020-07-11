@@ -11,9 +11,12 @@ export const urls = {
         url: url + "User_registration/send_otp",
     },
    //change_password  or FP
-    VerifyOtp: {
+    ChangePassword: {
         url: url + "User_registration/change_password",
     },
+    Register:{
+        url: url + "User_registration",
 
+    }
 
 }

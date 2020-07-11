@@ -16,12 +16,11 @@ class _Header extends Component {
 
   render() {
     const {
-      showBack,
+      showBack, showLogo,
       onSearchPress,
       onNotificationPress, onCallingPress,
       title,
-      showSearch, showCalling, showNotification,
-      profilePic,
+      showSearch, showCalling, showNotification
     } = this.props;
 
     return (
@@ -32,19 +31,20 @@ class _Header extends Component {
           paddingVertical: Platform.OS === 'ios' ? hp(2) : 2,
           backgroundColor: '#FFFFFF',
         }}>
-        <Left style={{marginLeft:hp(1),width:wp(30)}}>
+        <Left style={{ marginLeft: hp(1), width: wp(30) }}>
           <Button transparent>
             {showBack ? (
               <Image
                 style={{ height: hp(2.5), width: hp(2.5) }}
                 source={require('../../assets/image/back.png')}
               />
-            ) : (
-                <View style={{marginTop:2,marginBottom:2,width:wp(40)}}>
-                  <Text style={{ fontWeight:'500',color: color.brandColor,fontSize: hp(2.5) }}>SAR</Text>
-                  <Text style={{ color: color.brandColor,marginTop:2,fontSize: hp(1.5) }}>A Royal Chains Brand</Text>
-                </View>
-              )}
+            ) :
+                (
+                  <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
+                    <Text style={{ fontWeight: '500', color: color.brandColor, fontSize: hp(2.5) }}>SAR</Text>
+                    <Text style={{ color: color.brandColor, marginTop: 2, fontSize: hp(1.5) }}>A Royal Chains Brand</Text>
+                  </View>
+                )}
           </Button>
         </Left>
 
@@ -61,22 +61,25 @@ class _Header extends Component {
           ) : null
           }
 
-          <Button transparent onPress={onCallingPress}>
-            <Image
-              style={{ height: hp(3), width: hp(3) }}
-              source={require('../../assets/image/BlueIcons/Phone.png')}
-            />
-          </Button>
+          {showCalling ? (
+            <Button transparent onPress={onCallingPress}>
+              <Image
+                style={{ height: hp(3), width: hp(3) }}
+                source={require('../../assets/image/BlueIcons/Phone.png')}
+              />
+            </Button>
+          ) : null}
 
-
-          <Button transparent onPress={onNotificationPress}>
-            <Image
-              resizeMode={'cover'}
-              style={{ height: hp(3.2), width: hp(3.2) }}
-              source={require('../../assets/image/BlueIcons/Notification.png')}
-            // defaultSource={require('../../assets/img/defaultImage.png')}
-            />
-          </Button>
+          {showNotification ? (
+            <Button transparent onPress={onNotificationPress}>
+              <Image
+                resizeMode={'cover'}
+                style={{ height: hp(3.2), width: hp(3.2) }}
+                source={require('../../assets/image/BlueIcons/Notification.png')}
+              />
+            </Button>
+          ) : null
+          }
         </Right>
       </Header>
     );
