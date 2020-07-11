@@ -105,13 +105,20 @@ class ForgotPassword extends React.Component {
 
     let error = "";
     try {
-
+      if (mobileNo=='') {
+        error = "Please enter mobile number";
+        throw new Error();
+      }
       if (!isMobile) {
         error = "Please enter valid mobile number";
         throw new Error();
       }
+      if (password == '') {
+        error = "Please enter password";
+        throw new Error();
+      }
       if (!isPassword) {
-        error = "Please enter valid password";
+        error = "Password must be atleast 4 character long";
         throw new Error();
       }
       else {

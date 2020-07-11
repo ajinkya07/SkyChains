@@ -103,12 +103,12 @@ class Scene extends React.Component {
     const { isLoginValue } = this.state;
     return (
       <NavigationContainer>
-        {isLoginValue !== ''
+        {/* {isLoginValue !== ''
           ? isLoginValue === true
             ? this.getHomeScene()
             : this.getLoginScene()
-          : null}
-        {/* {this.getLoginScene()} */}
+          : null} */}
+        {this.getLoginScene()}
 
       </NavigationContainer>
     );

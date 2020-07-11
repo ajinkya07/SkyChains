@@ -151,8 +151,12 @@ class Register extends React.Component {
         error = "Please enter organisation name";
         throw new Error();
       }
+      if (password == '') {
+        error = "Please enter password";
+        throw new Error();
+      }
       if (!isPassword) {
-        error = "Please enter valid password";
+        error = "Password must be atleast 4 character long";
         throw new Error();
       }
       else {
@@ -196,7 +200,7 @@ class Register extends React.Component {
                 value={fullName ? fullName : null}
                 type="fullName"
                 inputKey="fullName"
-                maxLength={30}
+                maxLength={25}
                 minLength={3}
                 onChangeText={this.onInputChanged}
                 placeholder="Full name"
@@ -233,7 +237,7 @@ class Register extends React.Component {
                 type="organisation"
                 inputKey="organisation"
                 placeholder="Organisation"
-                maxLength={20}
+                maxLength={25}
                 minLength={3}
                 onChangeText={this.onInputChanged}
                 returnKeyType="next"
