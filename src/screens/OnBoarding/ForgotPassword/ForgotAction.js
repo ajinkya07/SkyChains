@@ -78,7 +78,7 @@ export function afterOtpRequest(data) {
   
     return dispatch => {
       dispatch(showLoadingIndicator(OTP_DATA));
-      axios.post(urls.VerifyOtp.url, data, header).then(response => {
+      axios.post(urls.ChangePassword.url, data, header).then(response => {
           console.log("afterOtpRequest", response.data);
           if (response.data.ack ==='1') {
             dispatch(

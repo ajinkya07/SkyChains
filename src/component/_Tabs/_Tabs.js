@@ -12,7 +12,13 @@ import _Container from '@container/_Container'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
+
 import HomePage from '@homepage/HomePage'
+import AccountContainer from '@accountContainer/AccountContainer'
+import CartContainer from '@cartContainer/CartContainer'
+import CustomOrder from '@customOrder/CustomOrder'
+import CategoryContainer from '@category/CategoryContainer'
+
 
 var totalDuration = 0.00
 var backPressed = 0;
@@ -25,15 +31,15 @@ class Container extends React.Component {
             BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         });
         this.unsubscribeBlur = this.props.navigation.addListener('blur', e => {
-            BackHandler.removeEventListener('hardwareBackPress',this.handleBackButton,);
+            BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton,);
         });
 
-        onButtonPress = () => {
-            BackHandler.removeEventListener(
-                'hardwareBackPress',
-                this.handleBackButton,
-            );
-        };
+        // onButtonPress = () => {
+        //     BackHandler.removeEventListener(
+        //         'hardwareBackPress',
+        //         this.handleBackButton,
+        //     );
+        // };
     }
     handleBackButton = () => {
         // Alert.alert(
@@ -45,17 +51,17 @@ class Container extends React.Component {
         //     ],
         //      {cancelable: false,},
         // );
-             if (backPressed > 0 ) {
-          console.warn("backPressed > 0");
-          BackHandler.exitApp()
-          backPressed = 0
+        if (backPressed > 0) {
+            console.warn("backPressed > 0");
+            BackHandler.exitApp()
+            backPressed = 0
         }
         else {
             console.warn("backPressed 0");
-          backPressed++;
-          ToastAndroid.show("Press again to exit app", ToastAndroid.SHORT);
-          setTimeout(() => { backPressed = 0 }, 2000);
-          return true;
+            backPressed++;
+            ToastAndroid.show("Press again to exit app", ToastAndroid.SHORT);
+            setTimeout(() => { backPressed = 0 }, 2000);
+            return true;
         }
 
         return true;
@@ -71,48 +77,57 @@ class Container extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <HomePage navigation = {this.props.navigation} />
+                <HomePage navigation={this.props.navigation} />
             </View>
         );
     }
 }
 
 
-function CategoryScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>CategoryScreen!</Text>
-        </View>
-    );
+
+class CategoryScreen extends React.Component {
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <CategoryContainer navigation={this.props.navigation} />
+                
+            </View>
+        );
+    }
+}
+
+class CustomOrderScreen extends React.Component {
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <CustomOrder navigation={this.props.navigation} />
+            </View>
+        );
+    }
 
 }
 
-function CustomOrderScreen() {
 
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>CustomOrderScreen!</Text>
-        </View>
-    );
-
+class CartScreen extends React.Component {
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <CartContainer navigation={this.props.navigation} />
+            </View>
+        );
+    }
 }
 
 
-function CartScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>CartScreen!</Text>
-        </View>
-    );
-}
+class AccountScreen extends React.Component {
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <AccountContainer navigation={this.props.navigation} />
+            </View>
 
-function AccountScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>AccountScreen!</Text>
-        </View>
-
-    );
+        );
+    }
 }
 
 
@@ -124,14 +139,16 @@ export default function _Tabs() {
 
         <Tab.Navigator initialRouteName="Home"
             tabBarOptions={{
-                style:{height:Platform.OS === 'ios' ? hp(10) : hp(9)},
+                style: { height: Platform.OS === 'ios' ? hp(10) : hp(9) },
                 activeTintColor: color.brandColor,
-               inactiveTintColor:'gray',
-                labelStyle: { fontSize: hp(1.8),
-                margin: 0, padding: 0,bottom:2,top:2 },
+                inactiveTintColor: 'gray',
+                labelStyle: {
+                    fontSize: hp(1.8),
+                    margin: 0, padding: 0, bottom: 2, top: 2
+                },
             }}
             barStyle={{ backgroundColor: 'white' }}
-            >
+        >
 
             <Tab.Screen name="Home"
                 options={{
@@ -141,14 +158,14 @@ export default function _Tabs() {
 
                         if (focused) {
                             return (
-                                <Image style={{height: hp(3.5),width: hp(3.5),marginTop:-2}}
+                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2 }}
                                     source={require('../../assets/image/BlueIcons/Home.png')}
                                 />)
                         }
                         else {
                             return (
-                                <Image style={{height: hp(3),width: hp(3),marginTop: 3}}
-                                source={require('../../assets/image/home.png')}
+                                <Image style={{ height: hp(3), width: hp(3), marginTop: 3 }}
+                                    source={require('../../assets/image/home.png')}
 
                                 />
                             )
@@ -167,14 +184,14 @@ export default function _Tabs() {
 
                         if (focused) {
                             return (
-                                <Image style={{height: hp(3.2),width: hp(3.2),marginTop: -2}}
-                                source={require('../../assets/image/BlueIcons/Category.png')}
+                                <Image style={{ height: hp(3.2), width: hp(3.2), marginTop: -2 }}
+                                    source={require('../../assets/image/BlueIcons/Category.png')}
                                 />
                             )
                         }
                         else {
                             return (
-                                <Image style={{height: hp(2.5),width: hp(2.5),marginTop: 4}}
+                                <Image style={{ height: hp(2.5), width: hp(2.5), marginTop: 4 }}
                                     source={require('../../assets/image/Category.png')}
                                 />
                             )
@@ -193,14 +210,14 @@ export default function _Tabs() {
 
                         if (focused) {
                             return (
-                                <Image style={{height: hp(3.5),width: hp(3.5),marginTop: -2}}
+                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2 }}
                                     source={require('../../assets/image/BlueIcons/Cart.png')}
                                 />
                             )
                         }
                         else {
                             return (
-                                <Image style={{height: hp(2.8),width: hp(2.8),marginTop: 3}}
+                                <Image style={{ height: hp(2.8), width: hp(2.8), marginTop: 3 }}
                                     source={require('../../assets/image/Cart.png')}
                                 />
                             )
@@ -212,20 +229,20 @@ export default function _Tabs() {
 
             <Tab.Screen name="Customize"
                 options={{
-                   tabBarLabel: 'Customize',
-                   activeTintColor: color.brandColor,
+                    tabBarLabel: 'Customize',
+                    activeTintColor: color.brandColor,
                     tabBarIcon: ({ color, size, focused }) => {
 
                         if (focused) {
                             return (
-                                <Image style={{height: hp(3.5),width: hp(3.5),marginTop: -2}}
+                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2 }}
                                     source={require('../../assets/image/CustomOrder.png')}
                                 />
                             )
                         }
                         else {
                             return (
-                                <Image style={{height: hp(2.8),width: hp(2.8),marginTop: 3}}
+                                <Image style={{ height: hp(2.8), width: hp(2.8), marginTop: 3 }}
                                     source={require('../../assets/image/CustomOrder.png')}
                                 />
                             )
@@ -244,14 +261,14 @@ export default function _Tabs() {
 
                         if (focused) {
                             return (
-                                <Image style={{height: hp(3.5),width: hp(3.5),marginTop: -2}}
-                                source={require('../../assets/image/BlueIcons/Account.png')}
+                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2 }}
+                                    source={require('../../assets/image/BlueIcons/Account.png')}
                                 />
                             )
                         }
                         else {
                             return (
-                                <Image style={{height: hp(2.8),width: hp(2.8),marginTop: 3}}
+                                <Image style={{ height: hp(2.8), width: hp(2.8), marginTop: 3 }}
                                     source={require('../../assets/image/Account.png')}
                                 />
                             )

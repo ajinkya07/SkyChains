@@ -54,10 +54,10 @@ export function validatePassword(password) {
    // 6 to 20 length
   // 1 special  includeing !@#$%^&*
   // 1 digit
-  if (password.length < 6) {
+  if (password.length < 4) {
     return false
   }
-  var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,10}$/;
+  var pass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,10}$/;
     return pass.test(password) ? true :true;
 }
 

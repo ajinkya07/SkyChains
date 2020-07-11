@@ -7,6 +7,7 @@ import SignIn from '@login/SignIn';
 import Register from '@register/Register';
 import ForgotPassword from '@forgotPassword/ForgotPassword';
 import VerifyOtp from '@forgotPassword/VerifyOtp';
+import VerifyOtpForRegister from '@register/VerifyOtpForRegister';
 
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -57,10 +58,13 @@ class Scene extends React.Component {
         <Stack.Screen name="ForgotPassword"
           component={ForgotPassword} options={{ headerShown: false }}
         />
-
         <Stack.Screen name="VerifyOtp"
           component={VerifyOtp} options={{ headerShown: false }}
         />
+        <Stack.Screen name="VerifyOtpForRegister"
+          component={VerifyOtpForRegister} options={{ headerShown: false }}
+        />
+
 
 
       </Stack.Navigator>
@@ -83,10 +87,13 @@ class Scene extends React.Component {
         <Stack.Screen name="ForgotPassword"
           component={ForgotPassword} options={{ headerShown: false }}
         />
-
         <Stack.Screen name="VerifyOtp"
           component={VerifyOtp} options={{ headerShown: false }}
         />
+        <Stack.Screen name="VerifyOtpForRegister"
+          component={VerifyOtpForRegister} options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
 
     );

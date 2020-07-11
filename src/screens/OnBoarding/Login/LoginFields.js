@@ -34,6 +34,8 @@ class LoginFields extends Component {
     let isValid = false;
 
     console.log("this.props", this.props);
+    console.log("text", text);
+
 
     if (text && text.length > 0) {
       switch (type) {
@@ -50,13 +52,13 @@ class LoginFields extends Component {
           isValid = validatePassword(text);
           break;
 
-        case "firstName":
+        case "fullName":
           isValid = validateName(text);
           break;
 
-        case "lastName":
-          isValid = validateName(text);
-          break;
+          case "organisation":
+            isValid = validateName(text);
+            break;
 
         default:
           break;

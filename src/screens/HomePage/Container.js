@@ -31,16 +31,19 @@ class Container extends Component {
 
 
   onNotificationPress() {
-    alert('inProgress')
+    alert('notify')
     //this.props.navigation.navigate('Notification');
   }
 
   renderSearchbar = () =>{
-    alert('inProgress')
+    alert('search')
     //this.props.navigation.navigate('SearchScreen');
 
   }
 
+  renderCall = () =>{
+    alert('call')
+  }
 
   render() {
     const { safeAreaView } = HomePageStyle;
@@ -49,12 +52,15 @@ class Container extends Component {
     return (
       <SafeAreaView style={safeAreaView}>
         <_Container
-          showHeader
-          showSearch
-          showNotification
-          showCalling
+          showHeader={true}
+          showSearch={true}
+          showNotification={true}
+          showCalling={true}
+          showLogo={false}
+          showBack={false}
           showLoading={false}
           onSearchPress={() => this.renderSearchbar()}
+          onCallingPress={()=> this.renderCall()}
           onNotificationPress={() => this.onNotificationPress()}>
           <_Tabs />
         </_Container>

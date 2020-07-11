@@ -13,3 +13,14 @@ export const OTP_DATA_SUCCESS = "otpDataSuccess";
 export const OTP_DATA_ERROR = "otpDataError";
 export const OTP_DATA_RESET_REDUCER = "otpDataResetReducer";
 
+export const OTP_REGISTER_DATA = "OTPRegisterData";
+export const OTP_REGISTER_DATA_SUCCESS = "OTPRegisterDataSuccess";
+export const OTP_REGISTER_DATA_ERROR = "OTPRegisterDataError";
+export const OTP_REGISTER_DATA_RESET_REDUCER = "OTPRegisterDataResetReducer";
+
+export const REGISTER_DATA = "registerData";
+export const REGISTER_DATA_SUCCESS = "registerDataSuccess";
+export const REGISTER_DATA_ERROR = "registerDataError";
+export const REGISTER_DATA_RESET_REDUCER = "registerDataResetReducer";
+
+
