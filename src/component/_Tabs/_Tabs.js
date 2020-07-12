@@ -147,7 +147,7 @@ export default function _Tabs() {
                     margin: 0, padding: 0, bottom: 2, top: 2
                 },
             }}
-            barStyle={{ backgroundColor: 'white' }}
+            barStyle={{ backgroundColor: 'white', }}
         >
 
             <Tab.Screen name="Home"
@@ -261,7 +261,7 @@ export default function _Tabs() {
 
                         if (focused) {
                             return (
-                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2 }}
+                                <Image style={{ height: hp(3.5), width: hp(3.5), marginTop: -2, }}
                                     source={require('../../assets/image/BlueIcons/Account.png')}
                                 />
                             )

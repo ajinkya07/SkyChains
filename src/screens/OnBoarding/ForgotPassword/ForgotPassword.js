@@ -1,21 +1,37 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
-  ImageBackground, Image, StyleSheet,
-  TouchableOpacity, ActivityIndicator, SafeAreaView,
-  TextInput, Dimensions,
+  ImageBackground,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { Container, Content, Icon,Toast } from 'native-base';
+import {
+  Body,
+  Container,
+  Content,
+  Header,
+  Left,
+  Right,
+  Toast,
+} from 'native-base';
 import IconPack from '@login/IconPack';
-const { width, height } = Dimensions.get('window');
-import { sendOtpRequest } from "@forgotPassword/ForgotAction";
-import { connect } from 'react-redux';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import LoginFields from '@login/LoginFields'
-import { color } from '@values/colors';
-
-
+const {width, height} = Dimensions.get('window');
+import {sendOtpRequest} from '@forgotPassword/ForgotAction';
+import {connect} from 'react-redux';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import LoginFields from '@login/LoginFields';
+import {color} from '@values/colors';
 
 class ForgotPassword extends React.Component {
   constructor(props) {
@@ -27,16 +43,11 @@ class ForgotPassword extends React.Component {
       isMobile: false,
       successForgotVersion: 0,
       errorForgotVersion: 0,
-
-    }
+    };
   }
 
-
-
   static getDerivedStateFromProps(nextProps, prevState) {
-    const {
-      successForgotVersion, errorForgotVersion
-    } = nextProps;
+    const {successForgotVersion, errorForgotVersion} = nextProps;
     let newState = null;
 
     if (successForgotVersion > prevState.successForgotVersion) {
@@ -54,35 +65,35 @@ class ForgotPassword extends React.Component {
     return newState;
   }
 
-
   async componentDidUpdate(prevProps, prevState) {
-    const {forgotData} = this.props
+    const {forgotData} = this.props;
 
     if (this.state.successForgotVersion > prevState.successForgotVersion) {
-      if (forgotData.otp != "") {
-        this.showToast("OTP sent successfully", 'success')
-        this.props.navigation.navigate('VerifyOtp', { mobile: forgotData.mobile_number, otp: forgotData.otp,
-                                        password:this.state.password })
+      if (forgotData.otp != '') {
+        this.showToast('OTP sent successfully', 'success');
+        this.props.navigation.navigate('VerifyOtp', {
+          mobile: forgotData.mobile_number,
+          otp: forgotData.otp,
+          password: this.state.password,
+        });
       } else {
-        this.showToast('Please contact admin', 'danger')
+        this.showToast('Please contact admin', 'danger');
       }
     }
     if (this.state.errorForgotVersion > prevState.errorForgotVersion) {
-      this.showToast(this.props.errorMsg, 'danger')
+      this.showToast(this.props.errorMsg, 'danger');
     }
   }
 
-
-  onInputChanged = ({ inputKey, isValid, value }) => {
-    let validationKey = "";
+  onInputChanged = ({inputKey, isValid, value}) => {
+    let validationKey = '';
     switch (inputKey) {
-
-      case "mobileNo":
-        validationKey = "isMobile";
+      case 'mobileNo':
+        validationKey = 'isMobile';
         break;
 
-      case "password":
-        validationKey = "isPassword";
+      case 'password':
+        validationKey = 'isPassword';
         break;
       default:
         break;
@@ -92,139 +103,152 @@ class ForgotPassword extends React.Component {
       [inputKey]: value,
       [validationKey]: isValid,
     });
-
-  }
+  };
 
   sendOtp = () => {
-    const {
-      password,
-      isPassword,
-      mobileNo,
-      isMobile,
-    } = this.state;
+    const {password, isPassword, mobileNo, isMobile} = this.state;
 
-    let error = "";
+    let error = '';
     try {
-      if (mobileNo=='') {
-        error = "Please enter mobile number";
+      if (mobileNo == '') {
+        error = 'Please enter mobile number';
         throw new Error();
       }
       if (!isMobile) {
-        error = "Please enter valid mobile number";
+        error = 'Please enter valid mobile number';
         throw new Error();
       }
       if (password == '') {
-        error = "Please enter password";
+        error = 'Please enter password';
         throw new Error();
       }
       if (!isPassword) {
-        error = "Password must be atleast 4 character long";
+        error = 'Password must be atleast 4 character long';
         throw new Error();
-      }
-      else {
+      } else {
         const data = new FormData();
         data.append('mobile_number', mobileNo);
 
-        this.props.sendOtpRequest(data)
+        this.props.sendOtpRequest(data);
       }
     } catch (err) {
-      console.log("err", err);
-      this.showToast(error, 'danger')
+      console.log('err', err);
+      this.showToast(error, 'danger');
     }
-  }
+  };
 
   renderLoader = () => {
     return (
       <View style={styles.loaderView}>
         <ActivityIndicator size="large" color={color.white} />
       </View>
-    )
-  }
+    );
+  };
 
   showToast = (msg, type, duration) => {
     Toast.show({
       text: msg ? msg : 'Server error, Please try again',
-      type: type ? type : "danger",
-      duration: duration ? duration : 2500
+      type: type ? type : 'danger',
+      duration: duration ? duration : 2500,
     });
-  }
-
+  };
 
   render() {
-    const { mobileNo, password } = this.state
+    const {mobileNo, password} = this.state;
 
     return (
       <Container>
         <ImageBackground source={IconPack.LOGIN_BG} style={styles.bgImage}>
           <SafeAreaView style={styles.flex}>
-            <View style={styles.viewContainer}>
-              <View
-                style={{
-                  marginHorizontal: 60,
-                  height: 90,
-                }}>
-                <Text
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : null}
+              keyboardVerticalOffset={Platform.select({
+                ios: -90,
+                android: 0,
+              })}
+              style={{flex: 1}}>
+              <Header style={styles.headerStyle}>
+                <Left>
+                  <TouchableOpacity
+                    onPress={() => this.props.navigation.goBack()}>
+                    <Image
+                      style={styles.backImage}
+                      source={require('../../../assets/image/back.png')}
+                    />
+                  </TouchableOpacity>
+                </Left>
+                <Body />
+                <Right />
+              </Header>
+            
+              <View style={styles.viewContainer}>
+                <View
                   style={{
-                    color: '#fbcb84',
-                    fontWeight: '400',
-                    fontSize: 30,
-                    marginBottom: 10,
-                    textAlign: 'center',
+                    marginHorizontal: 60,
+                    height: 90,
                   }}>
-                  Forgot Password
-              </Text>
-                <Text
-                  style={{ fontSize: 16, color: '#ffffff', textAlign: 'center' }}>
-                  Enter the Mobile No. associated with your Account
-              </Text>
+                  <Text
+                    style={{
+                      color: '#fbcb84',
+                      fontWeight: '400',
+                      fontSize: 30,
+                      marginBottom: 10,
+                      textAlign: 'center',
+                    }}>
+                    Forgot Password
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: '#ffffff',
+                      textAlign: 'center',
+                    }}>
+                    Enter the Mobile No. associated with your Account
+                  </Text>
+                </View>
+                <LoginFields
+                  value={mobileNo ? mobileNo : null}
+                  type="mobileNo"
+                  inputKey="mobileNo"
+                  maxLength={10}
+                  minLength={10}
+                  onChangeText={this.onInputChanged}
+                  placeholder="Mobile"
+                  returnKeyType="next"
+                  placeholderTextColor="#fbcb84"
+                  Icon={IconPack.MOBILE_LOGO}
+                  keyboardType='phone-pad'
+
+                />
+                <LoginFields
+                  value={password ? password : null}
+                  type="password"
+                  inputKey="password"
+                  maxLength={10}
+                  minLength={10}
+                  onChangeText={this.onInputChanged}
+                  placeholder="Password"
+                  returnKeyType="done"
+                  secureTextEntry
+                  placeholderTextColor="#fbcb84"
+                  isSecure={true}
+                  Icon={IconPack.KEY_LOGO}
+                />
+                <ActionButtonRounded
+                  title="Confirm"
+                  onButonPress={() => this.sendOtp()}
+                  containerStyle={styles.buttonStyle}
+                />
               </View>
-              <LoginFields
-                value={mobileNo ? mobileNo : null}
-                type="mobileNo"
-                inputKey="mobileNo"
-                maxLength={10}
-                minLength={10}
-                onChangeText={this.onInputChanged}
-                placeholder="Mobile"
-                returnKeyType="next"
-                placeholderTextColor="#fbcb84"
-                Icon={IconPack.MOBILE_LOGO}
-              />
-              <LoginFields
-                value={password ? password : null}
-                type="password"
-                inputKey="password"
-                maxLength={10}
-                minLength={10}
-                onChangeText={this.onInputChanged}
-                placeholder="Password"
-                returnKeyType="done"
-                secureTextEntry
-                placeholderTextColor=""
-                placeholderTextColor="#fbcb84"
-                isSecure={true}
-                Icon={IconPack.KEY_LOGO}
-              />
-              <ActionButtonRounded
-                title="Confirm"
-                onButonPress={() => this.sendOtp()}
-                containerStyle={styles.buttonStyle}
-              />
-            </View>
-           
-            {
-              this.props.isFetching && this.renderLoader()
-            }
-        
+
+              {this.props.isFetching && this.renderLoader()}
+            </KeyboardAvoidingView>
           </SafeAreaView>
-       
-       
         </ImageBackground>
       </Container>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   viewContainer: {
@@ -236,17 +260,29 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  flex: { flex: 1 },
+  flex: {flex: 1},
   buttonStyle: {
     marginTop: 65,
     marginBottom: 22,
   },
   loaderView: {
-    position: 'absolute', height: hp(100), width: wp(100),
-    alignItems: 'center', justifyContent: 'center'
+    position: 'absolute',
+    height: hp(100),
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backImage: {
+    width: 14,
+    height: 26,
+    marginLeft: 20,
+  },
+  headerStyle: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    borderBottomWidth: 0,
   },
 });
-
 
 function mapStateToProps(state) {
   return {
@@ -259,13 +295,13 @@ function mapStateToProps(state) {
   };
 }
 
-
-export default connect(mapStateToProps, { sendOtpRequest })(ForgotPassword);
-
-
+export default connect(
+  mapStateToProps,
+  {sendOtpRequest},
+)(ForgotPassword);
 
 //-------------ActionButtonCommon-----------//
-const ActionButtonRounded = ({ title, onButonPress, containerStyle }) => {
+const ActionButtonRounded = ({title, onButonPress, containerStyle}) => {
   return (
     <TouchableOpacity
       onPress={() => {
@@ -288,7 +324,7 @@ const actionButtonRoundedStyle = StyleSheet.create({
   mainContainerStyle: {
     backgroundColor: '#11255a',
     height: 50,
-    width: width - 80,
+    width: width - 36,
     justifyContent: 'center',
     borderRadius: 40,
     borderColor: '#ffffff',

@@ -28,7 +28,8 @@ export default class _Text extends Component {
       numberOfLines,
       fwExtraLarge,
       textColor,
-      fsLarge
+      fsLarge,
+      fsMedium
     } = this.props;
 
 
@@ -64,6 +65,10 @@ export default class _Text extends Component {
     else if(fsLarge)
     {
       defaultFontSize = fontSize.fsLarge;
+    }
+    else if(fsMedium)
+    {
+      defaultFontSize = fontSize.fsMedium;
     }
     
     else {
