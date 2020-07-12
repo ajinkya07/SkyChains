@@ -54,7 +54,7 @@ class _Header extends Component {
           {showSearch ? (
             <Button transparent onPress={onSearchPress}>
               <Image
-                style={{ height: hp(2.8), width: hp(2.8) }}
+                style={{ height: hp(3.2), width: hp(3.2) }}
                 source={require('../../assets/image/BlueIcons/Search.png')}
               />
             </Button>
@@ -64,7 +64,7 @@ class _Header extends Component {
           {showCalling ? (
             <Button transparent onPress={onCallingPress}>
               <Image
-                style={{ height: hp(3), width: hp(3) }}
+                style={{ height: hp(3.5), width: hp(3.5) }}
                 source={require('../../assets/image/BlueIcons/Phone.png')}
               />
             </Button>
@@ -74,7 +74,7 @@ class _Header extends Component {
             <Button transparent onPress={onNotificationPress}>
               <Image
                 resizeMode={'cover'}
-                style={{ height: hp(3.2), width: hp(3.2) }}
+                style={{ height: hp(3.6), width: hp(3.6) }}
                 source={require('../../assets/image/BlueIcons/Notification.png')}
               />
             </Button>

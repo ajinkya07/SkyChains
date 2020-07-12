@@ -11,7 +11,7 @@ export default class CustomOrder extends Component {
   render() {
     return (
       <View>
-        <Text> CustomOrder </Text>
+        <Text> Customize </Text>
       </View>
     );
   }

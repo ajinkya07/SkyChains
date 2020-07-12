@@ -4,6 +4,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 export const fontSize = {
 
     fsHeading: hp(2.2),  
+
     fsPrimary: hp(2), 
 
     fsSmall: hp(1.8), 
@@ -16,8 +17,9 @@ export const fontSize = {
     
     fsLogoName:hp(5),
 
-    fsLarge: hp(3)
+    fsLarge: hp(3),
 
+    fsMedium:hp(2.5)
 
     };
 

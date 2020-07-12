@@ -9,6 +9,11 @@ import ForgotPassword from '@forgotPassword/ForgotPassword';
 import VerifyOtp from '@forgotPassword/VerifyOtp';
 import VerifyOtpForRegister from '@register/VerifyOtpForRegister';
 
+import OrderHistory from '@orderHistory/OrderHistory';
+import OrderHistoryDetail from '@orderHistory/OrderHistoryDetail';
+import CustomOrder from '@accountCustomOrder/CustomOrder';
+
+
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -29,8 +34,8 @@ class Scene extends React.Component {
 
   async getItem() {
     let value = await AsyncStorage.getItem('userId');
-    console.log("value",value);
-    
+    console.log("value", value);
+
     if (value) {
       let parsed = JSON.parse(value);
       if (parsed) {
@@ -65,6 +70,16 @@ class Scene extends React.Component {
         <Stack.Screen name="VerifyOtpForRegister"
           component={VerifyOtpForRegister} options={{ headerShown: false }}
         />
+        <Stack.Screen name="OrderHistory"
+          component={OrderHistory} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="OrderHistoryDetail"
+          component={OrderHistoryDetail} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="CustomOrder"
+          component={CustomOrder} options={{ headerShown: false }}
+        />
+
 
       </Stack.Navigator>
 
@@ -80,7 +95,7 @@ class Scene extends React.Component {
         <Stack.Screen name="SignIn"
           component={SignIn} options={{ headerShown: false }}
         />
-        
+
         <Stack.Screen name="Register"
           component={Register} options={{ headerShown: false }}
         />
@@ -93,6 +108,16 @@ class Scene extends React.Component {
         <Stack.Screen name="VerifyOtpForRegister"
           component={VerifyOtpForRegister} options={{ headerShown: false }}
         />
+        <Stack.Screen name="OrderHistory"
+          component={OrderHistory} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="OrderHistoryDetail"
+          component={OrderHistoryDetail} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="CustomOrder"
+          component={CustomOrder} options={{ headerShown: false }}
+        />
+
 
       </Stack.Navigator>
 
@@ -103,12 +128,12 @@ class Scene extends React.Component {
     const { isLoginValue } = this.state;
     return (
       <NavigationContainer>
-        {/* {isLoginValue !== ''
+        {isLoginValue !== ''
           ? isLoginValue === true
             ? this.getHomeScene()
             : this.getLoginScene()
-          : null} */}
-        {this.getLoginScene()}
+          : null}
+        {/* {this.getLoginScene()} */}
 
       </NavigationContainer>
     );
