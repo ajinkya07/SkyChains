@@ -163,7 +163,7 @@ class ForgotPassword extends React.Component {
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : null}
               keyboardVerticalOffset={Platform.select({
-                ios: -185,
+                ios: -90,
                 android: 0,
               })}
               style={{flex: 1}}>
@@ -180,6 +180,7 @@ class ForgotPassword extends React.Component {
                 <Body />
                 <Right />
               </Header>
+            
               <View style={styles.viewContainer}>
                 <View
                   style={{
@@ -216,6 +217,8 @@ class ForgotPassword extends React.Component {
                   returnKeyType="next"
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.MOBILE_LOGO}
+                  keyboardType='phone-pad'
+
                 />
                 <LoginFields
                   value={password ? password : null}

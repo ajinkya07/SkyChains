@@ -95,7 +95,7 @@ class VerifyOtpForRegister extends React.Component {
     if (this.state.successOTPRegisterVersion > prevState.successOTPRegisterVersion) {
       if (registerData.ack === '1') {
         this.props.navigation.navigate('SignIn')
-        this.showToast('User registered successfully', 'success')
+        this.showToast(registerData.msg, 'success')
       }
       else {
         this.showToast('Please contact admin', 'danger')
@@ -228,7 +228,6 @@ class VerifyOtpForRegister extends React.Component {
                 codeInputFieldStyle={styles.otpInputStyle}
                 codeInputHighlightStyle={styles.otpInputHighlightStyle}
                 style={styles.otpContainerStyle}
-
                 onCodeChanged={(code) => this.saveCode(code)}
                 onCodeFilled={(finalCode) => this.finalEnteredOtp(finalCode)}
 

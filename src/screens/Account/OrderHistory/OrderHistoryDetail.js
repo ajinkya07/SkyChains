@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -9,6 +9,8 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+
+import _CustomHeader from '@customHeader/_CustomHeader'
 
 const OrderHistoryDetailComponent = () => {
   return (
@@ -22,6 +24,7 @@ const OrderHistoryDetailComponent = () => {
               uri:
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSHnx2IxXolP5b4-ZWmOhi6JgsAJDHH7Y1fnw&usqp=CAU',
             }}
+            defaultSource={require('../../../assets/image/default.png')}
           />
         </View>
         <View style={styles.contentView}>
@@ -80,7 +83,7 @@ const OrderDetailBottomTab = () => {
           marginVertical: 5,
         }}
       />
-      <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
+      <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
         <TouchableOpacity onPress={() => alert('Reorder')}>
           <Text style={BottomTabstyles.detailText}>RE-ORDER</Text>
         </TouchableOpacity>
@@ -108,14 +111,20 @@ export default class OrderHistoryDetail extends Component {
   render() {
     return (
       <>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <OrderHistoryDetailComponent />
-          <OrderHistoryDetailComponent />
-          <OrderHistoryDetailComponent />
-          <OrderHistoryDetailComponent />
-        </ScrollView>
-        <OrderDetailBottomTab />
-        <SafeAreaView />
+      <SafeAreaView style={{flex:1}}>
+          <_CustomHeader
+            Title='History Detail'
+            LeftBtnPress={() => this.props.navigation.goBack()}
+          />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <OrderHistoryDetailComponent />
+            <OrderHistoryDetailComponent />
+            <OrderHistoryDetailComponent />
+            <OrderHistoryDetailComponent />
+          </ScrollView>
+          <OrderDetailBottomTab />
+          <SafeAreaView />
+        </SafeAreaView>
       </>
     );
   }

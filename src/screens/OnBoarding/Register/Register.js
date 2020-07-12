@@ -222,7 +222,7 @@ class Register extends React.Component {
                     onPress={() => this.props.navigation.goBack()}>
                     <Image
                       style={styles.backImage}
-                      source={IconPack.WHITE_ARROW}
+                      source={require('../../../assets/image/back.png')}
                     />
                   </TouchableOpacity>
                 </Left>
@@ -253,6 +253,8 @@ class Register extends React.Component {
                   returnKeyType="next"
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.MOBILE_LOGO}
+                  keyboardType='phone-pad'
+
                 />
                 <LoginFields
                   value={emailId ? emailId : null}

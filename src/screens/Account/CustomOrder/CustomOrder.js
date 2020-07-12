@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,14 @@ import {
   ScrollView,
   Image,
   Platform,
+  SafeAreaView,
 } from 'react-native';
+import _CustomHeader from '@customHeader/_CustomHeader'
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 
 const CustomOrderDetails = () => {
   return (
@@ -18,6 +25,7 @@ const CustomOrderDetails = () => {
             uri:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSHnx2IxXolP5b4-ZWmOhi6JgsAJDHH7Y1fnw&usqp=CAU',
           }}
+          defaultSource={require('../../../assets/image/default.png')}
         />
       </View>
       <View>
@@ -78,10 +86,17 @@ export default class CustomOrder extends Component {
 
   render() {
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <CustomOrderDetails />
-        <CustomOrderDetails />
-      </ScrollView>
+      <SafeAreaView style={{ flex: 1 }}>
+        <_CustomHeader
+          Title='Custom Order Detail'
+          LeftBtnPress={() => this.props.navigation.goBack()}
+        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <CustomOrderDetails />
+          <CustomOrderDetails />
+        </ScrollView>
+      </SafeAreaView>
+
     );
   }
 }

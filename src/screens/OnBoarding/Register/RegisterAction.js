@@ -78,8 +78,8 @@ export function registerAfterOtpRequest(data) {
     return dispatch => {
       dispatch(showLoadingIndicator(REGISTER_DATA));
   
-      axios.post(urls.SendOtp.url, data, header).then(response => {
-          console.log("registerRequest", response.data);
+      axios.post(urls.Register.url, data, header).then(response => {
+          console.log("registerAfterOtpRequest", response.data);
           if (response.data.ack ==='1') {
             dispatch(
               onSuccess(response.data, REGISTER_DATA_SUCCESS)

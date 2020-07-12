@@ -8,7 +8,7 @@ import Register from '@register/Register';
 import ForgotPassword from '@forgotPassword/ForgotPassword';
 import VerifyOtp from '@forgotPassword/VerifyOtp';
 import VerifyOtpForRegister from '@register/VerifyOtpForRegister';
-
+import AboutUs from '@aboutUs/AboutUs';
 import OrderHistory from '@orderHistory/OrderHistory';
 import OrderHistoryDetail from '@orderHistory/OrderHistoryDetail';
 import CustomOrder from '@accountCustomOrder/CustomOrder';
@@ -79,7 +79,9 @@ class Scene extends React.Component {
         <Stack.Screen name="CustomOrder"
           component={CustomOrder} options={{ headerShown: false }}
         />
-
+  <Stack.Screen name="AboutUs"
+          component={AboutUs} options={{ headerShown: false }}
+        />
 
       </Stack.Navigator>
 
@@ -116,6 +118,9 @@ class Scene extends React.Component {
         />
         <Stack.Screen name="CustomOrder"
           component={CustomOrder} options={{ headerShown: false }}
+        />
+          <Stack.Screen name="AboutUs"
+          component={AboutUs} options={{ headerShown: false }}
         />
 
 

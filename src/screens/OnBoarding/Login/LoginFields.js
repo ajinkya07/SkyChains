@@ -80,7 +80,9 @@ class LoginFields extends Component {
 
   render() {
 
-    const { containerStyle, isSecure, placeholder, maxLength, minLength, placeholderTextColor, Icon } = this.props
+    const { containerStyle, isSecure, placeholder, maxLength, minLength,
+      keyboardType,
+      placeholderTextColor, Icon } = this.props
     const { isPasswordField, secureInput } = this.state
 
     return (
@@ -99,6 +101,8 @@ class LoginFields extends Component {
           placeholderTextColor={placeholderTextColor}
           onChangeText={this.onChangeText}
           secureTextEntry={isSecure && !secureInput}
+          keyboardType={keyboardType ? keyboardType : 'default'}
+
         />
         <View style={loginFieldsStyles.loginIconStyle}>
           <Image

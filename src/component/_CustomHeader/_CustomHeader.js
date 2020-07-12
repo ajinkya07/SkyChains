@@ -6,14 +6,15 @@ import {
 } from 'native-base'
 
 import {
-    View, Image, TouchableOpacity
+    View, Image, TouchableOpacity,Platform
 } from 'react-native';
 import _Text from '@text/_Text'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
   } from 'react-native-responsive-screen';
-  
+  import { color } from '@values/colors';
+
 
 export default class _CustomHeader extends Component {
 
@@ -30,31 +31,33 @@ export default class _CustomHeader extends Component {
             <View >
                 <Header hasTabs
                     style={{ 
-                        height:hp(6),
+                        width: wp(100),
+                        height: hp(7.5),
+                        paddingVertical: Platform.OS === 'ios' ? hp(2) : 2,
                         backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : 'transparent' }}
                 >
                     <Left style={{ flex: 1 }}>
                         <Button
-                            style={{ marginLeft: 10, marginTop: 10, }}
+                            style={{ marginLeft: 8, marginTop: 8, }}
                             transparent
-                            onPress={() => this.props.LeftBtn()}
+                            onPress={() => this.props.LeftBtnPress()}
                         >
-                            {this.props.LeftBtnIcon &&
-                                <Image
-                                    source={this.props.LeftBtnIcon ? this.props.LeftBtnIcon : require('../../assets/img/left.png')}
-                                    style={{
-                                        height: this.props.height ? this.props.height : hp(2.5),
-                                        width: this.props.width ? this.props.width : hp(2.5)
-                                    }}
-                                />
-                            }
+                            <Image
+                                source={this.props.LeftBtnIcon ? this.props.LeftBtnIcon :
+                                    require('../../assets/image/back.png')}
+                                style={{
+                                    height: this.props.height ? this.props.height : hp(2.5),
+                                    width: this.props.width ? this.props.width : hp(2.5)
+                                }}
+                            />
+
                         </Button>
 
                     </Left>
 
                     {this.props.Title &&
                         <Body style={{ flex: 1 }}>
-                            <Title style={{ color: color.black }}>
+                            <Title style={{ color: color.black,fontSize:hp(2.8) }}>
                                 {this.props.Title ? this.props.Title : ''}
                             </Title>
                         </Body>
@@ -65,7 +68,7 @@ export default class _CustomHeader extends Component {
                             <Button
                                 style={{ marginRight: 5, marginTop: 10, }}
                                 transparent
-                                onPress={() => this.props.RightBtn()}
+                                onPress={() => this.props.RightBtnPress()}
                             >
                                 <Image source={this.props.RightBtnIcon}
                                     style={{
@@ -85,7 +88,12 @@ export default class _CustomHeader extends Component {
                         }
                     </Right>
                 </Header>
-
+                <View
+                style={{
+                  borderBottomWidth: hp(0.2),
+                  borderBottomColor: '#DDDDDD',
+                }}
+              />
             </View>
         )
     }

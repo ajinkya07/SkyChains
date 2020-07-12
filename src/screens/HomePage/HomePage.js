@@ -56,7 +56,7 @@ export default class HomePage extends Component {
         super(props);
         this.state = {
             currentPage: 0,
-            isModalVisible: false
+            isModalVisible: true
         };
     }
 
@@ -419,8 +419,6 @@ export default class HomePage extends Component {
                             </Modal>
                         </View>
                     }
-
-
 
 
                     {this.carausalView()}

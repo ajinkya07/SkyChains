@@ -125,7 +125,7 @@ export default class AccountContainer extends Component {
               <AccountRow
                 title="About Us"
                 icon={IconPack.ABOUT}
-                onPress={() => alert('Todo')}
+                onPress={() => this.props.navigation.navigate('AboutUs')}
               />
               <AccountRow
                 title="Call / Email Us"
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   topViewContainer: {
     marginBottom: 55,
     marginLeft: 16,
-    marginTop: 16,
+    marginTop: hp(2),
   },
   accountRowViewContainer: {
     flexDirection: 'row',

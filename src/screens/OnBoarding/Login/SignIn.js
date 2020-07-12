@@ -1,4 +1,4 @@
-import React, {useState, Component} from 'react';
+import React, { useState, Component } from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,16 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from 'react-native';
-import {Container, Content, Icon, Toast} from 'native-base';
+import { Container, Content, Icon, Toast } from 'native-base';
 import IconPack from '@login/IconPack';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {color} from '@values/colors';
+import { color } from '@values/colors';
 import {
   validateEmail,
   validateMobNum,
@@ -29,9 +30,11 @@ import {
   validateUserName,
 } from '@values/validate';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-import {signInRequest} from '@login/LoginAction';
+import { signInRequest } from '@login/LoginAction';
+
+
 
 class SignIn extends React.Component {
   constructor(props) {
@@ -47,7 +50,7 @@ class SignIn extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const {successLoginVersion, errorLoginVersion} = nextProps;
+    const { successLoginVersion, errorLoginVersion } = nextProps;
     let newState = null;
 
     if (successLoginVersion > prevState.successLoginVersion) {
@@ -66,7 +69,6 @@ class SignIn extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    console.log('this.props.loginData', this.props.loginData);
 
     if (this.state.successLoginVersion > prevState.successLoginVersion) {
       if (this.props.loginData.user_status === 'Available') {
@@ -82,7 +84,11 @@ class SignIn extends React.Component {
     }
   }
 
-  onInputChanged = ({inputKey, isValid, value}) => {
+  componentWillUnmount = () => {
+    console.log("componentWillUnmount");
+
+  }
+  onInputChanged = ({ inputKey, isValid, value }) => {
     let validationKey = '';
     switch (inputKey) {
       case 'mobileNo':
@@ -118,10 +124,8 @@ class SignIn extends React.Component {
     });
   };
 
-  loginRequest() {
-    const {password, isPassword, mobileNo, isMobile} = this.state;
-
-    console.log('this.state', this.state);
+  loginRequest = () => {
+    const { password, isPassword, mobileNo, isMobile } = this.state;
 
     let error = '';
     try {
@@ -143,7 +147,6 @@ class SignIn extends React.Component {
         data.append('login_type', 'client');
 
         this.props.signInRequest(data);
-        // this.props.navigation.navigate('Container')
       }
     } catch (err) {
       console.log('err', err);
@@ -151,8 +154,21 @@ class SignIn extends React.Component {
     }
   }
 
+  showLoader = () => {
+    return (
+      <View
+        style={[
+          actionButtonRoundedStyle.mainContainerStyle,]}>
+        <View style={actionButtonRoundedStyle.innerContainer}>
+          <ActivityIndicator size="large" color={color.white} />
+        </View>
+      </View>
+    )
+  }
+
+
   render() {
-    const {mobileNo, password} = this.state;
+    const { mobileNo, password } = this.state;
 
     return (
       <Container>
@@ -164,7 +180,7 @@ class SignIn extends React.Component {
                 ios: -150,
                 android: 500,
               })}
-              style={{flex: 1}}>
+              style={{ flex: 1 }}>
               <Content
                 contentContainerStyle={{
                   flex: 1,
@@ -197,8 +213,10 @@ class SignIn extends React.Component {
                     onChangeText={this.onInputChanged}
                     placeholder="Mobile"
                     returnKeyType="next"
+                    keyboardType='phone-pad'
                     placeholderTextColor="#fbcb84"
                     Icon={IconPack.MOBILE_LOGO}
+
                   />
                   <LoginFields
                     value={password ? password : null}
@@ -214,7 +232,8 @@ class SignIn extends React.Component {
                     isSecure={true}
                     Icon={IconPack.KEY_LOGO}
                   />
-                  <View style={{justifyContent: 'flex-end', marginLeft: 110}}>
+
+                  <View style={{ justifyContent: 'flex-end', marginLeft: 110 }}>
                     <TouchableOpacity
                       onPress={() =>
                         this.props.navigation.navigate('ForgotPassword')
@@ -231,15 +250,18 @@ class SignIn extends React.Component {
                     </TouchableOpacity>
                   </View>
 
-                  <ActionButtonRounded
-                    title="Login"
-                    onButonPress={() => this.loginRequest()}
-                    containerStyle={styles.buttonStyle}
-                  />
+                  {!this.props.isFetching &&
+                    <ActionButtonRounded
+                      title="Login"
+                      onButonPress={() => this.loginRequest()}
+                      containerStyle={styles.buttonStyle}
+                    />}
 
-                  <View style={{flexDirection: 'row'}}>
+                  {this.props.isFetching && this.showLoader()}
+
+                  <View style={{ flexDirection: 'row' }}>
                     <Text
-                      style={{paddingTop: 12, fontSize: 18, color: '#fbcb84'}}>
+                      style={{ paddingTop: 12, fontSize: 18, color: '#fbcb84' }}>
                       Don't have an account ?
                     </Text>
                     <TouchableOpacity
@@ -251,16 +273,17 @@ class SignIn extends React.Component {
                           fontSize: 18,
                           color: '#fbcb84',
                           fontWeight: 'bold',
-                          paddingTop: 12,
+                          paddingTop: 12, marginLeft: 2
                         }}>
                         Signup
                       </Text>
                     </TouchableOpacity>
                   </View>
+
                 </View>
               </Content>
             </KeyboardAvoidingView>
-            {this.props.isFetching && this.renderLoader()}
+            {/* {this.props.isFetching && this.renderLoader()} */}
           </SafeAreaView>
         </ImageBackground>
       </Container>
@@ -278,7 +301,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  flex: {flex: 1},
+  flex: { flex: 1 },
   buttonStyle: {
     //marginTop: 60,
   },
@@ -304,8 +327,11 @@ function mapStateToProps(state) {
 
 export default connect(
   mapStateToProps,
-  {signInRequest},
+  { signInRequest },
 )(SignIn);
+
+
+
 
 class LoginFields extends Component {
   constructor(props) {
@@ -357,8 +383,8 @@ class LoginFields extends Component {
           break;
       }
     }
-    this.setState({isValid, text});
-    onChangeText && onChangeText({inputKey, isValid, value: text, inputId});
+    this.setState({ isValid, text });
+    onChangeText && onChangeText({ inputKey, isValid, value: text, inputId });
   };
 
   setSecureInput = secureInput => {
@@ -378,8 +404,9 @@ class LoginFields extends Component {
       minLength,
       placeholderTextColor,
       Icon,
+      keyboardType,ref,onSubmitEditing
     } = this.props;
-    const {isPasswordField, secureInput} = this.state;
+    const { isPasswordField, secureInput } = this.state;
 
     return (
       <View
@@ -397,6 +424,7 @@ class LoginFields extends Component {
           placeholderTextColor={placeholderTextColor}
           onChangeText={this.onChangeText}
           secureTextEntry={isSecure && !secureInput}
+          keyboardType={keyboardType ? keyboardType : 'default'}
         />
         <Image style={loginFieldsStyles.imageloginIconStyle} source={Icon} />
         {isSecure && (
@@ -473,7 +501,7 @@ const loginFieldsStyles = StyleSheet.create({
 });
 
 //-------------ActionButtonCommon-----------//
-const ActionButtonRounded = ({title, onButonPress, containerStyle}) => {
+const ActionButtonRounded = ({ title, onButonPress, containerStyle }) => {
   return (
     <TouchableOpacity
       onPress={() => {

@@ -55,7 +55,7 @@ export default class CategoryContainer extends Component {
         <ImageBackground source={require('../../assets/image/BGGradient.png')}
           style={{ width: wp(100), height: hp(100) }}
         >
-          <View style={{ justifyContent: 'center', width: wp(100), paddingVertical: hp(9) }}>
+          <View style={{ justifyContent: 'center', width: wp(100), paddingVertical: Platform.OS === 'ios' ? hp(14) : hp(9) }}>
             <FlatList
               onRefresh={() => alert('inProgress')}
               refreshing={false}
