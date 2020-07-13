@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, {useState, Component, useRef} from 'react';
 import {
   View,
   Text,
@@ -47,6 +47,9 @@ class SignIn extends React.Component {
       successLoginVersion: 0,
       errorLoginVersion: 0,
     };
+    this.mobileRef = React.createRef();
+    this.passwordRef = React.createRef();
+
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -84,10 +87,7 @@ class SignIn extends React.Component {
     }
   }
 
-  componentWillUnmount = () => {
-    console.log("componentWillUnmount");
 
-  }
   onInputChanged = ({ inputKey, isValid, value }) => {
     let validationKey = '';
     switch (inputKey) {
@@ -166,13 +166,14 @@ class SignIn extends React.Component {
     )
   }
 
-
+ 
   render() {
     const { mobileNo, password } = this.state;
 
     return (
       <Container>
-        <ImageBackground source={IconPack.LOGIN_BG} style={styles.bgImage}>
+        <ImageBackground source={IconPack.LOGIN_BG} 
+        style={styles.bgImage}>
           <SafeAreaView style={styles.flex}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : null}
@@ -216,6 +217,8 @@ class SignIn extends React.Component {
                     keyboardType='phone-pad'
                     placeholderTextColor="#fbcb84"
                     Icon={IconPack.MOBILE_LOGO}
+                    onSubmitEditing={() => this.passwordRef.current.focus()}
+
 
                   />
                   <LoginFields
@@ -231,6 +234,8 @@ class SignIn extends React.Component {
                     placeholderTextColor="#fbcb84"
                     isSecure={true}
                     Icon={IconPack.KEY_LOGO}
+                    textInputRef={this.passwordRef}
+
                   />
 
                   <View style={{ justifyContent: 'flex-end', marginLeft: 110 }}>
@@ -355,8 +360,6 @@ class LoginFields extends Component {
     } = this.props;
     let isValid = false;
 
-    console.log('this.props', this.props);
-
     if (text && text.length > 0) {
       switch (type) {
         case 'mobileNo':
@@ -404,7 +407,11 @@ class LoginFields extends Component {
       minLength,
       placeholderTextColor,
       Icon,
-      keyboardType,ref,onSubmitEditing
+      keyboardType,
+      ref,
+      returnKeyType,
+      textInputRef,
+      onSubmitEditing
     } = this.props;
     const { isPasswordField, secureInput } = this.state;
 
@@ -425,6 +432,10 @@ class LoginFields extends Component {
           onChangeText={this.onChangeText}
           secureTextEntry={isSecure && !secureInput}
           keyboardType={keyboardType ? keyboardType : 'default'}
+          ref={textInputRef}
+          returnKeyType={returnKeyType}
+          onSubmitEditing={onSubmitEditing}
+
         />
         <Image style={loginFieldsStyles.imageloginIconStyle} source={Icon} />
         {isSecure && (

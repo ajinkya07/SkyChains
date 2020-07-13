@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -23,15 +23,15 @@ import {
   Toast,
 } from 'native-base';
 import IconPack from '@login/IconPack';
-const {width, height} = Dimensions.get('window');
-import {sendOtpRequest} from '@forgotPassword/ForgotAction';
-import {connect} from 'react-redux';
+const { width, height } = Dimensions.get('window');
+import { sendOtpRequest } from '@forgotPassword/ForgotAction';
+import { connect } from 'react-redux';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import LoginFields from '@login/LoginFields';
-import {color} from '@values/colors';
+import { color } from '@values/colors';
 
 class ForgotPassword extends React.Component {
   constructor(props) {
@@ -44,10 +44,13 @@ class ForgotPassword extends React.Component {
       successForgotVersion: 0,
       errorForgotVersion: 0,
     };
+    this.mobileRef = React.createRef();
+    this.passwordRef = React.createRef();
+
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const {successForgotVersion, errorForgotVersion} = nextProps;
+    const { successForgotVersion, errorForgotVersion } = nextProps;
     let newState = null;
 
     if (successForgotVersion > prevState.successForgotVersion) {
@@ -66,7 +69,7 @@ class ForgotPassword extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const {forgotData} = this.props;
+    const { forgotData } = this.props;
 
     if (this.state.successForgotVersion > prevState.successForgotVersion) {
       if (forgotData.otp != '') {
@@ -85,7 +88,7 @@ class ForgotPassword extends React.Component {
     }
   }
 
-  onInputChanged = ({inputKey, isValid, value}) => {
+  onInputChanged = ({ inputKey, isValid, value }) => {
     let validationKey = '';
     switch (inputKey) {
       case 'mobileNo':
@@ -106,7 +109,7 @@ class ForgotPassword extends React.Component {
   };
 
   sendOtp = () => {
-    const {password, isPassword, mobileNo, isMobile} = this.state;
+    const { password, isPassword, mobileNo, isMobile } = this.state;
 
     let error = '';
     try {
@@ -154,7 +157,7 @@ class ForgotPassword extends React.Component {
   };
 
   render() {
-    const {mobileNo, password} = this.state;
+    const { mobileNo, password } = this.state;
 
     return (
       <Container>
@@ -166,7 +169,7 @@ class ForgotPassword extends React.Component {
                 ios: -90,
                 android: 0,
               })}
-              style={{flex: 1}}>
+              style={{ flex: 1 }}>
               <Header style={styles.headerStyle}>
                 <Left>
                   <TouchableOpacity
@@ -180,7 +183,7 @@ class ForgotPassword extends React.Component {
                 <Body />
                 <Right />
               </Header>
-            
+
               <View style={styles.viewContainer}>
                 <View
                   style={{
@@ -218,6 +221,7 @@ class ForgotPassword extends React.Component {
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.MOBILE_LOGO}
                   keyboardType='phone-pad'
+                  onSubmitEditing={() => this.passwordRef.current.focus()}
 
                 />
                 <LoginFields
@@ -233,6 +237,8 @@ class ForgotPassword extends React.Component {
                   placeholderTextColor="#fbcb84"
                   isSecure={true}
                   Icon={IconPack.KEY_LOGO}
+                  textInputRef={this.passwordRef}
+
                 />
                 <ActionButtonRounded
                   title="Confirm"
@@ -260,7 +266,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  flex: {flex: 1},
+  flex: { flex: 1 },
   buttonStyle: {
     marginTop: 65,
     marginBottom: 22,
@@ -297,11 +303,11 @@ function mapStateToProps(state) {
 
 export default connect(
   mapStateToProps,
-  {sendOtpRequest},
+  { sendOtpRequest },
 )(ForgotPassword);
 
 //-------------ActionButtonCommon-----------//
-const ActionButtonRounded = ({title, onButonPress, containerStyle}) => {
+const ActionButtonRounded = ({ title, onButonPress, containerStyle }) => {
   return (
     <TouchableOpacity
       onPress={() => {

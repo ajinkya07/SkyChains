@@ -81,7 +81,10 @@ class LoginFields extends Component {
   render() {
 
     const { containerStyle, isSecure, placeholder, maxLength, minLength,
-      keyboardType,
+      keyboardType,  ref,
+      returnKeyType,
+      textInputRef,
+      onSubmitEditing,
       placeholderTextColor, Icon } = this.props
     const { isPasswordField, secureInput } = this.state
 
@@ -102,6 +105,9 @@ class LoginFields extends Component {
           onChangeText={this.onChangeText}
           secureTextEntry={isSecure && !secureInput}
           keyboardType={keyboardType ? keyboardType : 'default'}
+          ref={textInputRef}
+          returnKeyType={returnKeyType}
+          onSubmitEditing={onSubmitEditing}
 
         />
         <View style={loginFieldsStyles.loginIconStyle}>
@@ -142,7 +148,7 @@ const loginFieldsStyles = StyleSheet.create({
   },
   mainContainerStyle: {
     height: 70,
-    width: width - 80,
+    width: width - 36,
     //width: Appstore.wWidth -30,
   },
   userTextInputButtonRight: {

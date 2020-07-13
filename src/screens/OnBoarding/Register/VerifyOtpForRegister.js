@@ -176,7 +176,7 @@ class VerifyOtpForRegister extends React.Component {
         data.append('email_id', receivedEmail);
         data.append('organization', receivedOrg);
         data.append('password', receivedPassword);
-        data.append('otp', finalCode);
+        //data.append('otp', finalCode);
         data.append('reg_source', reg_source);
 
         this.props.registerAfterOtpRequest(data)

@@ -5,7 +5,11 @@ import {
   Platform
 } from 'react-native';
 import _CustomHeader from '@customHeader/_CustomHeader'
-
+import { heightPercentageToDP } from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 
 export default class OrderHistory extends Component {
@@ -19,7 +23,12 @@ export default class OrderHistory extends Component {
       <SafeAreaView style={{flex:1}}>
         <_CustomHeader
           Title='Order History'
+          RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
+          RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
           LeftBtnPress={() => this.props.navigation.goBack()}
+          RightBtnPressOne={()=>alert("order History search")}
+          RightBtnPressTwo={()=>alert("order History notify")}
+          rightIconHeight2={hp(3.5)}
         />
         <View style={styles.viewContainer}>
           <TouchableOpacity

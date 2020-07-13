@@ -49,7 +49,6 @@ export function onFailure(error, type) {
 }
 
 export function setLoginData(data) {
-  console.log("setLoginData",data);
   
   global.userId = data.data.user_id;
   AsyncStorage.setItem('userId', data.data.user_id.toString())
@@ -58,8 +57,6 @@ export function setLoginData(data) {
   AsyncStorage.setItem('mobileNumber', data.data.mobile_number.toString())
   AsyncStorage.setItem('emailId', data.data.email_id.toString())
 
-  
-  
 }
 
 export function signInRequest(data) {

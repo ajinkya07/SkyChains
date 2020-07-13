@@ -84,11 +84,20 @@ export default class CustomOrder extends Component {
     this.state = {};
   }
 
+  
+
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <_CustomHeader
-          Title='Custom Order Detail'
+          Title='Custom Order History'
+          RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
+          RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
+          LeftBtnPress={() => this.props.navigation.goBack()}
+          RightBtnPressOne={()=>alert("order History search")}
+          RightBtnPressTwo={()=>alert("order History notify")}
+          rightIconHeight2={hp(3.5)}
+
           LeftBtnPress={() => this.props.navigation.goBack()}
         />
         <ScrollView showsVerticalScrollIndicator={false}>

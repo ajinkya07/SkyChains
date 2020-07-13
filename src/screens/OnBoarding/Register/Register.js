@@ -51,6 +51,12 @@ class Register extends React.Component {
       successRegisterVersion: 0,
       errorRegisterVersion: 0,
     };
+    this.fullNameRef = React.createRef();
+    this.mobileRef = React.createRef();
+    this.emailRef = React.createRef();
+    this.organisationRef = React.createRef();
+    this.passwordRef = React.createRef();
+
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -230,6 +236,7 @@ class Register extends React.Component {
                 <Right />
               </Header>
               <View style={styles.viewContainer}>
+
                 <LoginFields
                   value={fullName ? fullName : null}
                   type="fullName"
@@ -241,6 +248,8 @@ class Register extends React.Component {
                   returnKeyType="next"
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.REGISTER_NAME}
+                  onSubmitEditing={() => this.mobileRef.current.focus()}
+
                 />
                 <LoginFields
                   value={mobileNo ? mobileNo : null}
@@ -254,6 +263,8 @@ class Register extends React.Component {
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.MOBILE_LOGO}
                   keyboardType='phone-pad'
+                  textInputRef={this.mobileRef}
+                  onSubmitEditing={() => this.emailRef.current.focus()}
 
                 />
                 <LoginFields
@@ -267,6 +278,9 @@ class Register extends React.Component {
                   returnKeyType="next"
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.EMAIL}
+                  textInputRef={this.emailRef}
+                  onSubmitEditing={() => this.organisationRef.current.focus()}
+
                 />
                 <LoginFields
                   value={organisation ? organisation : null}
@@ -279,6 +293,9 @@ class Register extends React.Component {
                   returnKeyType="next"
                   placeholderTextColor="#fbcb84"
                   Icon={IconPack.ORGANISATION}
+                  textInputRef={this.organisationRef}
+                  onSubmitEditing={() => this.passwordRef.current.focus()}
+
                 />
                 <LoginFields
                   value={password ? password : null}
@@ -294,6 +311,8 @@ class Register extends React.Component {
                   placeholderTextColor="#fbcb84"
                   isSecure={true}
                   Icon={IconPack.KEY_LOGO}
+                  textInputRef={this.passwordRef}
+
                 />
                 <ActionButtonRounded
                   title="Register"
