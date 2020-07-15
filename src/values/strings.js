@@ -12,7 +12,7 @@ export const strings = {
     serverFailedMsg:"Server Failed Please Try again later",
     categoryDesigns:'Category Designs',
     seeMore:'See More',
-    latestDesigns:'Latest Designs',
-    bestSelling:'Best Selling',
+    latestDesigns:'Latest',
+    bestSelling:'Best',
     diwaliCollection:'Diwali Collection'
     }

@@ -187,22 +187,23 @@ class ForgotPassword extends React.Component {
               <View style={styles.viewContainer}>
                 <View
                   style={{
-                    marginHorizontal: 60,
-                    height: 90,
+                    marginHorizontal: 50,
+                    height:90,
                   }}>
                   <Text
                     style={{
                       color: '#fbcb84',
                       fontWeight: '400',
-                      fontSize: 30,
-                      marginBottom: 10,
+                      fontSize: hp(4),
+                      marginBottom: hp(10),
+                      marginTop:-hp(10),
                       textAlign: 'center',
                     }}>
                     Forgot Password
                   </Text>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: hp(2.2),
                       color: '#ffffff',
                       textAlign: 'center',
                     }}>
@@ -241,7 +242,7 @@ class ForgotPassword extends React.Component {
 
                 />
                 <ActionButtonRounded
-                  title="Confirm"
+                  title="Get OTP"
                   onButonPress={() => this.sendOtp()}
                   containerStyle={styles.buttonStyle}
                 />
@@ -344,7 +345,7 @@ const actionButtonRoundedStyle = StyleSheet.create({
   },
   titleStyle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: hp(2.5),
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',

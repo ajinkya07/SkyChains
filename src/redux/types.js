@@ -24,3 +24,13 @@ export const REGISTER_DATA_ERROR = "registerDataError";
 export const REGISTER_DATA_RESET_REDUCER = "registerDataResetReducer";
 
 
+export const HOMEPAGE_DATA = "homePageData";
+export const HOMEPAGE_DATA_SUCCESS = "homePageDataSuccess";
+export const HOMEPAGE_DATA_ERROR = "homePageDataError";
+export const HOMEPAGE_DATA_RESET_REDUCER = "homePageDataResetReducer";
+    
+export const PRODUCT_GRID_DATA = "productData";
+export const PRODUCT_GRID_DATA_SUCCESS = "productDataSuccess";
+export const PRODUCT_GRID_DATA_ERROR = "productDataError";
+export const PRODUCT_GRID_DATA_RESET_REDUCER = "productDataResetReducer";
+

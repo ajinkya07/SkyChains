@@ -217,7 +217,7 @@ class VerifyOtp extends React.Component {
                 onCodeFilled={(finalCode) => this.finalEnteredOtp(finalCode)}
 
               />
-              <View style={{ marginBottom: 20, alignItems: 'center' }}>
+              <View style={{ marginBottom: 30,marginTop:hp(2), alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => this.verifyOtp()}>
                   <Image
                     style={styles.VerifyButtonStyle}
@@ -227,7 +227,7 @@ class VerifyOtp extends React.Component {
               </View>
               <TouchableOpacity onPress={() => this.resendOtp()}>
                 <Text
-                  style={{ color: '#ffffff', fontSize: 14, fontWeight: 'bold' }}>
+                  style={{ color: '#ffffff', fontSize: hp(2.2), fontWeight: 'bold' }}>
                   RESEND CODE
                 </Text>
               </TouchableOpacity>
@@ -250,6 +250,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     borderRadius: 10,
     borderColor: '#c4c0b6',
+    borderWidth:2
+
   },
   otpInputHighlightStyle: {
     width: 50,
@@ -269,14 +271,14 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     color: '#fbcb84',
-    fontSize: 23,
+    fontSize: hp(3.5),
     marginTop: hRem * 160,
   },
   descriptionStyle: {
     color: '#fff',
-    marginTop: 16,
-    fontSize: 16,
-    width: width - 80,
+    marginTop: hp(5),
+    fontSize: hp(2.2),
+    width: wp(90),
     textAlign: 'center',
   },
   numberStyle: {

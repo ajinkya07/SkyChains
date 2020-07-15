@@ -41,8 +41,8 @@ class _Header extends Component {
             ) :
                 (
                   <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
-                    <Text style={{ fontWeight: '500', color: color.brandColor, fontSize: hp(2.5) }}>SAR</Text>
-                    <Text style={{ color: color.brandColor, marginTop: 2, fontSize: hp(1.5) }}>A Royal Chains Brand</Text>
+                    <Text style={{ fontWeight: 'bold', color: color.brandColor, fontSize: hp(2.5) }}>SKY CHAINS</Text>
+                    <Text style={{fontWeight:'400', color: color.brandColor, marginTop: 2, fontSize: hp(1.8) }}>Designs Infinite</Text>
                   </View>
                 )}
           </Button>
