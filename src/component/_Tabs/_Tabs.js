@@ -59,7 +59,7 @@ class Container extends React.Component {
         else {
             console.warn("backPressed 0");
             backPressed++;
-            ToastAndroid.show("Press again to exit app", ToastAndroid.SHORT);
+            ToastAndroid.show("Press again to close app", ToastAndroid.SHORT);
             setTimeout(() => { backPressed = 0 }, 2000);
             return true;
         }
@@ -147,7 +147,7 @@ export default function _Tabs() {
                     margin: 0, padding: 0, bottom: 2, top: 2
                 },
             }}
-            barStyle={{ backgroundColor: 'white', }}
+            barStyle={{ backgroundColor: '#EEF8F7', }}
         >
 
             <Tab.Screen name="Home"
@@ -205,7 +205,8 @@ export default function _Tabs() {
                 options={{
                     tabBarLabel: 'Cart',
                     activeTintColor: color.brandColor,
-
+                    tabBarBadge:true,
+                    
                     tabBarIcon: ({ color, size, focused }) => {
 
                         if (focused) {

@@ -179,7 +179,6 @@ class ProductGrid extends Component {
     }
 
     showNoDataFound = (message) => {
-        console.log("showNoDataFound", message);
         return (
             <View style={{
                 height: hp(60), alignSelf: 'center', justifyContent: 'center',
@@ -267,12 +266,11 @@ class ProductGrid extends Component {
                     numColumns={2}
                     keyExtractor={(item, index) => index.toString()}
                     style={{ marginBottom: hp(1), marginTop: hp(1), }}
-                //ListEmptyComponent={<Text style={{ textAlign: 'center' }}>No Data Found</Text>}
+                    ListEmptyComponent={()=>this.showNoDataFound(this.props.errorMsg)}
                 />}
 
 
                 {this.props.isFetching && this.renderLoader()}
-                {this.props.productGridData.length === 0 && this.showNoDataFound(this.props.errorMsg)}
 
 
 
