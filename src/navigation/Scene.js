@@ -13,6 +13,10 @@ import OrderHistory from '@orderHistory/OrderHistory';
 import OrderHistoryDetail from '@orderHistory/OrderHistoryDetail';
 import CustomOrder from '@accountCustomOrder/CustomOrder';
 
+import ProductGrid from '@productGrid/ProductGrid';
+import SubCategoryList from '@subCategoryList/SubCategoryList';
+import CategoryContainer from '@category/CategoryContainer';
+
 
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -34,7 +38,6 @@ class Scene extends React.Component {
 
   async getItem() {
     let value = await AsyncStorage.getItem('userId');
-    console.log("value", value);
 
     if (value) {
       let parsed = JSON.parse(value);
@@ -79,8 +82,18 @@ class Scene extends React.Component {
         <Stack.Screen name="CustomOrder"
           component={CustomOrder} options={{ headerShown: false }}
         />
-  <Stack.Screen name="AboutUs"
+        <Stack.Screen name="AboutUs"
           component={AboutUs} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="ProductGrid"
+          component={ProductGrid} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="SubCategoryList"
+          component={SubCategoryList} options={{ headerShown: false }}
+        />
+
+        <Stack.Screen name="CategoryContainer"
+          component={CategoryContainer} options={{ headerShown: false }}
         />
 
       </Stack.Navigator>
@@ -119,8 +132,18 @@ class Scene extends React.Component {
         <Stack.Screen name="CustomOrder"
           component={CustomOrder} options={{ headerShown: false }}
         />
-          <Stack.Screen name="AboutUs"
+        <Stack.Screen name="AboutUs"
           component={AboutUs} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="ProductGrid"
+          component={ProductGrid} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="SubCategoryList"
+          component={SubCategoryList} options={{ headerShown: false }}
+        />
+
+        <Stack.Screen name="CategoryContainer"
+          component={CategoryContainer} options={{ headerShown: false }}
         />
 
 

@@ -29,7 +29,7 @@ class _Header extends Component {
           width: wp(100),
           height: hp(7.5),
           paddingVertical: Platform.OS === 'ios' ? hp(2) : 2,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#EEF8F7',
         }}>
         <Left style={{ marginLeft: hp(1), width: wp(30) }}>
           <Button transparent>
@@ -41,8 +41,8 @@ class _Header extends Component {
             ) :
                 (
                   <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
-                    <Text style={{ fontWeight: '500', color: color.brandColor, fontSize: hp(2.5) }}>SAR</Text>
-                    <Text style={{ color: color.brandColor, marginTop: 2, fontSize: hp(1.5) }}>A Royal Chains Brand</Text>
+                    <Text style={{ fontWeight: 'bold', color: color.brandColor, fontSize: hp(2.5) }}>SKY CHAINS</Text>
+                    <Text style={{fontWeight:'400', color: color.brandColor, marginTop: 2, fontSize: hp(1.8) }}>Designs Infinite</Text>
                   </View>
                 )}
           </Button>

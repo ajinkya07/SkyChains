@@ -16,7 +16,12 @@ export const urls = {
     },
     Register:{
         url: url + "User_registration",
-
+    },
+    HomePage:{
+        url: url + "Home"
+    },
+    ProductGrid:{
+        url: url + "Products_Grid"
     }
 
 }

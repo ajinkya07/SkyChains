@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   flex: { flex: 1 },
   buttonStyle: {
-    marginTop: 20,
+    marginTop: 30,
     marginBottom: 50,
   },
   loaderView: {
@@ -418,7 +418,7 @@ const actionButtonRoundedStyle = StyleSheet.create({
   },
   titleStyle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: hp(2.5),
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',

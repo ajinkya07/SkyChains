@@ -15,7 +15,10 @@ import Swiper from 'react-native-swiper'
 import Modal from 'react-native-modal';
 import _CustomButton from '@customButton/_CustomButton'
 import * as Animatable from 'react-native-animatable';
+import { getHomePageData } from '@homepage/HomePageAction';
+import { connect } from 'react-redux';
 
+var userId = ''
 
 
 const SCREENS = [
@@ -50,15 +53,53 @@ const LIST2 = [
 
 ]
 
-export default class HomePage extends Component {
+class HomePage extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             currentPage: 0,
-            isModalVisible: true
+            isModalVisible: false,
+            successHomePageVersion: 0,
+            errorHomePageVersion: 0,
         };
+        userId = global.userId;
+
     }
+
+    componentDidMount = () => {
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        const data = new FormData();
+        data.append('user_id', userId);
+        data.append('image_type', type);
+
+        this.props.getHomePageData(data)
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const { successHomePageVersion, errorHomePageVersion } = nextProps;
+        let newState = null;
+
+        if (successHomePageVersion > prevState.successHomePageVersion) {
+            newState = {
+                ...newState,
+                successHomePageVersion: nextProps.successHomePageVersion,
+            };
+        }
+        if (errorHomePageVersion > prevState.errorHomePageVersion) {
+            newState = {
+                ...newState,
+                errorHomePageVersion: nextProps.errorHomePageVersion,
+            };
+        }
+        return newState;
+    }
+
+    //   async componentDidUpdate(prevProps, prevState) {
+    //     const {  } = this.props;
+    //   }
+
 
     setCurrentPage = (position) => {
         this.setState({ currentPage: position });
@@ -66,93 +107,111 @@ export default class HomePage extends Component {
 
 
     renderScreen = (data, index) => {
+        const { homePageData } = this.props
+        let baseUrl = homePageData && homePageData.base_path
+
         return (
             <View key={index}>
-                <Image style={{ height: hp(23), width: wp(100) }}
-                    source={data.url}
+                <Image style={{ height: hp(25), width: wp(100) }}
+                    source={{ uri: baseUrl + data.brand_image }}
                     defaultSource={require('../../assets/image/default.png')}
+                    resizeMode='cover'
                 />
             </View>
         )
     }
 
-    carausalView = () => {
+    carausalView = (bannerData) => {
         return (
-            <View style={{ height: hp(23), width: wp(100) }}>
-                <Swiper
-                    style={{ flexGrow: 1, }}
-                    //loop={true}
-                    autoplayTimeout={5}
-                    ref={(swiper) => { this.swiper = swiper; }}
-                    index={this.state.currentPage}
-                    autoplay={true}
-                    showsPagination={true}
-                    loadMinimalLoader={<ActivityIndicator />}
-                    dot={<View style={{
-                        backgroundColor: '#D7D7D7', width: 8, height: 8,
-                        borderRadius: 4, marginLeft: 3,
-                        marginRight: 3, top: 10
-                    }} />}
-                    activeDot={<View style={{
-                        backgroundColor: color.brandColor, width: 10, height: 10, borderRadius: 5,
-                        marginLeft: 3, marginRight: 3, top: 10
-                    }} />}
-                    onIndexChanged={(page) => this.setCurrentPage(page)}
-                >
-                    {SCREENS.map((page, index) => this.renderScreen(page, index))}
-                </Swiper>
+            <View style={{
+                height: hp(25), width: wp(100), borderBottomColor: color.gray,
+                borderWidth: !this.props.isFetching ? 0.5 : 0
+            }}>
+                {bannerData ?
+                    <Swiper
+                        style={{ flexGrow: 1, }}
+                        autoplayTimeout={12}
+                        ref={(swiper) => { this.swiper = swiper; }}
+                        index={this.state.currentPage}
+                        autoplay={true}
+                        showsPagination={true}
+                        loadMinimal={true}
+                        loadMinimalLoader={<ActivityIndicator size="small" color='gray' />}
+                        dot={<View style={{
+                            backgroundColor: 'gray', width: 8, height: 8,
+                            borderRadius: 4, marginLeft: 3,
+                            marginRight: 3, top: 10
+                        }} />}
+                        activeDot={<View style={{
+                            backgroundColor: color.white, width: 10, height: 10, borderRadius: 5,
+                            marginLeft: 3, marginRight: 3, top: 10
+                        }} />}
+                        onIndexChanged={(page) => this.setCurrentPage(page)}
+                    >
+                        {bannerData.map((page, index) => this.renderScreen(page, index))}
+                    </Swiper>
+                    : this.renderLoader2()
+                }
             </View>
         )
     }
 
+    getProductGridOrNot = (data) => {
+        if (data.subcategory.length === 0) {
+            this.props.navigation.navigate("ProductGrid", { gridData: data })
+        } else if (data.subcategory.length > 0) {
+            this.props.navigation.navigate("SubCategoryList", { subcategory: data })
+        }
+    }
+
+
 
     getCategoryDesigns = (item, index) => {
-        const {
-            categoryView,
-            categoryImage, horizontalCategory
-        } = HomePageStyle;
+        const { homePageData } = this.props
+        const { categoryView, categoryImage, horizontalCategory } = HomePageStyle;
+        let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
 
         return (
-            <TouchableOpacity onPress={() => alert("ok")}>
-                <Animatable.View animation="zoomIn" style={categoryView}>
-                    <Image
+            <TouchableOpacity onPress={() => this.getProductGridOrNot(item)}>
+                <View animation="zoomIn" style={categoryView}>
+                    <Animatable.Image animation="zoomIn"
                         resizeMode={'cover'}
                         style={categoryImage}
                         defaultSource={require('../../assets/image/default.png')}
-                        source={require('../../assets/image/insta.png')}
+                        source={{ uri: baseUrl + item.image_name }}
                     />
-                    <_Text numberOfLines={2} fsSmall style={{ textAlign: 'center', marginTop: hp(1) }}>
-                        {item.name}
+                    <_Text numberOfLines={2} fsPrimary
+                        style={{ textAlign: 'center', marginTop: hp(1) }}>
+                        {item.col_name}
                     </_Text>
-                </Animatable.View>
+                </View>
             </TouchableOpacity>
         );
     }
 
 
-    getLatestDesigns = (item, index) => {
-        const {
-            latestDesign, latestTextView, latestTextView2,
+    getProductDesigns = (item, index) => {
+        const { latestDesign, latestTextView, latestTextView2,
             latestImage, horizontalLatestDesign, border, iconView
         } = HomePageStyle;
-
+        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
 
         return (
             <TouchableOpacity onPress={() => alert("latest design")}>
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
                         <Image
-                            resizeMode={'cover'}
+                            // resizeMode={'cover'}
                             style={latestImage}
                             defaultSource={require('../../assets/image/default.png')}
-                            source={require('../../assets/image/insta.png')}
+                            source={{ uri: url + item.images[0].image_name }}
                         />
                         <View style={latestTextView}>
                             <View style={{ width: wp(14), marginLeft: 5 }}>
                                 <_Text numberOfLines={1} fsPrimary >Code</_Text>
                             </View>
                             <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.code}</_Text>
+                                <_Text numberOfLines={1} fsPrimary >{item.collection_sku_code}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
@@ -162,7 +221,7 @@ export default class HomePage extends Component {
                                 <_Text numberOfLines={1} fsPrimary >Weight</_Text>
                             </View>
                             <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.weight}</_Text>
+                                <_Text numberOfLines={1} fsPrimary >{parseInt(item.gross_wt).toFixed(2)}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
@@ -172,174 +231,86 @@ export default class HomePage extends Component {
                                 <_Text numberOfLines={1} fsPrimary >Inches</_Text>
                             </View>
                             <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.inches}</_Text>
+                                <_Text numberOfLines={1} fsPrimary >{item.length}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
+                        {item.in_cart === 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Heart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/DarkCart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
 
-                        <View style={iconView}>
-                            <TouchableOpacity onPress={() => alert('wishlist')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/Heart.png')}
-                                    style={{ height: hp(3), width: hp(3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => alert('cart')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/DarkCart.png')}
-                                    style={{ height: hp(3), width: hp(3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        {item.in_cart > 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Minus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <_Text numberOfLines={1}
+                                textColor={color.brandColor}
+                                fsMedium fwHeading >{item.in_cart}
+                                </_Text>
+
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Plus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
+
                     </View>
                 </View>
             </TouchableOpacity>
         );
     }
 
-
-    getBestSelling = (item, index) => {
-        const {
-            latestDesign, latestTextView, latestTextView2,
-            latestImage, horizontalLatestDesign, border, iconView
-        } = HomePageStyle;
-
-        return (
-            <TouchableOpacity onPress={() => alert("best selling")}>
-                <View style={horizontalLatestDesign}>
-                    <View style={latestDesign}>
-                        <Image
-                            resizeMode={'cover'}
-                            style={latestImage}
-                            defaultSource={require('../../assets/image/default.png')}
-                            source={require('../../assets/image/default.png')}
-                        />
-                        <View style={latestTextView}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Code</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.code}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={latestTextView2}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Weight</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.weight}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={latestTextView2}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Inches</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.inches}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={iconView}>
-                            <TouchableOpacity onPress={() => alert('wishlist')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/Heart.png')}
-                                    style={{ height: hp(3.5), width: hp(3.5) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => alert('cart')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/DarkCart.png')}
-                                    style={{ height: hp(3.5), width: hp(3.5) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-
-
-    getDiwaliCollection = (item, index) => {
-        const {
-            latestDesign, latestTextView, latestTextView2,
-            latestImage, horizontalLatestDesign, border, iconView
-        } = HomePageStyle;
-
-        return (
-            <TouchableOpacity onPress={() => alert("best selling")}>
-                <View style={horizontalLatestDesign}>
-                    <View style={latestDesign}>
-                        <Image
-                            resizeMode={'cover'}
-                            style={latestImage}
-                            defaultSource={require('../../assets/image/default.png')}
-                            source={require('../../assets/image/default.png')}
-                        />
-                        <View style={latestTextView}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Code</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.code}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={latestTextView2}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Weight</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.weight}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={latestTextView2}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Inches</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.inches}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={iconView}>
-                            <TouchableOpacity onPress={() => alert('wishlist')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/Heart.png')}
-                                    style={{ height: hp(3.5), width: hp(3.5) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => alert('cart')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/DarkCart.png')}
-                                    style={{ height: hp(3.5), width: hp(3.5) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        );
-    }
 
     onOkPressed = () => {
         this.setState({ isModalVisible: false })
     }
+
+    renderLoader = () => {
+        return (
+            <View style={{
+                position: 'absolute', height: hp(80), width: wp(100),
+                alignItems: 'center', justifyContent: 'center',
+            }}>
+                <ActivityIndicator size="large" color={color.brandColor} />
+            </View>
+        );
+    };
+
+    renderLoader2 = () => {
+        return (
+            <View style={{
+                position: 'absolute', height: hp(25), width: wp(100),
+                alignItems: 'center', justifyContent: 'center',
+            }}>
+                <ActivityIndicator size="large" color={color.gray} />
+            </View>
+        );
+    };
+
 
     render() {
         const { mainContainer,
@@ -347,22 +318,21 @@ export default class HomePage extends Component {
             watchAllImage, watchAllText, activityIndicatorView, folloUs, socialIconView, socialTextView
         } = HomePageStyle;
 
+        const { homePageData, isFetching } = this.props
+        const bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
+
+        const collection = homePageData && homePageData.collection ? homePageData.collection : []
+
+        const finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+
         return (
             <View style={mainContainer}>
-                <ScrollView showsVerticalScrollIndicator={false}>
 
+                <ScrollView showsVerticalScrollIndicator={false}>
 
                     {this.state.isModalVisible &&
                         <View>
-                            <Modal
-                                style={{
-                                    justifyContent: 'center',
-                                    // paddingVertical:hp(2)
-                                    // marginBottom: 0,
-                                    // marginLeft: 0,
-                                    // marginRight: 0,
-                                }}
-                                //     animationIn='fadeIn'
+                            <Modal style={{ justifyContent: 'center' }}
                                 isVisible={this.state.isModalVisible}
                                 onRequestClose={() => this.setState({ isModalVisible: false })}
                                 onBackdropPress={() => this.setState({ isModalVisible: false })}
@@ -376,18 +346,15 @@ export default class HomePage extends Component {
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             borderRadius: 15
-                                            //  borderTopLeftRadius:15,
-                                            //  borderTopRightRadius:15
-
                                         }}>
                                         <View style={{
                                             bottom: hp(5), backgroundColor: 'white',
-                                            borderColor:'red',borderWidth:1,
+                                            borderColor: 'red', borderWidth: 1,
                                             alignItems: 'center', justifyContent: 'center',
                                             height: hp(8), width: hp(8), borderRadius: hp(4)
                                         }}>
                                             <TouchableOpacity
-                                                hitSlop={{position: 'absolute', top: 5, bottom: 5, left: 5, right: 5 }}
+                                                hitSlop={{ position: 'absolute', top: 5, bottom: 5, left: 5, right: 5 }}
                                                 onPress={() => this.onOkPressed()}>
                                                 <Image source={require('../../assets/image/remove.png')}
                                                     style={{ height: hp(5), width: hp(5), }}
@@ -403,16 +370,15 @@ export default class HomePage extends Component {
                                                 borderWidth: 1,
                                                 bottom: hp(2)
                                             }}
-                                        //  resizeMode='cover'
                                         />
 
                                         <_CustomButton
                                             onPress={() => this.onOkPressed()}
                                             title="OK"
-                                            height={hp(7.5)}
+                                            height={hp(7.2)}
                                             width={wp(80)}
-                                            fontSize={hp(3)}
-                                            fontWeight='bold'
+                                            fontSize={hp(2.5)}
+                                            fontWeight={Platform.OS === 'ios' ? '400' : 'bold'}
                                         />
                                     </View>
                                 </SafeAreaView>
@@ -421,148 +387,133 @@ export default class HomePage extends Component {
                     }
 
 
-                    {this.carausalView()}
+                    {this.carausalView(bannerData)}
+
 
                     {/* CATEGORY DESIGNS */}
-                    <View style={topHeading}>
-                        <View style={heading}>
-                            <_Text
-                                fsExtraLarge
-                                fwPrimary
-                                numberOfLines={1}
-                                textColor={color.brandColor}>
-                                {strings.categoryDesigns}
-                            </_Text>
-                        </View>
-
-                        <View style={watchAllView}>
-                            <TouchableOpacity style={watchTouchableView}>
+                    {!this.props.isFetching &&
+                        <View style={topHeading}>
+                            <View style={heading}>
                                 <_Text
-                                    fsHeading
+                                    fsExtraLarge
+                                    fwPrimary
                                     numberOfLines={1}
-                                    fwSmall
-                                    textColor={color.brandColor}
-                                >
-                                    {strings.seeMore}
+                                    textColor={color.brandColor}>
+                                    {strings.categoryDesigns}
                                 </_Text>
-                                <Image
-                                    resizeMode={'cover'}
-                                    style={watchAllImage}
-                                    source={require('../../assets/image/watchAll.png')}
-                                />
-                            </TouchableOpacity>
+                            </View>
+
+                            <View style={watchAllView}>
+                                <TouchableOpacity style={watchTouchableView}
+                                    onPress={() => this.props.navigation.navigate('CategoryContainer', { collection: collection, fromSeeMore: true })}
+                                >
+                                    <_Text
+                                        fsHeading
+                                        numberOfLines={1}
+                                        fwSmall
+                                        textColor={color.brandColor}
+                                    >
+                                        {strings.seeMore}
+                                    </_Text>
+                                    <Image
+                                        resizeMode={'cover'}
+                                        style={watchAllImage}
+                                        source={require('../../assets/image/watchAll.png')}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                    }
 
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View style={{ paddingLeft: Platform.OS === 'ios' ? hp(2.2) : hp(1), flexDirection: 'row' }}>
-                            {LIST && LIST.map((item, index) => (
+                        <View style={{
+                            paddingLeft: Platform.OS === 'ios' ? hp(2.2) : hp(1),
+                            flexDirection: 'row'
+                        }}>
+                            {collection && collection.map((item, index) => (
                                 this.getCategoryDesigns(item, index)
                             ))}
                         </View>
                     </ScrollView>
 
 
-                    {/* LATEST DESIGNS */}
-                    <View style={topHeading1}>
-                        <View style={heading}>
-                            <_Text
-                                fsExtraLarge
-                                fwPrimary
-                                numberOfLines={1}
-                                textColor={color.brandColor}>
-                                {strings.latestDesigns}
-                            </_Text>
+
+                    {/* PRODUCT DESIGNS */}
+
+                    {finalCollection && finalCollection.map((data, index) => (
+                        <View>
+                            <View style={topHeading1}>
+                                <View style={heading}>
+                                    <_Text
+                                        fsExtraLarge
+                                        fwPrimary
+                                        numberOfLines={1}
+                                        textColor={color.brandColor}>
+                                        {data.key}
+                                    </_Text>
+                                </View>
+                            </View>
+
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                {data.product_assign && data.product_assign.map((product, index) => (
+                                    <View style={{ flexDirection: 'row' }}>
+                                        {this.getProductDesigns(product)}
+                                    </View>
+                                ))}
+
+                            </ScrollView>
                         </View>
-                    </View>
+                    ))}
 
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-
-                        <View style={{ paddingLeft: hp(2), flexDirection: 'row' }}>
-                            {LIST2 && LIST2.map((item, index) => (
-                                this.getLatestDesigns(item, index)
-                            ))}
-                        </View>
-
-                    </ScrollView>
-
-                    {/* BEST SELLING */}
-                    <View style={topHeading2}>
-                        <View style={heading}>
-                            <_Text
-                                fsExtraLarge
-                                fwPrimary
-                                numberOfLines={1}
-                                textColor={color.brandColor}>
-                                {strings.bestSelling}
-                            </_Text>
-                        </View>
-                    </View>
-
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-
-                        <View style={{ paddingLeft: hp(2), flexDirection: 'row' }}>
-                            {LIST2 && LIST2.map((item, index) => (
-                                this.getBestSelling(item, index)
-                            ))}
-                        </View>
-
-                    </ScrollView>
-
-
-
-                    {/* DIWALI COLLECTION */}
-                    <View style={topHeading3}>
-                        <View style={heading}>
-                            <_Text
-                                fsExtraLarge
-                                fwPrimary
-                                numberOfLines={1}
-                                textColor={color.brandColor}>
-                                {strings.diwaliCollection}
-                            </_Text>
-                        </View>
-                    </View>
-
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-
-                        <View style={{ paddingLeft: hp(2), flexDirection: 'row' }}>
-                            {LIST2 && LIST2.map((item, index) => (
-                                this.getDiwaliCollection(item, index)
-                            ))}
-                        </View>
-
-                    </ScrollView>
 
                     {/* FOLLOW US ON SOCIAL  */}
 
-                    <View style={folloUs}>
-                        <View style={socialIconView}>
-                            <TouchableOpacity>
-                                <Image
-                                    source={require('../../assets/image/instaIcon.png')}
-                                    style={{ height: hp(5), width: hp(5) }}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Image
-                                    source={require('../../assets/image/facebook.png')}
-                                    style={{ height: hp(4.8), width: hp(4.8) }}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={socialTextView}>
-                            <_Text
-                                textColor={color.brandColor}
-                                style={{ textAlign: 'center' }} fsExtraLarge fwSmall>
-                                Follow us on social media
+                    {!this.props.isFetching &&
+                        <View style={folloUs}>
+                            <View style={socialIconView}>
+                                <TouchableOpacity>
+                                    <Image
+                                        source={require('../../assets/image/instaIcon.png')}
+                                        style={{ height: hp(5), width: hp(5) }}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <Image
+                                        source={require('../../assets/image/facebook.png')}
+                                        style={{ height: hp(4.8), width: hp(4.8) }}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={socialTextView}>
+                                <_Text
+                                    textColor={color.brandColor}
+                                    style={{ textAlign: 'center' }} fsExtraLarge fwSmall>
+                                    Follow us on social media
                             </_Text>
-                        </View>
+                            </View>
 
-                    </View>
+                        </View>
+                    }
 
                 </ScrollView>
+
+                {this.props.isFetching ? this.renderLoader() : null}
+
             </View>
         );
     }
 }
+
+
+function mapStateToProps(state) {
+    return {
+        isFetching: state.homePageReducer.isFetching,
+        error: state.homePageReducer.error,
+        errorMsg: state.homePageReducer.errorMsg,
+        successHomePageVersion: state.homePageReducer.successHomePageVersion,
+        errorHomePageVersion: state.homePageReducer.errorHomePageVersion,
+        homePageData: state.homePageReducer.homePageData,
+    };
+}
+
+export default connect(mapStateToProps, { getHomePageData },)(HomePage);

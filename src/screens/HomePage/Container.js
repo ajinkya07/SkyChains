@@ -52,10 +52,10 @@ class Container extends Component {
     return (
       <SafeAreaView style={safeAreaView}>
         <_Container
-          showHeader={true}
-          showSearch={true}
-          showNotification={true}
-          showCalling={true}
+          showHeader
+          showSearch
+          showNotification
+          showCalling
           showLogo={false}
           showBack={false}
           showLoading={false}

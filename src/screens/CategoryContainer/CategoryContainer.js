@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
-  View, Text, FlatList,
-  ImageBackground,
-  Image
+  View, Text, FlatList,StyleSheet,
+  ImageBackground, SafeAreaView,
+  Image, TouchableOpacity, ActivityIndicator
 }
   from 'react-native';
 import {
@@ -15,6 +15,9 @@ import { color } from '@values/colors';
 import { capitalizeFirstLetter } from "@values/validate";
 import _Header from '@header/_Header'
 import * as Animatable from 'react-native-animatable';
+import _CustomHeader from '@customHeader/_CustomHeader'
+import _Container from '@container/_Container';
+import { connect } from 'react-redux';
 
 
 
@@ -33,12 +36,45 @@ const LIST = [
 
 ]
 
-export default class CategoryContainer extends Component {
+class CategoryContainer extends Component {
   constructor(props) {
     super(props);
+
+    const collection = this.props.route ? this.props.route.params.collection : [];
+    const fromSeeMore = this.props.route ? this.props.route.params.fromSeeMore : false
+
     this.state = {
+      categories: collection,
+      fromSeeMore: fromSeeMore,
+      successHomePageVersion: 0,
+      errorHomePageVersion: 0,
+
     };
   }
+
+ componentDidMount = () =>{
+   const{ homePageData} = this.props
+   const{ fromSeeMore} = this.state
+
+  if (!fromSeeMore && homePageData && (homePageData.collection).length > 0) {
+    console.log("two");
+    this.setState({
+      categories: homePageData.collection
+    })
+  }
+
+ }
+
+  
+
+  showToast = (msg, type, duration) => {
+    Toast.show({
+      text: msg ? msg : 'Server error, Please try again',
+      type: type ? type : 'danger',
+      duration: duration ? duration : 2500,
+    });
+  };
+
 
   showNotification = () => {
     alert('showNotification from category')
@@ -47,40 +83,66 @@ export default class CategoryContainer extends Component {
     alert('onSearch from category')
   }
 
+  renderLoader = () => {
+    return (
+      <View style={styles.loaderView}>
+        <ActivityIndicator size="large" color={color.brandColor} />
+      </View>
+    );
+  };
+
 
   render() {
-    return (
-      <View>
+    const { categories, fromSeeMore } = this.state
 
-        <ImageBackground source={require('../../assets/image/BGGradient.png')}
-          style={{ width: wp(100), height: hp(100) }}
-        >
-          <View style={{ justifyContent: 'center', width: wp(100), paddingVertical: Platform.OS === 'ios' ? hp(14) : hp(9) }}>
-            <FlatList
-              onRefresh={() => alert('inProgress')}
-              refreshing={false}
-              data={LIST && LIST}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={item => item.id}
-              renderItem={({ item, index }) => (
-                <Animatable.View animation="flipInX" style={{ paddingTop: hp(0.5), paddingBottom: hp(0.5) }}>
+    console.log("categories", this.state.categories);
+    let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
+
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
+
+        {fromSeeMore &&
+          <_CustomHeader
+            Title={'Category'}
+            RightBtnIcon1={require('../../assets/image/BlueIcons/Search.png')}
+            RightBtnIcon2={require('../../assets/image/BlueIcons/Notification.png')}
+            LeftBtnPress={() => this.props.navigation.goBack()}
+            RightBtnPressOne={() => alert("grid search")}
+            RightBtnPressTwo={() => alert("grid notify")}
+            rightIconHeight2={hp(3.5)}
+            LeftBtnPress={() => this.props.navigation.goBack()}
+          />}
+
+        <View style={{
+          justifyContent: 'center', width: wp(100),
+          marginBottom: !fromSeeMore ? 0 : hp(9)
+        }}>
+          <FlatList
+            onRefresh={() => alert('inProgress')}
+            refreshing={false}
+            data={categories && categories}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => item.id}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity onPress={() => alert('ok')}>
+                <Animatable.View animation="flipInX" style={{ paddingTop: hp(1), paddingBottom: hp(0.5) }}>
                   <View style={{ flexDirection: 'row', flex: 1, marginLeft: hp(2), marginRight: hp(2) }}>
                     <View style={{ flex: 0.25, justifyContent: 'flex-start', }}>
                       <Image
                         style={{
-                          height: hp(9), width: hp(9), borderRadius: 10,
-                          borderWidth: 0.3, borderColor: '#DCDCDC'
+                          height: hp(10), width: hp(10), borderRadius: 10,
+                          borderWidth: 0.4, borderColor: color.gray
                         }}
-                        source={require('../../assets/image/insta.png')}
+                        source={{ uri: baseUrl + item.image_name }}
                         defaultSource={require('../../assets/image/default.png')}
                       />
                     </View>
 
                     <View style={{ alignContent: 'center', justifyContent: 'center', flex: 0.70 }}>
                       <_Text numberOfLines={2} fwPrimary
-                        textColor={color.white}
+                        //textColor={color.white}
                         fsMedium style={{ marginRight: hp(3) }}>
-                        {capitalizeFirstLetter(item.name)}
+                        {capitalizeFirstLetter(item.col_name)}
                       </_Text>
                     </View>
                   </View>
@@ -94,13 +156,41 @@ export default class CategoryContainer extends Component {
                       }}
                     />}
                 </Animatable.View>
-              )
-              }
-            />
-          </View>
-        </ImageBackground>
-      </View>
+              </TouchableOpacity>
+            )
+            }
+          />
+        </View>
+
+        {(!categories || categories.length===0) ? this.renderLoader() : null}
+
+      </SafeAreaView>
 
     );
   }
 }
+
+
+const styles = StyleSheet.create({
+  loaderView: {
+      position: 'absolute',
+      height: hp(80),
+      width: wp(100),
+      alignItems: 'center',
+      justifyContent: 'center',
+  }
+});
+
+
+function mapStateToProps(state) {
+  return {
+    isFetching: state.homePageReducer.isFetching,
+    error: state.homePageReducer.error,
+    errorMsg: state.homePageReducer.errorMsg,
+    successHomePageVersion: state.homePageReducer.successHomePageVersion,
+    errorHomePageVersion: state.homePageReducer.errorHomePageVersion,
+    homePageData: state.homePageReducer.homePageData,
+  };
+}
+
+export default connect(mapStateToProps, null)(CategoryContainer);

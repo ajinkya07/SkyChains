@@ -16,7 +16,7 @@ export default {
   SHARE: require('../../../assets/image/Account/Share.png'),
   VERSION: require('../../../assets/image/Account/Version.png'),
   RATE: require('../../../assets/image/Account/Rate.png'),
-  MOVE_TO: require('../../../assets/image/Account/MOve-to.png'),
+  MOVE_TO: require('../../../assets/image/BlueIcons/Moveto.png'),
   CUSTOM_ORDER: require('../../../assets/image/Account/Custom-Order.png'),
   ORDER_HISTORY: require('../../../assets/image/Account/Custom-Order.png'),
   EXCLUSIVE: require('../../../assets/image/Account/Exclusive.png'),
@@ -31,4 +31,7 @@ export default {
   VERIFY_OTP_ICON: require('../../../assets/image/Account/Forward-Arrow.png'),
   CUSTOMORDER_BG: require('../../../assets/image/Account/CustomOrder_BG.png'),
   PLUS_ICON: require('../../../assets/image/Account/Plus.png'),
+  EDIT: require('../../../assets/image/BlueIcons/Edit.png'),
+  DELETE: require('../../../assets/image/BlueIcons/Delete.png'),
+
 };

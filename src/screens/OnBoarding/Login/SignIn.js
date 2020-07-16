@@ -172,8 +172,7 @@ class SignIn extends React.Component {
 
     return (
       <Container>
-        <ImageBackground source={IconPack.LOGIN_BG} 
-        style={styles.bgImage}>
+        <ImageBackground source={IconPack.LOGIN_BG}  style={styles.bgImage}>
           <SafeAreaView style={styles.flex}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : null}
@@ -197,9 +196,10 @@ class SignIn extends React.Component {
                     <Text
                       style={{
                         color: '#fbcb84',
-                        fontWeight: '400',
-                        fontSize: 30,
+                        fontWeight: "400",
+                        fontSize: hp(4),
                         marginBottom: 10,
+                        marginTop:-hp(5),
                         textAlign: 'center',
                       }}>
                       Login
@@ -278,7 +278,7 @@ class SignIn extends React.Component {
                           fontSize: 18,
                           color: '#fbcb84',
                           fontWeight: 'bold',
-                          paddingTop: 12, marginLeft: 2
+                          paddingTop: 12, marginLeft: 5
                         }}>
                         Signup
                       </Text>
@@ -549,7 +549,7 @@ const actionButtonRoundedStyle = StyleSheet.create({
   },
   titleStyle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: hp(2.5),
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
