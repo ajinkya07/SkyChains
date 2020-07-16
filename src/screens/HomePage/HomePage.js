@@ -125,7 +125,7 @@ class HomePage extends Component {
         return (
             <View style={{
                 height: hp(25), width: wp(100), borderBottomColor: color.gray,
-                borderWidth: bannerData ? 0.5 : 0
+                borderWidth: !this.props.isFetching ? 0.5 : 0
             }}>
                 {bannerData ?
                     <Swiper
@@ -157,11 +157,10 @@ class HomePage extends Component {
     }
 
     getProductGridOrNot = (data) => {
-        console.log("data----", data);
         if (data.subcategory.length === 0) {
             this.props.navigation.navigate("ProductGrid", { gridData: data })
         } else if (data.subcategory.length > 0) {
-            this.props.navigation.navigate("SubCategoryList",{subcategory:data})
+            this.props.navigation.navigate("SubCategoryList", { subcategory: data })
         }
     }
 
@@ -195,15 +194,14 @@ class HomePage extends Component {
         const { latestDesign, latestTextView, latestTextView2,
             latestImage, horizontalLatestDesign, border, iconView
         } = HomePageStyle;
-
-        let url = 'http://jewel.jewelmarts.in/public/backend/collection/'
+        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
 
         return (
             <TouchableOpacity onPress={() => alert("latest design")}>
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
                         <Image
-                            resizeMode={'cover'}
+                            // resizeMode={'cover'}
                             style={latestImage}
                             defaultSource={require('../../assets/image/default.png')}
                             source={{ uri: url + item.images[0].image_name }}
@@ -237,23 +235,49 @@ class HomePage extends Component {
                             </View>
                         </View>
                         <View style={border}></View>
+                        {item.in_cart === 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Heart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/DarkCart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
 
-                        <View style={iconView}>
-                            <TouchableOpacity onPress={() => alert('wishlist')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/Heart.png')}
-                                    style={{ height: hp(3), width: hp(3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => alert('cart')}>
-                                <Image
-                                    source={require('../../assets/image/BlueIcons/DarkCart.png')}
-                                    style={{ height: hp(3), width: hp(3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        {item.in_cart > 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Minus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <_Text numberOfLines={1}
+                                textColor={color.brandColor}
+                                fsMedium fwHeading >{item.in_cart}
+                                </_Text>
+
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../assets/image/BlueIcons/Plus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
+
                     </View>
                 </View>
             </TouchableOpacity>
@@ -268,7 +292,7 @@ class HomePage extends Component {
     renderLoader = () => {
         return (
             <View style={{
-                position: 'absolute', height: hp(100), width: wp(100),
+                position: 'absolute', height: hp(80), width: wp(100),
                 alignItems: 'center', justifyContent: 'center',
             }}>
                 <ActivityIndicator size="large" color={color.brandColor} />
@@ -294,17 +318,16 @@ class HomePage extends Component {
             watchAllImage, watchAllText, activityIndicatorView, folloUs, socialIconView, socialTextView
         } = HomePageStyle;
 
-        const { homePageData } = this.props
-
+        const { homePageData, isFetching } = this.props
         const bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
 
         const collection = homePageData && homePageData.collection ? homePageData.collection : []
 
         const finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
-        console.log("finalCollection", finalCollection);
 
         return (
             <View style={mainContainer}>
+
                 <ScrollView showsVerticalScrollIndicator={false}>
 
                     {this.state.isModalVisible &&
@@ -382,7 +405,7 @@ class HomePage extends Component {
 
                             <View style={watchAllView}>
                                 <TouchableOpacity style={watchTouchableView}
-                                    onPress={()=>this.props.navigation.navigate('CategoryContainer',{collection:collection})}
+                                    onPress={() => this.props.navigation.navigate('CategoryContainer', { collection: collection, fromSeeMore: true })}
                                 >
                                     <_Text
                                         fsHeading
@@ -471,11 +494,11 @@ class HomePage extends Component {
 
                         </View>
                     }
-                    
-                    {this.props.isFetching && this.renderLoader()}
-
 
                 </ScrollView>
+
+                {this.props.isFetching ? this.renderLoader() : null}
+
             </View>
         );
     }

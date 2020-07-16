@@ -45,11 +45,11 @@ export default {
   },
   gridImage: {
     height: hp(19),
-    width: wp(46),
+    width: wp(45),
+    top:1,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    borderRadius: 10, marginLeft: -2,
-    marginTop: -2,
+    borderRadius: 10, 
     alignItems: 'center',
     justifyContent: 'center',
 

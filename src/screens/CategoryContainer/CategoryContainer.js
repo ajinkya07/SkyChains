@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
-  View, Text, FlatList,
+  View, Text, FlatList,StyleSheet,
   ImageBackground, SafeAreaView,
-  Image, TouchableOpacity,ActivityIndicator
+  Image, TouchableOpacity, ActivityIndicator
 }
   from 'react-native';
 import {
@@ -17,6 +17,7 @@ import _Header from '@header/_Header'
 import * as Animatable from 'react-native-animatable';
 import _CustomHeader from '@customHeader/_CustomHeader'
 import _Container from '@container/_Container';
+import { connect } from 'react-redux';
 
 
 
@@ -35,16 +36,45 @@ const LIST = [
 
 ]
 
-export default class CategoryContainer extends Component {
+class CategoryContainer extends Component {
   constructor(props) {
     super(props);
 
     const collection = this.props.route ? this.props.route.params.collection : [];
+    const fromSeeMore = this.props.route ? this.props.route.params.fromSeeMore : false
 
     this.state = {
-      categories: collection
+      categories: collection,
+      fromSeeMore: fromSeeMore,
+      successHomePageVersion: 0,
+      errorHomePageVersion: 0,
+
     };
   }
+
+ componentDidMount = () =>{
+   const{ homePageData} = this.props
+   const{ fromSeeMore} = this.state
+
+  if (!fromSeeMore && homePageData && (homePageData.collection).length > 0) {
+    console.log("two");
+    this.setState({
+      categories: homePageData.collection
+    })
+  }
+
+ }
+
+  
+
+  showToast = (msg, type, duration) => {
+    Toast.show({
+      text: msg ? msg : 'Server error, Please try again',
+      type: type ? type : 'danger',
+      duration: duration ? duration : 2500,
+    });
+  };
+
 
   showNotification = () => {
     alert('showNotification from category')
@@ -55,21 +85,23 @@ export default class CategoryContainer extends Component {
 
   renderLoader = () => {
     return (
-        <View style={styles.loaderView}>
-            <ActivityIndicator size="large" color={color.brandColor} />
-        </View>
+      <View style={styles.loaderView}>
+        <ActivityIndicator size="large" color={color.brandColor} />
+      </View>
     );
-};
+  };
 
 
   render() {
-    const{categories} = this.state
+    const { categories, fromSeeMore } = this.state
 
     console.log("categories", this.state.categories);
+    let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
+
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
 
-         {categories&&
+        {fromSeeMore &&
           <_CustomHeader
             Title={'Category'}
             RightBtnIcon1={require('../../assets/image/BlueIcons/Search.png')}
@@ -81,56 +113,84 @@ export default class CategoryContainer extends Component {
             LeftBtnPress={() => this.props.navigation.goBack()}
           />}
 
-          <View style={{ justifyContent: 'center', width: wp(100), marginBottom: hp(9) }}>
-            <FlatList
-              onRefresh={() => alert('inProgress')}
-              refreshing={false}
-              data={LIST && LIST}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={item => item.id}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => alert('ok')}>
-                  <Animatable.View animation="flipInX" style={{ paddingTop: hp(0.5), paddingBottom: hp(0.5) }}>
-                    <View style={{ flexDirection: 'row', flex: 1, marginLeft: hp(2), marginRight: hp(2) }}>
-                      <View style={{ flex: 0.25, justifyContent: 'flex-start', }}>
-                        <Image
-                          style={{
-                            height: hp(9), width: hp(9), borderRadius: 10,
-                            borderWidth: 0.3, borderColor: '#DCDCDC'
-                          }}
-                          source={require('../../assets/image/insta.png')}
-                          defaultSource={require('../../assets/image/default.png')}
-                        />
-                      </View>
-
-                      <View style={{ alignContent: 'center', justifyContent: 'center', flex: 0.70 }}>
-                        <_Text numberOfLines={2} fwPrimary
-                          //textColor={color.white}
-                          fsMedium style={{ marginRight: hp(3) }}>
-                          {capitalizeFirstLetter(item.name)}
-                        </_Text>
-                      </View>
-                    </View>
-                    {index !== 9 &&
-                      <View
+        <View style={{
+          justifyContent: 'center', width: wp(100),
+          marginBottom: !fromSeeMore ? 0 : hp(9)
+        }}>
+          <FlatList
+            onRefresh={() => alert('inProgress')}
+            refreshing={false}
+            data={categories && categories}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => item.id}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity onPress={() => alert('ok')}>
+                <Animatable.View animation="flipInX" style={{ paddingTop: hp(1), paddingBottom: hp(0.5) }}>
+                  <View style={{ flexDirection: 'row', flex: 1, marginLeft: hp(2), marginRight: hp(2) }}>
+                    <View style={{ flex: 0.25, justifyContent: 'flex-start', }}>
+                      <Image
                         style={{
-                          paddingTop: hp(1), marginLeft: wp(22), marginRight: wp(3),
-                          alignSelf: 'stretch',
-                          borderBottomColor: '#D3D3D3',
-                          borderBottomWidth: 1,
+                          height: hp(10), width: hp(10), borderRadius: 10,
+                          borderWidth: 0.4, borderColor: color.gray
                         }}
-                      />}
-                  </Animatable.View>
-                </TouchableOpacity>
-              )
-              }
-            />
-          </View>
+                        source={{ uri: baseUrl + item.image_name }}
+                        defaultSource={require('../../assets/image/default.png')}
+                      />
+                    </View>
 
-          {!categories && this.renderLoader()}
+                    <View style={{ alignContent: 'center', justifyContent: 'center', flex: 0.70 }}>
+                      <_Text numberOfLines={2} fwPrimary
+                        //textColor={color.white}
+                        fsMedium style={{ marginRight: hp(3) }}>
+                        {capitalizeFirstLetter(item.col_name)}
+                      </_Text>
+                    </View>
+                  </View>
+                  {index !== 9 &&
+                    <View
+                      style={{
+                        paddingTop: hp(1), marginLeft: wp(22), marginRight: wp(3),
+                        alignSelf: 'stretch',
+                        borderBottomColor: '#D3D3D3',
+                        borderBottomWidth: 1,
+                      }}
+                    />}
+                </Animatable.View>
+              </TouchableOpacity>
+            )
+            }
+          />
+        </View>
+
+        {(!categories || categories.length===0) ? this.renderLoader() : null}
 
       </SafeAreaView>
 
     );
   }
 }
+
+
+const styles = StyleSheet.create({
+  loaderView: {
+      position: 'absolute',
+      height: hp(80),
+      width: wp(100),
+      alignItems: 'center',
+      justifyContent: 'center',
+  }
+});
+
+
+function mapStateToProps(state) {
+  return {
+    isFetching: state.homePageReducer.isFetching,
+    error: state.homePageReducer.error,
+    errorMsg: state.homePageReducer.errorMsg,
+    successHomePageVersion: state.homePageReducer.successHomePageVersion,
+    errorHomePageVersion: state.homePageReducer.errorHomePageVersion,
+    homePageData: state.homePageReducer.homePageData,
+  };
+}
+
+export default connect(mapStateToProps, null)(CategoryContainer);

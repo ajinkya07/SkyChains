@@ -15,13 +15,19 @@ import ProductGridStyle from '@productGrid/ProductGridStyle';
 import { getProductSubCategoryData } from '@productGrid/ProductGridAction';
 import { Toast } from 'native-base';
 import Modal from 'react-native-modal';
+import { strings } from '@values/strings'
 
 
 
 var userId = ''
 
-const categoryDatafromState = [
-    { name: '' }
+const sortByData = [
+    { id: '0', name: 'Code Ascending', url: require('../../../assets/image/DownArrow.png') },
+    { id: '1', name: 'Code Descending', url: require('../../../assets/image/DownArrow.png') },
+    { id: '2', name: 'Weight Ascending', url: require('../../../assets/image/DownArrow.png') },
+    { id: '3', name: 'Code Descending', url: require('../../../assets/image/DownArrow.png') },
+    { id: '4', name: 'Latest Ascending', url: require('../../../assets/image/DownArrow.png') }
+
 ]
 
 class ProductGrid extends Component {
@@ -34,15 +40,20 @@ class ProductGrid extends Component {
             categoryData: categoryData,
             successProductGridVersion: 0,
             errorProductGridVersion: 0,
+            isSortByModal: false,
+            selectedSortById: '2',
+
             gridData: [],
-            isSortByModal: false
+            loadingExtraData: false,
+            page: 0
+
         };
         userId = global.userId;
 
     }
 
     componentDidMount = () => {
-        const { categoryData } = this.state
+        const { categoryData, page } = this.state
 
         if (categoryData.subcategory.length === 0) {
             const data = new FormData();
@@ -51,8 +62,8 @@ class ProductGrid extends Component {
             data.append('collection_id', categoryData.id);
             data.append('user_id', userId);
             data.append('record', 10);
-            data.append('page_no', 0);
-            data.append('sort_by', 2);
+            data.append('page_no', page);
+            data.append('sort_by', '2');
 
             this.props.getProductSubCategoryData(data)
         }
@@ -84,16 +95,20 @@ class ProductGrid extends Component {
         if (this.state.successProductGridVersion > prevState.successProductGridVersion) {
             if (productGridData.products && productGridData.products.length > 0) {
                 this.setState({
-                    gridData: productGridData
+                    //gridData: productGridData,
+                    gridData: this.state.page === 1 ? productGridData.products : [...this.state.gridData, ...productGridData.products]
+
                 })
             } else {
                 this.showToast('Please contact admin', 'danger');
             }
         }
         if (this.state.errorProductGridVersion > prevState.errorProductGridVersion) {
-            // this.showNoDataFound(this.props.errorMsg)
-            this.showToast(this.props.errorMsg, 'danger');
-
+            Toast.show({
+                text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+                color: 'warning',
+                duration: 2500,
+            });
         }
     }
 
@@ -107,7 +122,7 @@ class ProductGrid extends Component {
 
     showToast = (msg, type, duration) => {
         Toast.show({
-            text: msg ? msg : 'Server error, Please try again',
+            text: msg ? msg : strings.serverFailedMsg,
             type: type ? type : 'danger',
             duration: duration ? duration : 2500,
         });
@@ -119,7 +134,7 @@ class ProductGrid extends Component {
             gridImage, gridDesign, border, iconView
         } = ProductGridStyle;
 
-        let url = 'http://jewel.jewelmarts.in/public/backend/collection/'
+        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
 
         return (
             <TouchableOpacity onPress={() => alert("latest design")}>
@@ -128,8 +143,8 @@ class ProductGrid extends Component {
                         <Image
                             resizeMode={'cover'}
                             style={gridImage}
-                            source={require('../../../assets/image/insta.png')}
-                        // source={{ uri: url + item.images[0].image_name }}
+                            defaultSource={require('../../../assets/image/default.png')}
+                            source={{ uri: url + item.image_name }}
                         />
                         <View style={latestTextView}>
                             <View style={{ width: wp(15), marginLeft: 5 }}>
@@ -161,22 +176,47 @@ class ProductGrid extends Component {
                         </View>
                         <View style={border}></View>
 
-                        <View style={iconView}>
-                            <TouchableOpacity onPress={() => alert('wishlist')}>
-                                <Image
-                                    source={require('../../../assets/image/BlueIcons/Heart.png')}
-                                    style={{ height: hp(3.3), width: hp(3.3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => alert('cart')}>
-                                <Image
-                                    source={require('../../../assets/image/BlueIcons/DarkCart.png')}
-                                    style={{ height: hp(3.3), width: hp(3.3) }}
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        {item.in_cart === 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../../assets/image/BlueIcons/Heart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../../assets/image/BlueIcons/DarkCart.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
+
+                        {item.in_cart > 0 &&
+                            <View style={iconView}>
+                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                    <Image
+                                        source={require('../../../assets/image/BlueIcons/Minus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <_Text numberOfLines={1}
+                                    textColor={color.brandColor}
+                                    fsMedium fwHeading >{item.in_cart}</_Text>
+
+                                <TouchableOpacity onPress={() => alert('cart')}>
+                                    <Image
+                                        source={require('../../../assets/image/BlueIcons/Plus.png')}
+                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        }
                     </View>
                 </View>
             </TouchableOpacity>
@@ -252,6 +292,7 @@ class ProductGrid extends Component {
             isSortByModal: true
         })
     }
+
     closeSortByModal = () => {
         this.setState({
             isSortByModal: false
@@ -259,14 +300,92 @@ class ProductGrid extends Component {
     }
 
     setSortBy = (item) => {
+        const { categoryData } = this.state
+
         this.closeSortByModal()
-        this.setState({ category: item.categoryName, selectedCategoryId: item.id })
+        this.setState({ selectedSortById: item.id })
+
+        const data = new FormData();
+        data.append('table', 'product_master');
+        data.append('mode_type', 'normal');
+        data.append('collection_id', categoryData.id);
+        data.append('user_id', userId);
+        data.append('record', 10);
+        data.append('page_no', 0);
+        data.append('sort_by', "2");
+
+        this.props.getProductSubCategoryData(data)
     }
 
 
+    seperator = () => {
+        return (
+            <View
+                style={{
+                    borderBottomColor: color.primaryGray,
+                    borderBottomWidth: 0.5,
+                    width: wp(95),
+                }}
+            />
+        );
+    };
+
+    LoadMoreData = () => {
+        console.log("LoadMoreData");
+        this.setState({
+            page: this.state.page + 1
+        }, () => this.LoadRandomData())
+    }
+
+    LoadRandomData = () => {
+        console.log("LoadRandomData");
+        const { categoryData, page } = this.state
+
+        const data = new FormData();
+        data.append('table', 'product_master');
+        data.append('mode_type', 'normal');
+        data.append('collection_id', categoryData.id);
+        data.append('user_id', userId);
+        data.append('record', 10);
+        data.append('page_no', page);
+        data.append('sort_by', '2');
+
+        this.props.getProductSubCategoryData(data)
+    }
+
+    footer = () => {
+        return (
+            <View>
+                {!this.props.isFetching && this.state.gridData.length >= 10 ?
+                    <TouchableOpacity onPress={() => this.LoadMoreData()}>
+                        <View style={{
+                            flex: 1, height: hp(5), width: wp(100), backgroundColor: '#EEF8F7',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                            <Text style={{ color: '#0d185c',fontSize:16,fontWeight:'bold' }}>Load More</Text>
+                        </View>
+                    </TouchableOpacity>
+                    : null
+                }
+                {this.props.isFetching && this.state.gridData.length >= 10 ?
+                    <View style={{
+                        flex: 1, height: 40, width: wp(100), backgroundColor: '#EEF8F7',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        <ActivityIndicator size="small" color={color.brandColor} />
+                    </View>
+                    : null
+                }
+            </View>
+
+        );
+    }
+
 
     render() {
-        const { categoryData, gridData, isSortByModal } = this.state
+        const { categoryData, gridData, isSortByModal, selectedSortById } = this.state
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
@@ -331,8 +450,8 @@ class ProductGrid extends Component {
                 </View>
 
 
-                {gridData && gridData.products && <FlatList
-                    data={gridData.products}
+                {gridData && <FlatList
+                    data={gridData}
                     showsHorizontalScrollIndicator={true}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
@@ -342,15 +461,17 @@ class ProductGrid extends Component {
                     )}
 
                     numColumns={2}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={{ marginBottom: hp(1), marginTop: hp(1), }}
-                    ListEmptyComponent={() => this.showNoDataFound(this.props.errorMsg)}
+                    keyExtractor={(item, index) => (item.collection_id).toString()}
+                    style={{ marginTop: hp(1), }}
+                    //onEndReachedThreshold={0.3}
+                    //onEndReached={()=> this.LoadMoreData()}
+                    ListFooterComponent={this.footer()}
+                // ListEmptyComponent={() => this.showNoDataFound(this.props.errorMsg)}
                 />}
 
 
                 {this.props.isFetching && this.renderLoader()}
 
-                {/* {isSortByModal && this.openSortByModal()} */}
                 <View>
                     <Modal
                         style={{
@@ -365,28 +486,44 @@ class ProductGrid extends Component {
                         <SafeAreaView>
                             <View
                                 style={{
-                                    height: hp(50),
                                     backgroundColor: 'white',
-                                    alignItems: 'center',
                                     justifyContent: 'center',
+                                    paddingHorizontal: hp(2),
+                                    borderColor: color.gray,
+                                    borderWidth: 0.5,
                                     borderTopLeftRadius: 10, borderTopRightRadius: 10
                                 }}>
-                                <Text>okoj</Text>
-                                {/* <FlatList
-                                data={categoryDatafromState}
-                                showsHorizontalScrollIndicator={false}
-                                showsVerticalScrollIndicator={false}
-                                //ItemSeparatorComponent={this.categorySeperator}
-                                renderItem={({ item }) => (
-                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                <FlatList
+                                    data={sortByData}
+                                    showsHorizontalScrollIndicator={false}
+                                    showsVerticalScrollIndicator={false}
+                                    ItemSeparatorComponent={this.seperator}
+                                    renderItem={({ item }) => (
                                         <TouchableOpacity
                                             hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
                                             onPress={() => this.setSortBy(item)}>
-                                            <_Text fsPrimary fwPrimary>{item.name}</_Text>
+                                            <View style={{ width: wp(100), flexDirection: 'row' }}>
+                                                <View style={{ paddingVertical: 15, width: wp(80), flexDirection: 'row' }}>
+                                                    <_Text fsHeading fwHeading>{item.name}</_Text>
+                                                    <Image source={item.url}
+                                                        style={{ top: 2, marginLeft: hp(2), height: hp(3), width: hp(3) }}
+                                                    />
+                                                </View>
+                                                <View style={{ paddingVertical: 15, width: wp(20), flexDirection: 'row' }}>
+                                                    {item.id === selectedSortById &&
+                                                        <Image source={require('../../../assets/image/BlueIcons/Tick.png')}
+                                                            style={{
+                                                                alignItems: 'flex-end',
+                                                                marginLeft: hp(1), height: hp(3), width: hp(4)
+                                                            }}
+                                                        />
+                                                    }
+                                                </View>
+                                            </View>
                                         </TouchableOpacity>
-                                    </View>
-                                )}
-                            /> */}
+
+                                    )}
+                                />
                             </View>
                         </SafeAreaView>
                     </Modal>

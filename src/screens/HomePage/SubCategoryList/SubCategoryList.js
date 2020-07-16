@@ -30,6 +30,8 @@ export default class SubCategoryList extends Component {
 
     subcategoryView = (item, index) => {
         console.log("item----", item);
+        let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
+
         return (
             <TouchableOpacity onPress={()=>this.getProductGridOrNot(item)}>
                 <Animatable.View animation="flipInX" style={{ paddingTop: hp(0.5), paddingBottom: hp(0.5) }}>
@@ -37,10 +39,10 @@ export default class SubCategoryList extends Component {
                         <View style={{ flex: 0.25, justifyContent: 'flex-start', }}>
                             <Image
                                 style={{
-                                    height: hp(9), width: hp(9), borderRadius: 10,
-                                    borderWidth: 0.3, borderColor: '#DCDCDC'
+                                    height: hp(10), width: hp(10), borderRadius: 10,
+                                    borderWidth: 0.4, borderColor: color.gray
                                 }}
-                                source={require('../../../assets/image/insta.png')}
+                                source={{ uri: baseUrl + item.image_name }}
                                 defaultSource={require('../../../assets/image/default.png')}
                             />
                         </View>
@@ -53,7 +55,6 @@ export default class SubCategoryList extends Component {
                             </_Text>
                         </View>
                     </View>
-                    {index !== (item.length - 1) &&
                         <View
                             style={{
                                 paddingTop: hp(0.8), marginLeft: wp(22), marginRight: wp(3),
@@ -61,7 +62,7 @@ export default class SubCategoryList extends Component {
                                 borderBottomColor: '#D3D3D3',
                                 borderBottomWidth: 1,
                             }}
-                        />}
+                        />
                 </Animatable.View>
             </TouchableOpacity>
         )

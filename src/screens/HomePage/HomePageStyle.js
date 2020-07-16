@@ -72,7 +72,7 @@ export default {
     height: hp(13),
     width: hp(13),
     borderColor:color.gray,
-    borderWidth:0.2,
+    borderWidth:0.4,
     borderRadius:10
 
   },
@@ -81,7 +81,7 @@ export default {
     backgroundColor:color.white,
     height:hp(39),width:wp(48),marginTop:hp(2),
     borderColor:color.gray,
-    borderWidth:0.2,borderRadius:10,
+    borderWidth:0.4,borderRadius:10,
     marginHorizontal: hp(1.5),
   },
 
@@ -93,11 +93,11 @@ export default {
   },
   latestImage: {
     height: hp(16),
-    width: wp(48),
+    width: wp(47),
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    borderRadius: 10,marginLeft:-2,
-    marginTop:-2,
+    borderRadius: 10,
+    top:1,
     alignItems: 'center',
     justifyContent: 'center',
 
