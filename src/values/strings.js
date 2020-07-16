@@ -9,7 +9,7 @@ export const strings = {
     invalidEmail:'Please enter correct email',
     invalidPassword:'Password must be atleast six character long and contain one special character and one numeric',
     globalErrorMsg:'Something went wrong',
-    serverFailedMsg:"Server Failed Please Try again later",
+    serverFailedMsg:"We are unable to connect at this moment.\nPlease try again later.",
     categoryDesigns:'Category Designs',
     seeMore:'See More',
     latestDesigns:'Latest',

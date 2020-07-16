@@ -90,7 +90,6 @@ class CategoryScreen extends React.Component {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <CategoryContainer navigation={this.props.navigation} />
-                
             </View>
         );
     }

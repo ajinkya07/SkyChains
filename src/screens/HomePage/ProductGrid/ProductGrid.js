@@ -14,10 +14,15 @@ import { color } from '@values/colors';
 import ProductGridStyle from '@productGrid/ProductGridStyle';
 import { getProductSubCategoryData } from '@productGrid/ProductGridAction';
 import { Toast } from 'native-base';
+import Modal from 'react-native-modal';
+
+
 
 var userId = ''
 
-
+const categoryDatafromState = [
+    { name: '' }
+]
 
 class ProductGrid extends Component {
     constructor(props) {
@@ -29,7 +34,8 @@ class ProductGrid extends Component {
             categoryData: categoryData,
             successProductGridVersion: 0,
             errorProductGridVersion: 0,
-            gridData: []
+            gridData: [],
+            isSortByModal: false
         };
         userId = global.userId;
 
@@ -37,7 +43,6 @@ class ProductGrid extends Component {
 
     componentDidMount = () => {
         const { categoryData } = this.state
-        console.log("gridData", categoryData);
 
         if (categoryData.subcategory.length === 0) {
             const data = new FormData();
@@ -95,7 +100,7 @@ class ProductGrid extends Component {
     renderLoader = () => {
         return (
             <View style={styles.loaderView}>
-                <ActivityIndicator size="large" color={color.white} />
+                <ActivityIndicator size="large" color={color.brandColor} />
             </View>
         );
     };
@@ -193,8 +198,75 @@ class ProductGrid extends Component {
         );
     }
 
+
+    sortByModal = () => {
+
+        const { isSortByModal } = this.state
+
+        return (
+            <View>
+                <Modal
+                    style={{
+                        justifyContent: 'flex-end',
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                    }}
+                    isVisible={this.state.isSortByModal}
+                    onRequestClose={this.closeSortByModal}
+                    onBackdropPress={() => this.closeSortByModal()}>
+                    <SafeAreaView>
+                        <View
+                            style={{
+                                height: hp(40),
+                                backgroundColor: 'gray',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            <Text>okoj</Text>
+                            {/* <FlatList
+                                data={categoryDatafromState}
+                                showsHorizontalScrollIndicator={false}
+                                showsVerticalScrollIndicator={false}
+                                //ItemSeparatorComponent={this.categorySeperator}
+                                renderItem={({ item }) => (
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <TouchableOpacity
+                                            hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
+                                            onPress={() => this.setSortBy(item)}>
+                                            <_Text fsPrimary fwPrimary>{item.name}</_Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            /> */}
+                        </View>
+                    </SafeAreaView>
+                </Modal>
+            </View>
+
+        );
+    };
+
+    openSortByModal = () => {
+        this.setState({
+            isSortByModal: true
+        })
+    }
+    closeSortByModal = () => {
+        this.setState({
+            isSortByModal: false
+        })
+    }
+
+    setSortBy = (item) => {
+        this.closeSortByModal()
+        this.setState({ category: item.categoryName, selectedCategoryId: item.id })
+    }
+
+
+
     render() {
-        const { categoryData, gridData } = this.state
+        const { categoryData, gridData, isSortByModal } = this.state
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
@@ -208,13 +280,17 @@ class ProductGrid extends Component {
                     rightIconHeight2={hp(3.5)}
                     LeftBtnPress={() => this.props.navigation.goBack()}
                 />
+
+
                 <View style={{
                     height: hp(6), width: wp(100), flexDirection: 'row',
                     borderBottomWidth: hp(0.2),
                     borderBottomColor: color.primaryGray,
                     backgroundColor: color.white
                 }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={this.props.error}
+                        onPress={() => this.openSortByModal()}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
                             justifyContent: 'center', alignItems: 'center'
@@ -226,7 +302,9 @@ class ProductGrid extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={this.props.error}
+                    >
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
                             justifyContent: 'center', alignItems: 'center'
@@ -238,7 +316,7 @@ class ProductGrid extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity disabled={this.props.error}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
                             justifyContent: 'center', alignItems: 'center'
@@ -266,12 +344,53 @@ class ProductGrid extends Component {
                     numColumns={2}
                     keyExtractor={(item, index) => index.toString()}
                     style={{ marginBottom: hp(1), marginTop: hp(1), }}
-                    ListEmptyComponent={()=>this.showNoDataFound(this.props.errorMsg)}
+                    ListEmptyComponent={() => this.showNoDataFound(this.props.errorMsg)}
                 />}
 
 
                 {this.props.isFetching && this.renderLoader()}
 
+                {/* {isSortByModal && this.openSortByModal()} */}
+                <View>
+                    <Modal
+                        style={{
+                            justifyContent: 'flex-end',
+                            marginBottom: 0,
+                            marginLeft: 0,
+                            marginRight: 0,
+                        }}
+                        isVisible={this.state.isSortByModal}
+                        onRequestClose={this.closeSortByModal}
+                        onBackdropPress={() => this.closeSortByModal()}>
+                        <SafeAreaView>
+                            <View
+                                style={{
+                                    height: hp(50),
+                                    backgroundColor: 'white',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderTopLeftRadius: 10, borderTopRightRadius: 10
+                                }}>
+                                <Text>okoj</Text>
+                                {/* <FlatList
+                                data={categoryDatafromState}
+                                showsHorizontalScrollIndicator={false}
+                                showsVerticalScrollIndicator={false}
+                                //ItemSeparatorComponent={this.categorySeperator}
+                                renderItem={({ item }) => (
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <TouchableOpacity
+                                            hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
+                                            onPress={() => this.setSortBy(item)}>
+                                            <_Text fsPrimary fwPrimary>{item.name}</_Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            /> */}
+                            </View>
+                        </SafeAreaView>
+                    </Modal>
+                </View>
 
 
             </SafeAreaView>

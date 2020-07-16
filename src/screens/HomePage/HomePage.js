@@ -162,7 +162,6 @@ class HomePage extends Component {
             this.props.navigation.navigate("ProductGrid", { gridData: data })
         } else if (data.subcategory.length > 0) {
             this.props.navigation.navigate("SubCategoryList",{subcategory:data})
-
         }
     }
 
@@ -382,7 +381,9 @@ class HomePage extends Component {
                             </View>
 
                             <View style={watchAllView}>
-                                <TouchableOpacity style={watchTouchableView}>
+                                <TouchableOpacity style={watchTouchableView}
+                                    onPress={()=>this.props.navigation.navigate('CategoryContainer',{collection:collection})}
+                                >
                                     <_Text
                                         fsHeading
                                         numberOfLines={1}
@@ -470,6 +471,7 @@ class HomePage extends Component {
 
                         </View>
                     }
+                    
                     {this.props.isFetching && this.renderLoader()}
 
 

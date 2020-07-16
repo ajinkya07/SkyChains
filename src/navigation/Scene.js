@@ -15,6 +15,8 @@ import CustomOrder from '@accountCustomOrder/CustomOrder';
 
 import ProductGrid from '@productGrid/ProductGrid';
 import SubCategoryList from '@subCategoryList/SubCategoryList';
+import CategoryContainer from '@category/CategoryContainer';
+
 
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -89,6 +91,11 @@ class Scene extends React.Component {
         <Stack.Screen name="SubCategoryList"
           component={SubCategoryList} options={{ headerShown: false }}
         />
+
+        <Stack.Screen name="CategoryContainer"
+          component={CategoryContainer} options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
 
     );
@@ -135,6 +142,9 @@ class Scene extends React.Component {
           component={SubCategoryList} options={{ headerShown: false }}
         />
 
+        <Stack.Screen name="CategoryContainer"
+          component={CategoryContainer} options={{ headerShown: false }}
+        />
 
 
       </Stack.Navigator>
