@@ -16,6 +16,8 @@ import CustomOrder from '@accountCustomOrder/CustomOrder';
 import ProductGrid from '@productGrid/ProductGrid';
 import SubCategoryList from '@subCategoryList/SubCategoryList';
 import CategoryContainer from '@category/CategoryContainer';
+import CategoryDetails from '@category/CategoryDetails';
+
 
 
 
@@ -91,9 +93,11 @@ class Scene extends React.Component {
         <Stack.Screen name="SubCategoryList"
           component={SubCategoryList} options={{ headerShown: false }}
         />
-
         <Stack.Screen name="CategoryContainer"
           component={CategoryContainer} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="CategoryDetails"
+          component={CategoryDetails} options={{ headerShown: false }}
         />
 
       </Stack.Navigator>
@@ -145,7 +149,9 @@ class Scene extends React.Component {
         <Stack.Screen name="CategoryContainer"
           component={CategoryContainer} options={{ headerShown: false }}
         />
-
+        <Stack.Screen name="CategoryDetails"
+          component={CategoryDetails} options={{ headerShown: false }}
+        />
 
       </Stack.Navigator>
 

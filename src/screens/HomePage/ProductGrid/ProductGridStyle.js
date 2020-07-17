@@ -34,7 +34,7 @@ export default {
     backgroundColor: color.white,
     height: hp(43), width: wp(46),
     borderColor: color.gray,
-    borderWidth: 0.2, borderRadius: 10,
+    borderWidth: 0.4, borderRadius: 10,
     marginHorizontal: hp(1),
   },
 

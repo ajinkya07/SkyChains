@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {
     View, Text, SafeAreaView, Image, StyleSheet,
-    TouchableOpacity, FlatList, ActivityIndicator
+    TouchableOpacity, FlatList, ActivityIndicator,
+    KeyboardAvoidingView, TouchableWithoutFeedback,
+    TextInput, ScrollView
 } from 'react-native';
 import _CustomHeader from '@customHeader/_CustomHeader'
 import {
@@ -16,17 +18,18 @@ import { getProductSubCategoryData } from '@productGrid/ProductGridAction';
 import { Toast } from 'native-base';
 import Modal from 'react-native-modal';
 import { strings } from '@values/strings'
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 
 
 var userId = ''
 
 const sortByData = [
-    { id: '0', name: 'Code Ascending', url: require('../../../assets/image/DownArrow.png') },
-    { id: '1', name: 'Code Descending', url: require('../../../assets/image/DownArrow.png') },
-    { id: '2', name: 'Weight Ascending', url: require('../../../assets/image/DownArrow.png') },
-    { id: '3', name: 'Code Descending', url: require('../../../assets/image/DownArrow.png') },
-    { id: '4', name: 'Latest Ascending', url: require('../../../assets/image/DownArrow.png') }
+    { id: '0', name: 'Code Ascending', url: require('../../../assets/image/uparrow.png') },
+    { id: '1', name: 'Code Descending', url: require('../../../assets/image/down-arrow.png') },
+    { id: '2', name: 'Weight Ascending', url: require('../../../assets/image/uparrow.png') },
+    { id: '3', name: 'Code Descending', url: require('../../../assets/image/down-arrow.png') },
+    { id: '4', name: 'Latest Ascending', url: require('../../../assets/image/uparrow.png') }
 
 ]
 
@@ -41,6 +44,11 @@ class ProductGrid extends Component {
             successProductGridVersion: 0,
             errorProductGridVersion: 0,
             isSortByModal: false,
+            isFilterModalVisible: false,
+            sliderValue: '15',
+            toValue: 0.00,
+            fromValue: 0.00,
+
             selectedSortById: '2',
 
             gridData: [],
@@ -363,7 +371,7 @@ class ProductGrid extends Component {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                            <Text style={{ color: '#0d185c',fontSize:16,fontWeight:'bold' }}>Load More</Text>
+                            <Text style={{ color: '#0d185c', fontSize: 16, fontWeight: 'bold' }}>Load More</Text>
                         </View>
                     </TouchableOpacity>
                     : null
@@ -383,9 +391,19 @@ class ProductGrid extends Component {
         );
     }
 
+    toggleFilterModal = () => {
+        this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible });
+    };
+
+    onTextChanged = (inputKey, value) => {
+        this.setState({
+            [inputKey]: value,
+        });
+    }
+
 
     render() {
-        const { categoryData, gridData, isSortByModal, selectedSortById } = this.state
+        const { categoryData, gridData, isSortByModal, selectedSortById, toValue, fromValue } = this.state
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
@@ -408,7 +426,7 @@ class ProductGrid extends Component {
                     backgroundColor: color.white
                 }}>
                     <TouchableOpacity
-                        disabled={this.props.error}
+                        //disabled={this.props.error}
                         onPress={() => this.openSortByModal()}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
@@ -422,8 +440,7 @@ class ProductGrid extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        disabled={this.props.error}
-                    >
+                        onPress={() => this.toggleFilterModal()}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
                             justifyContent: 'center', alignItems: 'center'
@@ -472,6 +489,7 @@ class ProductGrid extends Component {
 
                 {this.props.isFetching && this.renderLoader()}
 
+                {/* SORT BY MODAL */}
                 <View>
                     <Modal
                         style={{
@@ -504,9 +522,9 @@ class ProductGrid extends Component {
                                             onPress={() => this.setSortBy(item)}>
                                             <View style={{ width: wp(100), flexDirection: 'row' }}>
                                                 <View style={{ paddingVertical: 15, width: wp(80), flexDirection: 'row' }}>
-                                                    <_Text fsHeading fwHeading>{item.name}</_Text>
+                                                    <_Text fsHeading fwSmall>{item.name}</_Text>
                                                     <Image source={item.url}
-                                                        style={{ top: 2, marginLeft: hp(2), height: hp(3), width: hp(3) }}
+                                                        style={{ top: 2, marginLeft: hp(2), height: hp(2.8), width: hp(2) }}
                                                     />
                                                 </View>
                                                 <View style={{ paddingVertical: 15, width: wp(20), flexDirection: 'row' }}>
@@ -529,7 +547,100 @@ class ProductGrid extends Component {
                     </Modal>
                 </View>
 
+                {/* FILTER MODAL */}
 
+                <View>
+                    <Modal
+                        isVisible={this.state.isFilterModalVisible}
+                        transparent={true}
+                        onRequestClose={()=> this.toggleFilterModal}
+                        onBackdropPress={() => this.toggleFilterModal()}
+                        style={{ margin: 0 }}>
+                        <TouchableWithoutFeedback
+                            style={{ flex: 1 }}
+                            onPress={() => this.setState({ isFilterModalVisible: false })
+                            }>
+                            <KeyboardAvoidingView
+                                keyboardVerticalOffset={Platform.OS == 'android' ? 0 : 100}
+                                behavior="height"
+                                style={{ flex: 1 }}>
+                                <View style={styles.mainContainer}>
+                                    <TouchableWithoutFeedback
+                                        style={{ flex: 1 }}
+                                        onPress={() => null}>
+                                        <View style={styles.content}>
+                                            <View style={styles.filterContainer}>
+                                                <View style={styles.filter}>
+                                                    <TouchableOpacity
+                                                        onPress={() => alert('FilterPressed')}>
+                                                        <Image
+                                                            style={styles.filterImg}
+                                                            source={require('../../../assets/image/BlueIcons/Filter.png')}
+                                                        />
+                                                    </TouchableOpacity>
+                                                    <Text style={{ fontSize: 16 }}>Filter</Text>
+                                                </View>
+                                                <View>
+                                                    <TouchableOpacity onPress={() => alert('Apply')}>
+                                                        <Text style={{ fontSize: 16 }}>Apply</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.grossWeightContainer}>
+                                                <View style={styles.leftGrossWeight}>
+                                                    <TouchableOpacity
+                                                        onPress={() => alert('grossWeight')}>
+                                                        <Text style={styles.toText}>gross weight</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={styles.rightGrossWeight}>
+                                                    <View>
+                                                        <Text style={styles.toText}>gross weight</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={styles.sliderContainer}>
+                                                <View style={{ flex: 1 }}></View>
+                                                <View style={{ flex: 2 }}>
+                                                    <View>
+                                                        <RangeSlider />
+                                                    </View>
+                                                    <View style={{ marginTop: 25 }}>
+                                                        <Text style={styles.toText}>From</Text>
+                                                        <TextInput
+                                                            style={styles.textInputStyle}
+                                                            onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
+                                                            value={fromValue}
+                                                            placeholder="0.000"
+                                                            placeholderTextColor="#000"
+                                                            keyboardType={'numeric'}
+                                                        />
+                                                    </View>
+                                                    <View style={{ marginTop: 25, marginBottom: 15 }}>
+                                                        <Text style={styles.toText}>To</Text>
+                                                        <TextInput
+                                                            style={styles.textInputStyle}
+                                                            onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
+                                                            value={toValue}
+                                                            placeholder="0.000"
+                                                            placeholderTextColor="#000"
+                                                            keyboardType={'numeric'}
+                                                        />
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <SafeAreaView />
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                </View>
+                            </KeyboardAvoidingView>
+
+                        </TouchableWithoutFeedback>
+
+                    </Modal>
+
+                </View>
             </SafeAreaView>
         );
     }
@@ -543,7 +654,66 @@ const styles = StyleSheet.create({
         width: wp(100),
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    mainContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+    },
+    content: {
+        backgroundColor: '#fff',
+    },
+    text: {
+        color: '#808080',
+    },
+    toText: {
+        fontSize: 16,
+        color: '#808080',
+    },
+    filterContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: 46,
+        alignItems: 'center',
+        marginHorizontal: 16,
+    },
+    filter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    filterImg: {
+        width: 20,
+        height: 20,
+        marginRight: 15,
+    },
+    grossWeightContainer: {
+        flexDirection: 'row',
+        height: 46,
+        alignItems: 'center',
+    },
+    leftGrossWeight: {
+        backgroundColor: '#D3D3D3',
+        flex: 1,
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    rightGrossWeight: {
+        flex: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    border: {
+        borderColor: '#ddd',
+        borderBottomWidth: 0.5,
+    },
+    sliderContainer: {
+        flexDirection: 'row',
+    },
+    textInputStyle: {
+        height: 40,
+        borderColor: 'gray',
+        borderBottomWidth: 1,
+    },
 });
 
 
@@ -559,3 +729,41 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, { getProductSubCategoryData })(ProductGrid);
+
+
+
+class RangeSlider extends React.Component {
+    state = {
+        values: [3, 7],
+    };
+
+    multiSliderValuesChange = values => {
+        this.setState({
+            values,
+        });
+    };
+
+    render() {
+        return (
+            <View>
+                <MultiSlider
+                    values={[this.state.values[0], this.state.values[1]]}
+                    sliderLength={280}
+                    onValuesChange={this.multiSliderValuesChange}
+                    min={0}
+                    max={10}
+                    step={1}
+                />
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginHorizontal: 10,
+                    }}>
+                    <Text>{this.state.values[0]}</Text>
+                    <Text>{this.state.values[1]}</Text>
+                </View>
+            </View>
+        );
+    }
+}

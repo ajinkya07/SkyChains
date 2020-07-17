@@ -129,6 +129,7 @@ class HomePage extends Component {
             }}>
                 {bannerData ?
                     <Swiper
+                        removeClippedSubviews={false}
                         style={{ flexGrow: 1, }}
                         autoplayTimeout={12}
                         ref={(swiper) => { this.swiper = swiper; }}
@@ -197,7 +198,7 @@ class HomePage extends Component {
         let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
 
         return (
-            <TouchableOpacity onPress={() => alert("latest design")}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('CategoryDetails')}>
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
                         <Image
