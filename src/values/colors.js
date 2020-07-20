@@ -14,5 +14,7 @@ export const color = {
     disabledLoginColor:'#D5EAFB',
     borderGray:"#bfbdbd",
     textNote: "#999999",
-    hyperlinkColor:'blue'
+    hyperlinkColor:'blue',
+    golden:'#fbcb84',
+    headerColor:'#EEF8F7'
 }

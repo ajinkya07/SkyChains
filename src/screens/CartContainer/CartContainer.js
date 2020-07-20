@@ -21,7 +21,7 @@ const {width} = Dimensions.get('window');
 
 
 const Tab1 = () => {
-  const [isToggle, setToggleView] = useState(true);
+  const [isToggle, setToggleView] = useState(false);
 
   const setToggleValue = isToggle => {
     isToggle = !isToggle;
@@ -136,7 +136,7 @@ const CartDetails = () => {
 };
 
 const Tab2 = () => {
-  const [isToggle, setToggleView] = useState(true);
+  const [isToggle, setToggleView] = useState(false);
 
   const setToggleValue = isToggle => {
     isToggle = !isToggle;
@@ -369,8 +369,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imgStyle: {
-    width: 60,
-    height: 46,
+    width: hp(8),
+    height: hp(6),
+    
   },
   codeCollectionView: {
     justifyContent: 'center',

@@ -123,8 +123,8 @@ export default class OrderHistoryDetail extends Component {
           RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
           RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
           LeftBtnPress={() => this.props.navigation.goBack()}
-          RightBtnPressOne={()=>alert("order History Details search")}
-          RightBtnPressTwo={()=>alert("order History Details notify")}
+          RightBtnPressOne={()=> this.props.navigation.navigate('SearchScreen')}
+          RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
           rightIconHeight2={hp(3.5)}
           />
           <ScrollView showsVerticalScrollIndicator={false}>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, Text, FlatList,StyleSheet,
+  View, Text, FlatList, StyleSheet,
   ImageBackground, SafeAreaView,
   Image, TouchableOpacity, ActivityIndicator
 }
@@ -52,20 +52,19 @@ class CategoryContainer extends Component {
     };
   }
 
- componentDidMount = () =>{
-   const{ homePageData} = this.props
-   const{ fromSeeMore} = this.state
+  componentDidMount = () => {
+    const { homePageData } = this.props
+    const { fromSeeMore } = this.state
 
-  if (!fromSeeMore && homePageData && (homePageData.collection).length > 0) {
-    console.log("two");
-    this.setState({
-      categories: homePageData.collection
-    })
+    if (!fromSeeMore && homePageData && (homePageData.collection).length > 0) {
+      this.setState({
+        categories: homePageData.collection
+      })
+    }
+
   }
 
- }
 
-  
 
   showToast = (msg, type, duration) => {
     Toast.show({
@@ -91,6 +90,13 @@ class CategoryContainer extends Component {
     );
   };
 
+  getProductGridOrNot = (data) => {
+    if (data.subcategory.length === 0) {
+      this.props.navigation.navigate("ProductGrid", { gridData: data })
+    } else if (data.subcategory.length > 0) {
+      this.props.navigation.navigate("SubCategoryList", { subcategory: data })
+    }
+  }
 
   render() {
     const { categories, fromSeeMore } = this.state
@@ -107,8 +113,8 @@ class CategoryContainer extends Component {
             RightBtnIcon1={require('../../assets/image/BlueIcons/Search.png')}
             RightBtnIcon2={require('../../assets/image/BlueIcons/Notification.png')}
             LeftBtnPress={() => this.props.navigation.goBack()}
-            RightBtnPressOne={() => alert("grid search")}
-            RightBtnPressTwo={() => alert("grid notify")}
+            RightBtnPressOne={()=> this.props.navigation.navigate('SearchScreen')}
+            RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
             rightIconHeight2={hp(3.5)}
             LeftBtnPress={() => this.props.navigation.goBack()}
           />}
@@ -118,13 +124,13 @@ class CategoryContainer extends Component {
           marginBottom: !fromSeeMore ? 0 : hp(9)
         }}>
           <FlatList
-            onRefresh={() => alert('inProgress')}
+            onRefresh={() => alert("inProgress")}
             refreshing={false}
             data={categories && categories}
             showsVerticalScrollIndicator={false}
             keyExtractor={item => item.id}
             renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => alert('ok')}>
+              <TouchableOpacity onPress={() => this.getProductGridOrNot(item)}>
                 <Animatable.View animation="flipInX" style={{ paddingTop: hp(1), paddingBottom: hp(0.5) }}>
                   <View style={{ flexDirection: 'row', flex: 1, marginLeft: hp(2), marginRight: hp(2) }}>
                     <View style={{ flex: 0.25, justifyContent: 'flex-start', }}>
@@ -141,7 +147,7 @@ class CategoryContainer extends Component {
                     <View style={{ alignContent: 'center', justifyContent: 'center', flex: 0.70 }}>
                       <_Text numberOfLines={2} fwPrimary
                         //textColor={color.white}
-                        fsMedium style={{ marginRight: hp(3) }}>
+                        fsMedium style={{ marginRight: hp(3), marginLeft: Platform.OS === 'ios' ? hp(1) : 0 }}>
                         {capitalizeFirstLetter(item.col_name)}
                       </_Text>
                     </View>
@@ -162,7 +168,7 @@ class CategoryContainer extends Component {
           />
         </View>
 
-        {(!categories || categories.length===0) ? this.renderLoader() : null}
+        {(!categories || categories.length === 0) ? this.renderLoader() : null}
 
       </SafeAreaView>
 
@@ -173,11 +179,11 @@ class CategoryContainer extends Component {
 
 const styles = StyleSheet.create({
   loaderView: {
-      position: 'absolute',
-      height: hp(80),
-      width: wp(100),
-      alignItems: 'center',
-      justifyContent: 'center',
+    position: 'absolute',
+    height: hp(80),
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 
@@ -194,3 +200,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, null)(CategoryContainer);
+ 

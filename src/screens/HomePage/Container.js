@@ -31,23 +31,20 @@ class Container extends Component {
 
 
   onNotificationPress() {
-    alert('notify')
-    //this.props.navigation.navigate('Notification');
+    this.props.navigation.navigate('Notification');
   }
 
-  renderSearchbar = () =>{
-    alert('search')
-    //this.props.navigation.navigate('SearchScreen');
+  renderSearchbar = () => {
+    this.props.navigation.navigate('SearchScreen');
 
   }
 
-  renderCall = () =>{
+  renderCall = () => {
     alert('call')
   }
 
   render() {
     const { safeAreaView } = HomePageStyle;
-
 
     return (
       <SafeAreaView style={safeAreaView}>
@@ -60,7 +57,7 @@ class Container extends Component {
           showBack={false}
           showLoading={false}
           onSearchPress={() => this.renderSearchbar()}
-          onCallingPress={()=> this.renderCall()}
+          onCallingPress={() => this.renderCall()}
           onNotificationPress={() => this.onNotificationPress()}>
           <_Tabs />
         </_Container>
