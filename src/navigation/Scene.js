@@ -17,6 +17,9 @@ import ProductGrid from '@productGrid/ProductGrid';
 import SubCategoryList from '@subCategoryList/SubCategoryList';
 import CategoryContainer from '@category/CategoryContainer';
 import CategoryDetails from '@category/CategoryDetails';
+import SearchScreen from '@search/SearchScreen';
+import Notification from '@notification/Notification';
+import Banner from '@homepage/Banner';
 
 
 
@@ -97,7 +100,17 @@ class Scene extends React.Component {
           component={CategoryContainer} options={{ headerShown: false }}
         />
         <Stack.Screen name="CategoryDetails"
-          component={CategoryDetails} options={{ headerShown: false }}
+          component={CategoryDetails} options={{ headerShown: true }}
+        />
+        <Stack.Screen name="SearchScreen"
+          component={SearchScreen} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Banner"
+          component={Banner} options={{ headerShown: false }}
+        />
+
+        <Stack.Screen name="Notification"
+          component={Notification} options={{ headerShown: false }}
         />
 
       </Stack.Navigator>
@@ -150,7 +163,16 @@ class Scene extends React.Component {
           component={CategoryContainer} options={{ headerShown: false }}
         />
         <Stack.Screen name="CategoryDetails"
-          component={CategoryDetails} options={{ headerShown: false }}
+          component={CategoryDetails} options={{ headerShown: true }}
+        />
+        <Stack.Screen name="SearchScreen"
+          component={SearchScreen} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Banner"
+          component={Banner} options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Notification"
+          component={Notification} options={{ headerShown: false }}
         />
 
       </Stack.Navigator>

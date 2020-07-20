@@ -19,6 +19,7 @@ import { Toast } from 'native-base';
 import Modal from 'react-native-modal';
 import { strings } from '@values/strings'
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import FastImage from 'react-native-fast-image';
 
 
 
@@ -53,7 +54,9 @@ class ProductGrid extends Component {
 
             gridData: [],
             loadingExtraData: false,
-            page: 0
+            page: 0,
+            isProductImageModalVisibel: false,
+            productImageToBeDisplayed: ''
 
         };
         userId = global.userId;
@@ -104,7 +107,7 @@ class ProductGrid extends Component {
             if (productGridData.products && productGridData.products.length > 0) {
                 this.setState({
                     //gridData: productGridData,
-                    gridData: this.state.page === 1 ? productGridData.products : [...this.state.gridData, ...productGridData.products]
+                    gridData: this.state.page === 0 ? productGridData.products : [...this.state.gridData, ...productGridData.products]
 
                 })
             } else {
@@ -142,18 +145,29 @@ class ProductGrid extends Component {
             gridImage, gridDesign, border, iconView
         } = ProductGridStyle;
 
-        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
+        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <TouchableOpacity onPress={() => alert("latest design")}>
                 <View style={gridDesign}>
                     <View style={gridItemDesign}>
-                        <Image
+                        <TouchableOpacity onLongPress={() => this.showProductImageModal(item)}>
+                            {/* <Image
                             resizeMode={'cover'}
                             style={gridImage}
                             defaultSource={require('../../../assets/image/default.png')}
                             source={{ uri: url + item.image_name }}
-                        />
+                        /> */}
+                            <FastImage
+                                style={gridImage}
+                                source={{
+                                    uri: url + item.image_name,
+                                    // cache: FastImage.cacheControl.cacheOnly,
+                                }}
+
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                        </TouchableOpacity>
                         <View style={latestTextView}>
                             <View style={{ width: wp(15), marginLeft: 5 }}>
                                 <_Text numberOfLines={1} fsPrimary >Code</_Text>
@@ -165,17 +179,17 @@ class ProductGrid extends Component {
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
-                            <View style={{ width: wp(16), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Gross Wt</_Text>
+                            <View style={{ marginLeft: 5 }}>
+                                <_Text numberOfLines={1} fsPrimary >Gross Wt.</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                            <View style={{ marginRight: 10, width: wp(22), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                                 <_Text numberOfLines={1} fsPrimary >{parseInt(item.value[1]).toFixed(2)}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
-                            <View style={{ width: wp(15), marginLeft: 5 }}>
+                            <View style={{ width: wp(16), marginLeft: 5 }}>
                                 <_Text numberOfLines={1} fsPrimary >Name</_Text>
                             </View>
                             <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
@@ -231,6 +245,15 @@ class ProductGrid extends Component {
         );
     }
 
+
+    showProductImageModal = (item) => {
+        this.setState({
+            productImageToBeDisplayed: item,
+            isProductImageModalVisibel: true
+        })
+    }
+
+
     showNoDataFound = (message) => {
         return (
             <View style={{
@@ -247,54 +270,6 @@ class ProductGrid extends Component {
     }
 
 
-    sortByModal = () => {
-
-        const { isSortByModal } = this.state
-
-        return (
-            <View>
-                <Modal
-                    style={{
-                        justifyContent: 'flex-end',
-                        marginBottom: 0,
-                        marginLeft: 0,
-                        marginRight: 0,
-                    }}
-                    isVisible={this.state.isSortByModal}
-                    onRequestClose={this.closeSortByModal}
-                    onBackdropPress={() => this.closeSortByModal()}>
-                    <SafeAreaView>
-                        <View
-                            style={{
-                                height: hp(40),
-                                backgroundColor: 'gray',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                            <Text>okoj</Text>
-                            {/* <FlatList
-                                data={categoryDatafromState}
-                                showsHorizontalScrollIndicator={false}
-                                showsVerticalScrollIndicator={false}
-                                //ItemSeparatorComponent={this.categorySeperator}
-                                renderItem={({ item }) => (
-                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-                                        <TouchableOpacity
-                                            hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
-                                            onPress={() => this.setSortBy(item)}>
-                                            <_Text fsPrimary fwPrimary>{item.name}</_Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            /> */}
-                        </View>
-                    </SafeAreaView>
-                </Modal>
-            </View>
-
-        );
-    };
-
     openSortByModal = () => {
         this.setState({
             isSortByModal: true
@@ -308,7 +283,7 @@ class ProductGrid extends Component {
     }
 
     setSortBy = (item) => {
-        const { categoryData } = this.state
+        const { categoryData, page } = this.state
 
         this.closeSortByModal()
         this.setState({ selectedSortById: item.id })
@@ -319,7 +294,7 @@ class ProductGrid extends Component {
         data.append('collection_id', categoryData.id);
         data.append('user_id', userId);
         data.append('record', 10);
-        data.append('page_no', 0);
+        data.append('page_no', page);
         data.append('sort_by', "2");
 
         this.props.getProductSubCategoryData(data)
@@ -403,7 +378,10 @@ class ProductGrid extends Component {
 
 
     render() {
-        const { categoryData, gridData, isSortByModal, selectedSortById, toValue, fromValue } = this.state
+        const { categoryData, gridData, isSortByModal,isFilterModalVisible,
+            selectedSortById, toValue, fromValue, productImageToBeDisplayed, isProductImageModalVisibel } = this.state
+
+        let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
@@ -411,9 +389,8 @@ class ProductGrid extends Component {
                     Title={categoryData.col_name}
                     RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
                     RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
-                    LeftBtnPress={() => this.props.navigation.goBack()}
-                    RightBtnPressOne={() => alert("grid search")}
-                    RightBtnPressTwo={() => alert("grid notify")}
+                    RightBtnPressOne={()=> this.props.navigation.navigate('SearchScreen')}
+                    RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
                     rightIconHeight2={hp(3.5)}
                     LeftBtnPress={() => this.props.navigation.goBack()}
                 />
@@ -506,11 +483,23 @@ class ProductGrid extends Component {
                                 style={{
                                     backgroundColor: 'white',
                                     justifyContent: 'center',
-                                    paddingHorizontal: hp(2),
+                                    paddingHorizontal: hp(1),
                                     borderColor: color.gray,
                                     borderWidth: 0.5,
                                     borderTopLeftRadius: 10, borderTopRightRadius: 10
                                 }}>
+                                <View style={{marginTop:5, flexDirection: 'row', justifyContent: 'space-between',alignItems:'center' }}>
+                                    <Text style={{ fontSize: 20 }}>Sort By</Text>
+
+                                    <TouchableOpacity onPress={() => this.closeSortByModal()}>
+                                        <Image
+                                            style={{ height: hp(2.3), width: hp(2.3), marginTop: 3 }}
+                                            source={require('../../../assets/image/BlueIcons/Cross.png')}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(100)}}/>
+
                                 <FlatList
                                     data={sortByData}
                                     showsHorizontalScrollIndicator={false}
@@ -553,8 +542,8 @@ class ProductGrid extends Component {
                     <Modal
                         isVisible={this.state.isFilterModalVisible}
                         transparent={true}
-                        onRequestClose={()=> this.toggleFilterModal}
-                        onBackdropPress={() => this.toggleFilterModal()}
+                        onRequestClose={() => this.setState({isFilterModalVisible:false})}
+                        onBackdropPress={() => this.setState({isFilterModalVisible:false})}
                         style={{ margin: 0 }}>
                         <TouchableWithoutFeedback
                             style={{ flex: 1 }}
@@ -578,11 +567,11 @@ class ProductGrid extends Component {
                                                             source={require('../../../assets/image/BlueIcons/Filter.png')}
                                                         />
                                                     </TouchableOpacity>
-                                                    <Text style={{ fontSize: 16 }}>Filter</Text>
+                                                    <Text style={{ fontSize: 20 }}>Filter</Text>
                                                 </View>
                                                 <View>
                                                     <TouchableOpacity onPress={() => alert('Apply')}>
-                                                        <Text style={{ fontSize: 16 }}>Apply</Text>
+                                                        <Text style={{ fontSize: 20 }}>Apply</Text>
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
@@ -639,8 +628,48 @@ class ProductGrid extends Component {
                         </TouchableWithoutFeedback>
 
                     </Modal>
-
                 </View>
+
+                {/* LONG PRESS IMAGE MODAL */}
+
+                {this.state.isProductImageModalVisibel &&
+                    <View>
+                        <Modal style={{ justifyContent: 'center' }}
+                            isVisible={this.state.isProductImageModalVisibel}
+                            onRequestClose={() => this.setState({ isProductImageModalVisibel: false })}
+                            onBackdropPress={() => this.setState({ isProductImageModalVisibel: false })}
+                            onBackButtonPress={() => this.setState({ isProductImageModalVisibel: false })}
+                        >
+                            <SafeAreaView>
+                                <View style={{
+                                    height: hp(42), backgroundColor: 'white', alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: 10
+                                }}>
+                                    <_Text fsMedium style={{ marginTop: hp(0.5) }}>Code: {productImageToBeDisplayed.collection_sku_code}</_Text>
+                                    <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(90)}}/>
+                                    {/* <Image
+                                    source={{ uri: imageUrl + productImageToBeDisplayed.image_name }}
+                                    defaultSource={require('../../../assets/image/default.png')}
+                                    style={{
+                                        height: hp(30), width: wp(90), marginTop: hp(1),
+                                    }}
+                                    resizeMode='cover'
+                                /> */}
+                                    <FastImage
+                                        style={{
+                                            height: hp(34), width: wp(90), marginTop: hp(0.5),
+                                        }}
+                                        source={{ uri: imageUrl + productImageToBeDisplayed.image_name }}
+                                        resizeMode={FastImage.resizeMode.cover}
+                                    />
+                                </View>
+                            </SafeAreaView>
+                        </Modal>
+                    </View>
+                }
+
+
             </SafeAreaView>
         );
     }
@@ -684,6 +713,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         marginRight: 15,
+        marginTop:2
     },
     grossWeightContainer: {
         flexDirection: 'row',

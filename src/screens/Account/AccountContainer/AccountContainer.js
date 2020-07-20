@@ -84,9 +84,12 @@ export default class AccountContainer extends Component {
   showAppVersion = ()=>{
     Toast.show({
       text:'App version:  ' + version,
-      color:'warning',
-      duration:3500
-    })
+      // buttonText: "Okay",
+      // textStyle: { color: "fbcb84" },
+      // buttonTextStyle: { color: "#fbcb84" },
+      // buttonStyle: { backgroundColor: "#FFFFFF" },
+      duration:5000
+})
   }
   render() {
     console.log("version",version);

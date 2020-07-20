@@ -16,13 +16,12 @@ class _Container extends Component {
             showNotification,showCalling,showLogo,
             onNotificationPress, showBack, onSearchPress, onCallingPress, profilePic } = this.props
         const { mainContainer } = containerStyle
-
         return (
             <Container style={mainContainer} >
                 {
                     showHeader && <_Header 
                         title={title}
-                        showHeader={showHeader}
+                       // showHeader={showHeader}
                         showSearch={showSearch}
                         showNotification={showNotification}
                         showCalling={showCalling}
@@ -42,3 +41,13 @@ class _Container extends Component {
 }
 
 export default _Container
+
+// {
+//     showHeader &&  
+//     <_Header title={title}
+//      profilePic={profilePic}
+//       showSearch={showSearch} 
+//        showBack={showBack} 
+//        onSearchPress={onSearchPress} 
+//        onProfilePress={onProfilePress} ></_Header> 
+// }

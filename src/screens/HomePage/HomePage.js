@@ -17,6 +17,7 @@ import _CustomButton from '@customButton/_CustomButton'
 import * as Animatable from 'react-native-animatable';
 import { getHomePageData } from '@homepage/HomePageAction';
 import { connect } from 'react-redux';
+import FastImage from 'react-native-fast-image';
 
 var userId = ''
 
@@ -62,6 +63,8 @@ class HomePage extends Component {
             isModalVisible: false,
             successHomePageVersion: 0,
             errorHomePageVersion: 0,
+            isImageModalVisibel: false,
+            imageToBeDisplayed: ''
         };
         userId = global.userId;
 
@@ -111,13 +114,25 @@ class HomePage extends Component {
         let baseUrl = homePageData && homePageData.base_path
 
         return (
-            <View key={index}>
-                <Image style={{ height: hp(25), width: wp(100) }}
-                    source={{ uri: baseUrl + data.brand_image }}
-                    defaultSource={require('../../assets/image/default.png')}
-                    resizeMode='cover'
-                />
-            </View>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Banner', { bannerData: data, baseUrl: baseUrl })}>
+                <View key={index}>
+                    {/* <Image style={{ height: hp(25), width: wp(100) }}
+                        source={{ uri: baseUrl + data.brand_image }}
+                        defaultSource={require('../../assets/image/default.png')}
+                        resizeMode='cover'
+                    /> */}
+                    <FastImage
+                        style={{ height: hp(25), width: wp(100) }}
+                        source={{
+                            uri: baseUrl + data.brand_image,
+                            // cache: FastImage.cacheControl.cacheOnly,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                    />
+
+                </View>
+            </TouchableOpacity>
+
         )
     }
 
@@ -131,7 +146,7 @@ class HomePage extends Component {
                     <Swiper
                         removeClippedSubviews={false}
                         style={{ flexGrow: 1, }}
-                        autoplayTimeout={12}
+                        autoplayTimeout={10}
                         ref={(swiper) => { this.swiper = swiper; }}
                         index={this.state.currentPage}
                         autoplay={true}
@@ -195,18 +210,22 @@ class HomePage extends Component {
         const { latestDesign, latestTextView, latestTextView2,
             latestImage, horizontalLatestDesign, border, iconView
         } = HomePageStyle;
-        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/small_image/'
+        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('CategoryDetails')}>
+            <TouchableOpacity
+                onPress={() => alert("ok")}>
+                {/* onPress={() => this.props.navigation.navigate('CategoryDetails')}> */}
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
-                        <Image
-                            // resizeMode={'cover'}
-                            style={latestImage}
-                            defaultSource={require('../../assets/image/default.png')}
-                            source={{ uri: url + item.images[0].image_name }}
-                        />
+                        <TouchableOpacity onLongPress={() => this.showImageModal(item)}>
+                            <Image
+                                // resizeMode={'cover'}
+                                style={latestImage}
+                                defaultSource={require('../../assets/image/default.png')}
+                                source={{ uri: url + item.images[0].image_name }}
+                            />
+                        </TouchableOpacity>
                         <View style={latestTextView}>
                             <View style={{ width: wp(14), marginLeft: 5 }}>
                                 <_Text numberOfLines={1} fsPrimary >Code</_Text>
@@ -265,8 +284,8 @@ class HomePage extends Component {
                                     />
                                 </TouchableOpacity>
                                 <_Text numberOfLines={1}
-                                textColor={color.brandColor}
-                                fsMedium fwHeading >{item.in_cart}
+                                    textColor={color.brandColor}
+                                    fsMedium fwHeading >{item.in_cart}
                                 </_Text>
 
                                 <TouchableOpacity onPress={() => alert('cart')}>
@@ -283,6 +302,13 @@ class HomePage extends Component {
                 </View>
             </TouchableOpacity>
         );
+    }
+
+    showImageModal = (item) => {
+        this.setState({
+            imageToBeDisplayed: item,
+            isImageModalVisibel: true
+        })
     }
 
 
@@ -320,11 +346,15 @@ class HomePage extends Component {
         } = HomePageStyle;
 
         const { homePageData, isFetching } = this.props
+        const { imageToBeDisplayed } = this.state
+
         const bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
 
         const collection = homePageData && homePageData.collection ? homePageData.collection : []
 
         const finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+
+        let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <View style={mainContainer}>
@@ -495,6 +525,42 @@ class HomePage extends Component {
 
                         </View>
                     }
+
+
+                    {/*  IMAGE ON LONG PRESS */}
+
+                    {this.state.isImageModalVisibel &&
+                        <View>
+                            <Modal style={{ justifyContent: 'center' }}
+                                isVisible={this.state.isImageModalVisibel}
+                                onRequestClose={() => this.setState({ isImageModalVisibel: false })}
+                                onBackdropPress={() => this.setState({ isImageModalVisibel: false })}
+                                onBackButtonPress={() => this.setState({ isImageModalVisibel: false })}
+                            >
+                                <SafeAreaView>
+                                    <View style={{
+                                        height: hp(42), backgroundColor: 'white', alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: 10
+                                    }}>
+                                        <_Text fsMedium style={{marginTop:hp(0.5)}}>Code: {imageToBeDisplayed.collection_sku_code}</_Text>
+                                        <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(90)}}/>
+                                        <Image
+                                            source={{ uri: imageUrl + imageToBeDisplayed.images[0].image_name }}
+                                            defaultSource={require('../../assets/image/default.png')}
+                                            style={{
+                                                height: hp(35), width: wp(90),marginTop:hp(1),
+                                            }}
+                                            resizeMode='cover'
+                                        />
+                                    </View>
+                                </SafeAreaView>
+                            </Modal>
+                        </View>
+                    }
+
+
+
 
                 </ScrollView>
 

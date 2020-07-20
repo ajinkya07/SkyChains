@@ -69,7 +69,7 @@ export default {
     borderWidth: 0.5, width: wp(40),
   },
   iconView: {
-    width: wp(48), marginTop: hp(2.5),
+    width: wp(48), marginTop: hp(2.2),
     flexDirection: 'row',
     justifyContent: 'space-around'
   }

@@ -87,8 +87,8 @@ export default class SubCategoryList extends Component {
                         RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
                         RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
                         LeftBtnPress={() => this.props.navigation.goBack()}
-                        RightBtnPressOne={() => alert("grid search")}
-                        RightBtnPressTwo={() => alert("grid notify")}
+                        RightBtnPressOne={()=> this.props.navigation.navigate('SearchScreen')}
+                        RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
                         rightIconHeight2={hp(3.5)}
                         LeftBtnPress={() => this.props.navigation.goBack()}
                     />

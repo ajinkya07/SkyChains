@@ -19,6 +19,8 @@ const BG_IMAGE_MAX_HEIGHT = width * 0.9026162791;
 const MINUS_TOP = BG_IMAGE_MAX_HEIGHT;
 const MINUS_TOP_LESS = MINUS_TOP - 49;
 
+
+
 const CategoryDetails = props => {
   const [scrollY, setscrollY] = useState(new Animated.Value(0));
   const headerHeight = useHeaderHeight();
