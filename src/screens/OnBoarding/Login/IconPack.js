@@ -33,5 +33,6 @@ export default {
   PLUS_ICON: require('../../../assets/image/Account/Plus.png'),
   EDIT: require('../../../assets/image/BlueIcons/Edit.png'),
   DELETE: require('../../../assets/image/BlueIcons/Delete.png'),
+  CLOSE: require('../../../assets/image/close1.png'),
 
 };

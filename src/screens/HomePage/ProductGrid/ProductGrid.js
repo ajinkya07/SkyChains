@@ -14,8 +14,11 @@ import _Text from '@text/_Text';
 import { connect } from 'react-redux';
 import { color } from '@values/colors';
 import ProductGridStyle from '@productGrid/ProductGridStyle';
-import { getProductSubCategoryData } from '@productGrid/ProductGridAction';
-import { Toast } from 'native-base';
+import {
+    getProductSubCategoryData, getSortByParameters,
+    getfilterParameters
+} from '@productGrid/ProductGridAction';
+import { Toast, CheckBox } from 'native-base';
 import Modal from 'react-native-modal';
 import { strings } from '@values/strings'
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -25,14 +28,6 @@ import FastImage from 'react-native-fast-image';
 
 var userId = ''
 
-const sortByData = [
-    { id: '0', name: 'Code Ascending', url: require('../../../assets/image/uparrow.png') },
-    { id: '1', name: 'Code Descending', url: require('../../../assets/image/down-arrow.png') },
-    { id: '2', name: 'Weight Ascending', url: require('../../../assets/image/uparrow.png') },
-    { id: '3', name: 'Code Descending', url: require('../../../assets/image/down-arrow.png') },
-    { id: '4', name: 'Latest Ascending', url: require('../../../assets/image/uparrow.png') }
-
-]
 
 class ProductGrid extends Component {
     constructor(props) {
@@ -56,8 +51,15 @@ class ProductGrid extends Component {
             loadingExtraData: false,
             page: 0,
             isProductImageModalVisibel: false,
-            productImageToBeDisplayed: ''
+            productImageToBeDisplayed: '',
 
+            successSortByParamsVersion: 0,
+            errorSortByParamsVersion: 0,
+            sortList: [],
+
+            successFilterParamsVersion: 0,
+            errorFilterParamsVersion: 0,
+          
         };
         userId = global.userId;
 
@@ -78,10 +80,22 @@ class ProductGrid extends Component {
 
             this.props.getProductSubCategoryData(data)
         }
+        let data2 = new FormData();
+        data2.append('table', 'product_master');
+        data2.append('user_id', userId);
+        data2.append('mode_type', 'all_filter');
+
+
+        this.props.getSortByParameters()
+        this.props.getfilterParameters(data2)
+
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        const { successProductGridVersion, errorProductGridVersion } = nextProps;
+        const { successProductGridVersion, errorProductGridVersion,
+            successSortByParamsVersion, errorSortByParamsVersion,
+            successFilterParamsVersion,errorFilterParamsVersion
+        } = nextProps;
         let newState = null;
 
         if (successProductGridVersion > prevState.successProductGridVersion) {
@@ -96,13 +110,36 @@ class ProductGrid extends Component {
                 errorProductGridVersion: nextProps.errorProductGridVersion,
             };
         }
+        if (successSortByParamsVersion > prevState.successSortByParamsVersion) {
+            newState = {
+                ...newState,
+                successSortByParamsVersion: nextProps.successSortByParamsVersion,
+            };
+        }
+        if (errorSortByParamsVersion > prevState.errorSortByParamsVersion) {
+            newState = {
+                ...newState,
+                errorSortByParamsVersion: nextProps.errorSortByParamsVersion,
+            };
+        }
+        if (successFilterParamsVersion > prevState.successFilterParamsVersion) {
+            newState = {
+                ...newState,
+                successFilterParamsVersion: nextProps.successFilterParamsVersion,
+            };
+        }
+        if (errorFilterParamsVersion > prevState.errorFilterParamsVersion) {
+            newState = {
+                ...newState,
+                errorFilterParamsVersion: nextProps.errorFilterParamsVersion,
+            };
+        }
+
         return newState;
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        const { productGridData } = this.props;
-        console.log("productGridData", productGridData);
-
+        const { productGridData, sortByParamsData } = this.props;
         if (this.state.successProductGridVersion > prevState.successProductGridVersion) {
             if (productGridData.products && productGridData.products.length > 0) {
                 this.setState({
@@ -149,7 +186,13 @@ class ProductGrid extends Component {
 
         return (
             <TouchableOpacity onPress={() => alert("latest design")}>
-                <View style={gridDesign}>
+                <View style={{
+                    backgroundColor: color.white,
+                    height: item.value[2] && (item.value[2]).length > 11 ? hp(44) : hp(42), width: wp(46),
+                    borderColor: color.gray,
+                    borderWidth: 0.4, borderRadius: 15,
+                    marginHorizontal: hp(1),
+                }}>
                     <View style={gridItemDesign}>
                         <TouchableOpacity onLongPress={() => this.showProductImageModal(item)}>
                             {/* <Image
@@ -170,30 +213,30 @@ class ProductGrid extends Component {
                         </TouchableOpacity>
                         <View style={latestTextView}>
                             <View style={{ width: wp(15), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Code</_Text>
+                                <_Text numberOfLines={1} fsSmall >Code</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.value[0]}</_Text>
+                            <View style={{ marginRight: 10, width: wp(27), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor} >{item.value[0]}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
                             <View style={{ marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Gross Wt.</_Text>
+                                <_Text numberOfLines={1} fsSmall >Gross Wt.</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(22), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{parseInt(item.value[1]).toFixed(2)}</_Text>
+                            <View style={{ marginRight: 8, width: wp(24), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor}>{parseInt(item.value[1]).toFixed(2)}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
                             <View style={{ width: wp(16), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Name</_Text>
+                                <_Text numberOfLines={1} fsSmall >Name</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={2} fsPrimary >{item.value[2]}</_Text>
+                            <View style={{ marginRight: 10, width: wp(26), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={2} fsPrimary textColor={color.brandColor}>{item.value[2]}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
@@ -203,14 +246,14 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => alert('wishlist')}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Heart.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => alert('cart')}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/DarkCart.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -222,7 +265,7 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => alert('wishlist')}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Minus.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -233,7 +276,7 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => alert('cart')}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Plus.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -286,7 +329,6 @@ class ProductGrid extends Component {
         const { categoryData, page } = this.state
 
         this.closeSortByModal()
-        this.setState({ selectedSortById: item.id })
 
         const data = new FormData();
         data.append('table', 'product_master');
@@ -294,10 +336,13 @@ class ProductGrid extends Component {
         data.append('collection_id', categoryData.id);
         data.append('user_id', userId);
         data.append('record', 10);
-        data.append('page_no', page);
-        data.append('sort_by', "2");
+        data.append('page_no', 0);
+        data.append('sort_by', item.value);
 
         this.props.getProductSubCategoryData(data)
+
+        this.setState({ selectedSortById: item.value })
+
     }
 
 
@@ -314,7 +359,6 @@ class ProductGrid extends Component {
     };
 
     LoadMoreData = () => {
-        console.log("LoadMoreData");
         this.setState({
             page: this.state.page + 1
         }, () => this.LoadRandomData())
@@ -376,10 +420,20 @@ class ProductGrid extends Component {
         });
     }
 
+    setFromToSliderValues = (values) => {
+        this.setState({
+            fromValue: values[0].toString(),
+            toValue: values[1].toString()
+        })
+    }
 
     render() {
-        const { categoryData, gridData, isSortByModal,isFilterModalVisible,
-            selectedSortById, toValue, fromValue, productImageToBeDisplayed, isProductImageModalVisibel } = this.state
+        const { categoryData, gridData, isSortByModal, isFilterModalVisible,
+            selectedSortById, toValue, fromValue, productImageToBeDisplayed,
+            sortList,
+            isProductImageModalVisibel } = this.state
+
+        const { sortByParamsData } = this.props
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
@@ -389,8 +443,8 @@ class ProductGrid extends Component {
                     Title={categoryData.col_name}
                     RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
                     RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
-                    RightBtnPressOne={()=> this.props.navigation.navigate('SearchScreen')}
-                    RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
+                    RightBtnPressOne={() => this.props.navigation.navigate('SearchScreen')}
+                    RightBtnPressTwo={() => this.props.navigation.navigate('Notification')}
                     rightIconHeight2={hp(3.5)}
                     LeftBtnPress={() => this.props.navigation.goBack()}
                 />
@@ -486,22 +540,29 @@ class ProductGrid extends Component {
                                     paddingHorizontal: hp(1),
                                     borderColor: color.gray,
                                     borderWidth: 0.5,
-                                    borderTopLeftRadius: 10, borderTopRightRadius: 10
                                 }}>
-                                <View style={{marginTop:5, flexDirection: 'row', justifyContent: 'space-between',alignItems:'center' }}>
-                                    <Text style={{ fontSize: 20 }}>Sort By</Text>
+                                <View style={{
+                                    marginTop: 13, marginHorizontal: 5,
+                                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
+                                }}>
 
-                                    <TouchableOpacity onPress={() => this.closeSortByModal()}>
+                                    <Text style={{ fontSize: 20, fontWeight: '400' }}>Sort By</Text>
+
+                                    <TouchableOpacity
+                                        hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+                                        onPress={() => this.closeSortByModal()}>
                                         <Image
-                                            style={{ height: hp(2.3), width: hp(2.3), marginTop: 3 }}
+                                            style={{ alignSelf: 'flex-end', height: hp(2.3), width: hp(2.3), marginTop: 3 }}
                                             source={require('../../../assets/image/BlueIcons/Cross.png')}
                                         />
                                     </TouchableOpacity>
+
                                 </View>
-                                <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(100)}}/>
+
+                                <View style={{ marginTop: 10, borderBottomColor: 'gray', borderBottomWidth: 1.2, width: wp(100) }} />
 
                                 <FlatList
-                                    data={sortByData}
+                                    data={sortByParamsData ? sortByParamsData : []}
                                     showsHorizontalScrollIndicator={false}
                                     showsVerticalScrollIndicator={false}
                                     ItemSeparatorComponent={this.seperator}
@@ -510,20 +571,32 @@ class ProductGrid extends Component {
                                             hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
                                             onPress={() => this.setSortBy(item)}>
                                             <View style={{ width: wp(100), flexDirection: 'row' }}>
-                                                <View style={{ paddingVertical: 15, width: wp(80), flexDirection: 'row' }}>
-                                                    <_Text fsHeading fwSmall>{item.name}</_Text>
-                                                    <Image source={item.url}
-                                                        style={{ top: 2, marginLeft: hp(2), height: hp(2.8), width: hp(2) }}
-                                                    />
+                                                <View style={{ paddingVertical: 12, width: wp(80), flexDirection: 'row' }}>
+                                                    <_Text fsHeading fwSmall>{item.label}</_Text>
+                                                    {item.type === "desc" ?
+                                                        <Image source={require('../../../assets/image/down-arrow.png')}
+                                                            style={{ top: 2, marginLeft: hp(2), height: hp(2.2), width: hp(2) }}
+                                                        />
+                                                        :
+                                                        item.type === "asc" ?
+                                                            <Image source={require('../../../assets/image/uparrow.png')}
+                                                                style={{ top: 2, marginLeft: hp(2), height: hp(2.2), width: hp(2) }}
+                                                            />
+                                                            : null
+                                                    }
                                                 </View>
-                                                <View style={{ paddingVertical: 15, width: wp(20), flexDirection: 'row' }}>
-                                                    {item.id === selectedSortById &&
+                                                <View style={{ paddingVertical: 12, width: wp(20), flexDirection: 'row' }}>
+                                                    {item.value === selectedSortById &&
                                                         <Image source={require('../../../assets/image/BlueIcons/Tick.png')}
                                                             style={{
                                                                 alignItems: 'flex-end',
-                                                                marginLeft: hp(1), height: hp(3), width: hp(4)
+                                                                marginLeft: hp(1), height: hp(2.5), width: hp(3)
                                                             }}
                                                         />
+                                                        // <CheckBox
+                                                        //     color={color.brandColor}
+                                                        //     checked={item.value === selectedSortById ? true : false} />
+
                                                     }
                                                 </View>
                                             </View>
@@ -542,8 +615,8 @@ class ProductGrid extends Component {
                     <Modal
                         isVisible={this.state.isFilterModalVisible}
                         transparent={true}
-                        onRequestClose={() => this.setState({isFilterModalVisible:false})}
-                        onBackdropPress={() => this.setState({isFilterModalVisible:false})}
+                        onRequestClose={() => this.setState({ isFilterModalVisible: false })}
+                        onBackdropPress={() => this.setState({ isFilterModalVisible: false })}
                         style={{ margin: 0 }}>
                         <TouchableWithoutFeedback
                             style={{ flex: 1 }}
@@ -560,13 +633,13 @@ class ProductGrid extends Component {
                                         <View style={styles.content}>
                                             <View style={styles.filterContainer}>
                                                 <View style={styles.filter}>
-                                                    <TouchableOpacity
+                                                    {/* <TouchableOpacity
                                                         onPress={() => alert('FilterPressed')}>
                                                         <Image
                                                             style={styles.filterImg}
                                                             source={require('../../../assets/image/BlueIcons/Filter.png')}
                                                         />
-                                                    </TouchableOpacity>
+                                                    </TouchableOpacity> */}
                                                     <Text style={{ fontSize: 20 }}>Filter</Text>
                                                 </View>
                                                 <View>
@@ -576,45 +649,51 @@ class ProductGrid extends Component {
                                                 </View>
                                             </View>
                                             <View style={styles.border} />
+
                                             <View style={styles.grossWeightContainer}>
                                                 <View style={styles.leftGrossWeight}>
                                                     <TouchableOpacity
                                                         onPress={() => alert('grossWeight')}>
-                                                        <Text style={styles.toText}>gross weight</Text>
+                                                        <Text style={styles.toText}>Gross weight</Text>
                                                     </TouchableOpacity>
                                                 </View>
                                                 <View style={styles.rightGrossWeight}>
                                                     <View>
-                                                        <Text style={styles.toText}>gross weight</Text>
+                                                        <Text style={styles.toText}>Gross weight</Text>
                                                     </View>
                                                 </View>
                                             </View>
+                                     
+
                                             <View style={styles.sliderContainer}>
                                                 <View style={{ flex: 1 }}></View>
                                                 <View style={{ flex: 2 }}>
                                                     <View>
-                                                        <RangeSlider />
+                                                        <RangeSlider
+                                                            setsliderValues={this.setFromToSliderValues}
+                                                        />
                                                     </View>
                                                     <View style={{ marginTop: 25 }}>
                                                         <Text style={styles.toText}>From</Text>
                                                         <TextInput
+                                                            editable={false}
                                                             style={styles.textInputStyle}
-                                                            onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
+                                                            //onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
                                                             value={fromValue}
                                                             placeholder="0.000"
                                                             placeholderTextColor="#000"
-                                                            keyboardType={'numeric'}
                                                         />
                                                     </View>
                                                     <View style={{ marginTop: 25, marginBottom: 15 }}>
                                                         <Text style={styles.toText}>To</Text>
                                                         <TextInput
+                                                            editable={false}
                                                             style={styles.textInputStyle}
-                                                            onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
+                                                            // onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
                                                             value={toValue}
                                                             placeholder="0.000"
                                                             placeholderTextColor="#000"
-                                                            keyboardType={'numeric'}
+                                                        // keyboardType={'numeric'}
                                                         />
                                                     </View>
                                                 </View>
@@ -647,7 +726,7 @@ class ProductGrid extends Component {
                                     borderRadius: 10
                                 }}>
                                     <_Text fsMedium style={{ marginTop: hp(0.5) }}>Code: {productImageToBeDisplayed.collection_sku_code}</_Text>
-                                    <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(90)}}/>
+                                    <View style={{ marginTop: 5, borderBottomColor: 'gray', borderBottomWidth: 1, width: wp(90) }} />
                                     {/* <Image
                                     source={{ uri: imageUrl + productImageToBeDisplayed.image_name }}
                                     defaultSource={require('../../../assets/image/default.png')}
@@ -713,7 +792,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         marginRight: 15,
-        marginTop:2
+        marginTop: 2
     },
     grossWeightContainer: {
         flexDirection: 'row',
@@ -743,6 +822,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: 'gray',
         borderBottomWidth: 1,
+        fontSize: 16
     },
 });
 
@@ -755,10 +835,23 @@ function mapStateToProps(state) {
         successProductGridVersion: state.productGridReducer.successProductGridVersion,
         errorProductGridVersion: state.productGridReducer.errorProductGridVersion,
         productGridData: state.productGridReducer.productGridData,
+
+        successSortByParamsVersion: state.productGridReducer.successSortByParamsVersion,
+        errorSortByParamsVersion: state.productGridReducer.errorSortByParamsVersion,
+        sortByParamsData: state.productGridReducer.sortByParamsData,
+
+        successFilterParamsVersion: state.productGridReducer.successFilterParamsVersion,
+        errorFilterParamsVersion: state.productGridReducer.errorFilterParamsVersion,
+        filterParamsData: state.productGridReducer.filterParamsData,
+
+      
     };
 }
 
-export default connect(mapStateToProps, { getProductSubCategoryData })(ProductGrid);
+export default connect(mapStateToProps, {
+    getProductSubCategoryData, getSortByParameters,
+    getfilterParameters
+})(ProductGrid);
 
 
 
@@ -771,6 +864,7 @@ class RangeSlider extends React.Component {
         this.setState({
             values,
         });
+        this.props.setsliderValues(values)
     };
 
     render() {
@@ -790,8 +884,8 @@ class RangeSlider extends React.Component {
                         justifyContent: 'space-between',
                         marginHorizontal: 10,
                     }}>
-                    <Text>{this.state.values[0]}</Text>
-                    <Text>{this.state.values[1]}</Text>
+                    <Text style={{ fontSize: 16 }}>{this.state.values[0]}</Text>
+                    <Text style={{ fontSize: 16 }}>{this.state.values[1]}</Text>
                 </View>
             </View>
         );

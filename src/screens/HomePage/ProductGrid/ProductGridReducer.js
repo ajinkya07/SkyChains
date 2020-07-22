@@ -3,7 +3,17 @@ import {
   PRODUCT_GRID_DATA_SUCCESS,
   PRODUCT_GRID_DATA_ERROR,
   PRODUCT_GRID_DATA_RESET_REDUCER,
-  
+
+  SORT_BY_PARAMS_DATA,
+  SORT_BY_PARAMS_DATA_SUCCESS,
+  SORT_BY_PARAMS_DATA_ERROR,
+  SORT_BY_PARAMS_DATA_RESET_REDUCER,
+
+  FILTER_PARAMS_DATA,
+  FILTER_PARAMS_DATA_SUCCESS,
+  FILTER_PARAMS_DATA_ERROR,
+  FILTER_PARAMS_DATA_RESET_REDUCER,
+
 } from "@redux/types";
 
 
@@ -14,6 +24,16 @@ const initialState = {
   successProductGridVersion: 0,
   errorProductGridVersion: 0,
   productGridData: [],
+
+  successSortByParamsVersion: 0,
+  errorSortByParamsVersion: 0,
+  sortByParamsData: [],
+
+  successFilterParamsVersion: 0,
+  errorFilterParamsVersion: 0,
+  filterParamsData: [],
+
+
 };
 
 export default function dataReducer(state = initialState, action) {
@@ -48,6 +68,65 @@ export default function dataReducer(state = initialState, action) {
       return initialState;
 
 
+    case SORT_BY_PARAMS_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case SORT_BY_PARAMS_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        sortByParamsData: action.data.data,
+        successSortByParamsVersion: ++state.successSortByParamsVersion,
+        error: false
+      };
+
+    case SORT_BY_PARAMS_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorSortByParamsVersion: ++state.errorSortByParamsVersion
+      };
+
+    case SORT_BY_PARAMS_DATA_RESET_REDUCER:
+      return initialState;
+
+
+
+
+      case FILTER_PARAMS_DATA:
+        return {
+          ...state,
+          isFetching: true
+        };
+  
+      case FILTER_PARAMS_DATA_SUCCESS:
+        return {
+          ...state,
+          errorMsg: "",
+          isFetching: false,
+          filterParamsData: action.data.data,
+          successFilterParamsVersion: ++state.successFilterParamsVersion,
+          error: false
+        };
+  
+      case FILTER_PARAMS_DATA_ERROR:
+        return {
+          ...state,
+          isFetching: false,
+          error: true,
+          errorMsg: action.error,
+          errorFilterParamsVersion: ++state.errorFilterParamsVersion
+        };
+  
+      case FILTER_PARAMS_DATA_RESET_REDUCER:
+        return initialState;
+  
     default:
       return state;
   }

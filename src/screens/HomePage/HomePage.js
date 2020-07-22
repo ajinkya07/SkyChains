@@ -15,9 +15,11 @@ import Swiper from 'react-native-swiper'
 import Modal from 'react-native-modal';
 import _CustomButton from '@customButton/_CustomButton'
 import * as Animatable from 'react-native-animatable';
-import { getHomePageData } from '@homepage/HomePageAction';
+import { getHomePageData, getTotalCartCount, addToWishlist, addToCart } from '@homepage/HomePageAction';
 import { connect } from 'react-redux';
 import FastImage from 'react-native-fast-image';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Toast } from 'native-base';
 
 var userId = ''
 
@@ -64,7 +66,20 @@ class HomePage extends Component {
             successHomePageVersion: 0,
             errorHomePageVersion: 0,
             isImageModalVisibel: false,
-            imageToBeDisplayed: ''
+            imageToBeDisplayed: '',
+
+            // finalCollection: [],
+            // collection: [],
+            // bannerData: [],
+
+            successTotalCartCountVersion: 0,
+            errorTotalCartCountVersion: 0,
+
+            successAddToWishlistVersion: 0,
+            errorAddToWishlistVersion: 0,
+
+            successAddToCartVersion: 0,
+            errorAddToCartVersion: 0,
         };
         userId = global.userId;
 
@@ -78,10 +93,20 @@ class HomePage extends Component {
         data.append('image_type', type);
 
         this.props.getHomePageData(data)
+
+        const data2 = new FormData();
+        data2.append('user_id', userId);
+        data2.append('table', 'cart');
+
+        this.props.getTotalCartCount(data2)
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        const { successHomePageVersion, errorHomePageVersion } = nextProps;
+        const { successHomePageVersion, errorHomePageVersion,
+            successTotalCartCountVersion, errorTotalCartCountVersion,
+            successAddToWishlistVersion, errorAddToWishlistVersion,
+            successAddToCartVersion, errorAddToCartVersion
+        } = nextProps;
         let newState = null;
 
         if (successHomePageVersion > prevState.successHomePageVersion) {
@@ -96,13 +121,105 @@ class HomePage extends Component {
                 errorHomePageVersion: nextProps.errorHomePageVersion,
             };
         }
+        if (successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+            newState = {
+                ...newState,
+                successTotalCartCountVersion: nextProps.successTotalCartCountVersion,
+            };
+        }
+        if (errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+            newState = {
+                ...newState,
+                errorTotalCartCountVersion: nextProps.errorTotalCartCountVersion,
+            };
+        }
+        if (successAddToWishlistVersion > prevState.successAddToWishlistVersion) {
+            newState = {
+                ...newState,
+                successAddToWishlistVersion: nextProps.successAddToWishlistVersion,
+            };
+        }
+        if (errorAddToWishlistVersion > prevState.errorAddToWishlistVersion) {
+            newState = {
+                ...newState,
+                errorAddToWishlistVersion: nextProps.errorAddToWishlistVersion,
+            };
+        }
+
+        if (successAddToCartVersion > prevState.successAddToCartVersion) {
+            newState = {
+                ...newState,
+                successAddToCartVersion: nextProps.successAddToCartVersion,
+            };
+        }
+        if (errorAddToCartVersion > prevState.errorAddToCartVersion) {
+            newState = {
+                ...newState,
+                errorAddToCartVersion: nextProps.errorAddToCartVersion,
+            };
+        }
         return newState;
     }
 
-    //   async componentDidUpdate(prevProps, prevState) {
-    //     const {  } = this.props;
-    //   }
+    async componentDidUpdate(prevProps, prevState) {
+        const { totalCartCountData, addToWishlistData, addToCartData, homePageData } = this.props;
 
+        // var designData = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+        // var banner = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
+        // var categoryData = homePageData && homePageData.collection ? homePageData.collection : []
+
+        // if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+        //     this.setState({
+        //         finalCollection: homePageData && homePageData.final_collection ? homePageData.final_collection : []
+        //         ,
+        //         bannerData: homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
+        //         ,
+        //         collection: homePageData && homePageData.collection ? homePageData.collection : []
+
+        //     })
+        // }
+        if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+            //AsyncStorage.setItem("totalCartCount", totalCartCountData.count)
+            global.totalCartCount = totalCartCountData.count
+        }
+        if (this.state.successAddToWishlistVersion > prevState.successAddToWishlistVersion) {
+            if (addToWishlistData.ack === '1') {
+                Toast.show({
+                    text: addToWishlistData && addToWishlistData.msg,
+                    //type: 'warning',
+                    duration: 2500
+                })
+            }
+        } if (this.state.errorAddToWishlistVersion > prevState.errorAddToWishlistVersion) {
+            Toast.show({
+                text: addToWishlistData && addToWishlistData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+        if (this.state.successAddToCartVersion > prevState.successAddToCartVersion) {
+            if (addToCartData.ack === '1') {
+                Toast.show({
+                    text: addToCartData ? addToCartData.msg : strings.serverFailedMsg,
+                    duration: 2500,
+                });
+            }
+        } if (this.state.errorAddToCartVersion > prevState.errorAddToCartVersion) {
+            Toast.show({
+                text: addToCartData && addToCartData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+    }
+
+    showToast = (msg, type, duration) => {
+        Toast.show({
+            text: msg ? msg : strings.serverFailedMsg,
+            type: type ? type : 'danger',
+            duration: duration ? duration : 2500,
+        });
+    };
 
     setCurrentPage = (position) => {
         this.setState({ currentPage: position });
@@ -227,44 +344,44 @@ class HomePage extends Component {
                             />
                         </TouchableOpacity>
                         <View style={latestTextView}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Code</_Text>
+                            <View style={{ width: wp(12), marginLeft: 5 }}>
+                                <_Text numberOfLines={1} fsSmall >Code</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.collection_sku_code}</_Text>
-                            </View>
-                        </View>
-                        <View style={border}></View>
-
-                        <View style={latestTextView2}>
-                            <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Weight</_Text>
-                            </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{parseInt(item.gross_wt).toFixed(2)}</_Text>
+                            <View style={{ marginRight: 8, width: wp(23), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor}>{item.collection_sku_code}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
                             <View style={{ width: wp(14), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsPrimary >Inches</_Text>
+                                <_Text numberOfLines={1} fsSmall >Weight</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(25), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={1} fsPrimary >{item.length}</_Text>
+                            <View style={{ marginRight: 8, width: wp(21), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor} >{parseInt(item.gross_wt).toFixed(2)}</_Text>
+                            </View>
+                        </View>
+                        <View style={border}></View>
+
+                        <View style={latestTextView2}>
+                            <View style={{ width: wp(14), marginLeft: 5 }}>
+                                <_Text numberOfLines={1} fsSmall >Inches</_Text>
+                            </View>
+                            <View style={{ marginRight: 8, width: wp(21), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor} >{item.length}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
                         {item.in_cart === 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                <TouchableOpacity onPress={() => this.addToWishlist(item)}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Heart.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => alert('cart')}>
+                                <TouchableOpacity onPress={() => this.addToCart(item)}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/DarkCart.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -276,7 +393,7 @@ class HomePage extends Component {
 
                         {item.in_cart > 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                <TouchableOpacity onPress={() => alert('minus')}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Minus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -288,7 +405,7 @@ class HomePage extends Component {
                                     fsMedium fwHeading >{item.in_cart}
                                 </_Text>
 
-                                <TouchableOpacity onPress={() => alert('cart')}>
+                                <TouchableOpacity onPress={() => this.addToCart(item)}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Plus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -303,6 +420,42 @@ class HomePage extends Component {
             </TouchableOpacity>
         );
     }
+
+
+    addToWishlist = (item) => {
+
+        console.log("item", item);
+        let wishlistData = new FormData()
+
+        wishlistData.append('product_id', item.product_id);
+        wishlistData.append('user_id', userId);
+        wishlistData.append('cart_wish_table', 'wishlist');
+        wishlistData.append('no_quantity', 1);
+        wishlistData.append('product_inventory_table', 'product_master');
+
+        this.props.addToWishlist(wishlistData)
+    }
+
+    addToCart = async (item) => {
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cartData = new FormData()
+
+        cartData.append('product_id', item.product_id);
+        cartData.append('user_id', userId);
+        cartData.append('cart_wish_table', 'cart');
+        cartData.append('no_quantity', 1);
+        cartData.append('product_inventory_table', 'product_master');
+
+        await this.props.addToCart(cartData)
+
+        const data = new FormData();
+        data.append('user_id', userId);
+        data.append('image_type', type);
+
+        await this.props.getHomePageData(data)
+    }
+
 
     showImageModal = (item) => {
         this.setState({
@@ -346,13 +499,11 @@ class HomePage extends Component {
         } = HomePageStyle;
 
         const { homePageData, isFetching } = this.props
-        const { imageToBeDisplayed } = this.state
+        const { imageToBeDisplayed, } = this.state
 
-        const bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
-
-        const collection = homePageData && homePageData.collection ? homePageData.collection : []
-
-        const finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+        var finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+        var bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
+        var collection = homePageData && homePageData.collection ? homePageData.collection : []
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
@@ -422,7 +573,7 @@ class HomePage extends Component {
 
 
                     {/* CATEGORY DESIGNS */}
-                    {!this.props.isFetching &&
+                    {!this.props.isFetching && collection && collection.length > 0 &&
                         <View style={topHeading}>
                             <View style={heading}>
                                 <_Text
@@ -491,7 +642,6 @@ class HomePage extends Component {
                                         {this.getProductDesigns(product)}
                                     </View>
                                 ))}
-
                             </ScrollView>
                         </View>
                     ))}
@@ -499,7 +649,7 @@ class HomePage extends Component {
 
                     {/* FOLLOW US ON SOCIAL  */}
 
-                    {!this.props.isFetching &&
+                    {!this.props.isFetching && finalCollection && finalCollection.length > 0 &&
                         <View style={folloUs}>
                             <View style={socialIconView}>
                                 <TouchableOpacity>
@@ -543,13 +693,13 @@ class HomePage extends Component {
                                         justifyContent: 'center',
                                         borderRadius: 10
                                     }}>
-                                        <_Text fsMedium style={{marginTop:hp(0.5)}}>Code: {imageToBeDisplayed.collection_sku_code}</_Text>
-                                        <View style={{marginTop:5,borderBottomColor:'gray',borderBottomWidth:1,width:wp(90)}}/>
+                                        <_Text fsMedium style={{ marginTop: hp(0.5) }}>Code: {imageToBeDisplayed.collection_sku_code}</_Text>
+                                        <View style={{ marginTop: 5, borderBottomColor: 'gray', borderBottomWidth: 1, width: wp(90) }} />
                                         <Image
                                             source={{ uri: imageUrl + imageToBeDisplayed.images[0].image_name }}
                                             defaultSource={require('../../assets/image/default.png')}
                                             style={{
-                                                height: hp(35), width: wp(90),marginTop:hp(1),
+                                                height: hp(35), width: wp(90), marginTop: hp(1),
                                             }}
                                             resizeMode='cover'
                                         />
@@ -580,7 +730,22 @@ function mapStateToProps(state) {
         successHomePageVersion: state.homePageReducer.successHomePageVersion,
         errorHomePageVersion: state.homePageReducer.errorHomePageVersion,
         homePageData: state.homePageReducer.homePageData,
+
+        successTotalCartCountVersion: state.homePageReducer.successTotalCartCountVersion,
+        errorTotalCartCountVersion: state.homePageReducer.errorTotalCartCountVersion,
+        totalCartCountData: state.homePageReducer.totalCartCountData,
+
+        successAddToWishlistVersion: state.homePageReducer.successAddToWishlistVersion,
+        errorAddToWishlistVersion: state.homePageReducer.errorAddToWishlistVersion,
+        addToWishlistData: state.homePageReducer.addToWishlistData,
+
+        successAddToCartVersion: state.homePageReducer.successAddToCartVersion,
+        errorAddToCartVersion: state.homePageReducer.errorAddToCartVersion,
+        addToCartData: state.homePageReducer.addToCartData,
+
+
     };
 }
 
-export default connect(mapStateToProps, { getHomePageData },)(HomePage);
+export default connect(mapStateToProps, { getHomePageData, getTotalCartCount, addToWishlist, addToCart })
+    (HomePage);

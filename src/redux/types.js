@@ -34,3 +34,46 @@ export const PRODUCT_GRID_DATA_SUCCESS = "productDataSuccess";
 export const PRODUCT_GRID_DATA_ERROR = "productDataError";
 export const PRODUCT_GRID_DATA_RESET_REDUCER = "productDataResetReducer";
 
+export const SORT_BY_PARAMS_DATA = "sortByParamsData";
+export const SORT_BY_PARAMS_DATA_SUCCESS = "sortByParamsDataSuccess";
+export const SORT_BY_PARAMS_DATA_ERROR = "sortByParamsDataError";
+export const SORT_BY_PARAMS_DATA_RESET_REDUCER = "sortByParamsDataResetReducer";
+
+
+export const FILTER_PARAMS_DATA = "filterParamsData";
+export const FILTER_PARAMS_DATA_SUCCESS = "filterParamsDataSuccess";
+export const FILTER_PARAMS_DATA_ERROR = "filterParamsDataError";
+export const FILTER_PARAMS_DATA_RESET_REDUCER = "filterParamsDataResetReducer";
+
+
+
+export const TOTAL_CART_COUNT_DATA = "totalCartCountData";
+export const TOTAL_CART_COUNT_DATA_SUCCESS = "totalCartCountDataSuccess";
+export const TOTAL_CART_COUNT_DATA_ERROR = "totalCartCountDataError";
+export const TOTAL_CART_COUNT_DATA_RESET_REDUCER = "totalCartCountDataResetReducer";
+
+// for cart tab  
+
+export const CART_DATA = "cartData";
+export const CART_DATA_SUCCESS = "cartDataSuccess";
+export const CART_DATA_ERROR = "cartDataError";
+export const CART_DATA_RESET_REDUCER = "cartDataResetReducer";
+
+// for tab wishlist 
+export const WISHLIST_DATA = "wishlistData";
+export const WISHLIST_DATA_SUCCESS = "wishlistDataSuccess";
+export const WISHLIST_DATA_ERROR = "wishlistDataError";
+export const WISHLIST_DATA_RESET_REDUCER = "wishlistDataResetReducer";
+
+export const ADD_TO_WISHLIST_DATA = "addToWishlistData";
+export const ADD_TO_WISHLIST_DATA_SUCCESS = "addToWishlistDataSuccess";
+export const ADD_TO_WISHLIST_DATA_ERROR = "addToWishlistDataError";
+export const ADD_TO_WISHLIST_DATA_RESET_REDUCER = "addToWishlistDataResetReducer";
+
+
+export const ADD_TO_CART_DATA = "addToCartData";
+export const ADD_TO_CART_DATA_SUCCESS = "addToCartDataSuccess";
+export const ADD_TO_CART_DATA_ERROR = "addToCartDataError";
+export const ADD_TO_CART_DATA_RESET_REDUCER = "addToCartDataResetReducer";
+
+

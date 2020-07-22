@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import {
-    View, Text, SafeAreaView, TouchableOpacity,
-    StyleSheet, TextInput, ScrollView, Image
+    Text, View,
+    StyleSheet, Button,
+    TouchableWithoutFeedback,
+    TextInput, ScrollView,
+    TouchableOpacity, Alert,
+    Image, Platform, SafeAreaView,
+    Dimensions, FlatList,
 } from 'react-native';
 import {
     DatePicker, Footer
@@ -15,6 +20,10 @@ import {
 import _Text from '@text/_Text';
 import { connect } from 'react-redux';
 import { color } from '@values/colors';
+import Modal from 'react-native-modal';
+import IconPack from '@login/IconPack';
+import CheckBox from '@react-native-community/checkbox';
+const { width } = Dimensions.get('window');
 
 
 
@@ -27,9 +36,27 @@ export default class SearchScreen extends Component {
             nwFrom: '',
             nwTo: '',
             fromDate: new Date(),
-            toDate: new Date()
+            toDate: new Date(),
+            isModalVisible: false,
+            check: {},
+
         };
     }
+
+    toggleModal = () => {
+        this.setState({ isModalVisible: true });
+    };
+    closeModal = () => {
+        this.setState({ isModalVisible: false });
+    };
+
+    checkBox_Test = id => {
+        const checkCopy = { ...this.state.check };
+        if (checkCopy[id]) checkCopy[id] = false;
+        else checkCopy[id] = true;
+        this.setState({ check: checkCopy });
+    };
+
 
     setToDate(newDate) {
         this.setState({ toDate: newDate });
@@ -168,7 +195,7 @@ export default class SearchScreen extends Component {
         return (
             <View style={{ marginHorizontal: wp(3) }}>
                 <_Text fsHeading>Karat:</_Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={null}>
                     <View style={{
                         marginTop: hp(1), flexDirection: 'row',
                         justifyContent: 'space-between', width: wp(90),
@@ -190,7 +217,7 @@ export default class SearchScreen extends Component {
                 <_Text fsHeading>Select Categories:</_Text>
 
                 <View style={{ marginHorizontal: wp(3), justifyContent: 'center', alignItems: 'center' }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.toggleModal()}>
                         <View style={styles.roundedButton}>
                             <View style={styles.buttonText}>
                                 <_Text fsHeading bold>SELECT CATEGORIES</_Text>
@@ -206,7 +233,7 @@ export default class SearchScreen extends Component {
     searchButton = () => {
         return (
             <View style={{ marginBottom: hp(4), marginHorizontal: wp(3), justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={null}>
                     <View style={styles.roundedButtonSearch}>
                         <View style={styles.buttonText}>
                             <_Text fsHeading bold textColor={'#fbcb84'}>SEARCH</_Text>
@@ -224,7 +251,7 @@ export default class SearchScreen extends Component {
                     Title={'Search'}
                     RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
                     LeftBtnPress={() => this.props.navigation.goBack()}
-                    RightBtnPressTwo={()=> this.props.navigation.navigate('Notification')}
+                    RightBtnPressTwo={() => this.props.navigation.navigate('Notification')}
                     rightIconHeight2={hp(3.5)}
                 />
                 <ScrollView>
@@ -258,17 +285,88 @@ export default class SearchScreen extends Component {
                         {this.selectKarat()}
                     </View>
 
-                    <View style={{ paddingVertical: hp(2), }}>
+                    <View style={{ paddingVertical: 0, }}>
                         {this.selectCategories()}
                     </View>
-
+                     
                     <View style={{ paddingVertical: hp(0.5), }}>
-                        <View style={styles.border} />
                         {this.searchButton()}
-                    </View>
+                    </View> 
 
                 </ScrollView>
 
+                <Modal
+                    isVisible={this.state.isModalVisible}
+                    transparent={true}
+                    onRequestClose={() => this.closeModal()}
+                    style={{ margin: 28 }}>
+                    <TouchableWithoutFeedback
+                        style={{ flex: 1 }}
+                        onPress={() =>
+                            this.setState({
+                                isModalVisible: false,
+                            })
+                        }>
+                        <>
+                            <View style={styles.flex}>
+                                <View style={styles.selectCategoriesContainer}>
+                                    <Text style={styles.selectCategoryText}>
+                                        Select Categories
+                                  </Text>
+                                </View>
+
+                                <FlatList
+                                    style={{ backgroundColor: '#ffffff' }}
+                                    showsVerticalScrollIndicator={false}
+                                    data={[
+                                        { id: 1, categoryTitle: 'Choco Chains' },
+                                        { id: 2, categoryTitle: 'Mens Italian Chains' },
+                                        { id: 3, categoryTitle: 'IMP ASSEMBLE' },
+                                        { id: 4, categoryTitle: 'IMP FANCY CHAINS' },
+                                        { id: 5, categoryTitle: 'IMP HALF SETS' },
+                                        { id: 6, categoryTitle: 'IMP LONG MALA' },
+                                        { id: 7, categoryTitle: 'Mens bracelet' },
+                                        { id: 8, categoryTitle: 'Assemble Dokiya Chains' },
+                                    ]}
+                                    renderItem={({ item }) => (
+                                        <View style={styles.categoryContainer}>
+                                            <Text style={styles.categoryText}>
+                                                {item.categoryTitle}
+                                            </Text>
+                                            <CheckBox
+                                                style={styles.checkBox}
+                                                tintColors={{ true: '#11255a', false: 'gray' }}
+                                                value={this.state.check[item.id]}
+                                                onChange={() => this.checkBox_Test(item.id)}
+                                                boxType="square"
+                                                onFillColor="#11255a"
+                                                onTintColor="gray"
+                                                onCheckColor="#ffffff"
+                                            />
+                                        </View>
+                                    )}
+                                />
+                                <View style={styles.buttonContainer}>
+                                    <ActionButtonRounded
+                                        title="CONTINUE"
+                                        onButonPress={() => Alert.alert('Continue')}
+                                        containerStyle={styles.buttonStyle}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.closeIconView}>
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        this.setState({
+                                            isModalVisible: false,
+                                        })
+                                    }>
+                                    <Image style={styles.closeIcon} source={IconPack.CLOSE} />
+                                </TouchableOpacity>
+                            </View>
+                        </>
+                    </TouchableWithoutFeedback>
+                </Modal>
 
 
             </SafeAreaView>
@@ -304,5 +402,110 @@ const styles = StyleSheet.create({
         width: wp(100), height: hp(100),
         justifyContent: 'center',
         alignItems: 'center'
-    }
-})
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonStyle: {},
+    closeIcon: {
+        width: 20,
+        height: 20,
+    },
+    flex: {
+        flex: 1,
+    },
+    selectCategoriesContainer: {
+        height: 50,
+        backgroundColor: '#11255a',
+        borderTopLeftRadius: 14,
+        borderTopRightRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    selectCategoryText: {
+        fontSize: 21,
+        fontFamily: 'Helvetica',
+        color: '#fbcb84',
+    },
+    scrollView: {
+        backgroundColor: '#ffffff',
+    },
+    buttonContainer: {
+        justifyContent: 'flex-end',
+        height: 54,
+        backgroundColor: '#ffffff',
+        borderBottomLeftRadius: 14,
+        borderBottomRightRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    closeIconView: {
+        position: 'absolute',
+        top: 14,
+        right: 10,
+        bottom: 0,
+    },
+    categoryContainer: {
+        backgroundColor: '#D3D3D3',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        height: 50,
+        alignItems: 'center',
+        marginTop: 2,
+        marginBottom: 2,
+    },
+    categoryText: {
+        marginLeft: 32,
+        fontFamily: 'Helvetica',
+        fontSize: 16,
+    },
+    checkBox: {
+        marginRight: 12,
+    },
+});
+
+///--------------------------------ActionButton------------------
+const ActionButtonRounded = ({ title, onButonPress, containerStyle }) => {
+    return (
+        <TouchableOpacity
+            onPress={() => {
+                onButonPress();
+            }}>
+            <View
+                style={[
+                    actionButtonRoundedStyle.mainContainerStyle,
+                    containerStyle || null,
+                ]}>
+                <View style={actionButtonRoundedStyle.innerContainer}>
+                    <Text style={actionButtonRoundedStyle.titleStyle}>{title}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+};
+
+const actionButtonRoundedStyle = StyleSheet.create({
+    mainContainerStyle: {
+        backgroundColor: '#11255a',
+        height: 44,
+        width: width - 255,
+        justifyContent: 'center',
+        borderRadius: 40,
+    },
+    innerContainer: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    titleStyle: {
+        color: '#fbcb84',
+        fontSize: 14,
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '400',
+    },
+});

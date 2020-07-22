@@ -5,6 +5,7 @@ import forgotReducer from '@forgotPassword/ForgotReducer'
 import registerReducer from '@register/RegisterReducer'
 import homePageReducer from '@homepage/HomePageReducer'
 import productGridReducer from '@productGrid/ProductGridReducer'
+import cartContainerReducer from '@cartContainer/CartContainerReducer'
 
 
 
@@ -13,11 +14,12 @@ const appReducer = combineReducers({
     forgotReducer,
     registerReducer,
     homePageReducer,
-    productGridReducer
+    productGridReducer,
+    cartContainerReducer
 });
 
 const rootReducer = (state, action) => {
-return appReducer(state, action);
+    return appReducer(state, action);
 };
 
 export default rootReducer;

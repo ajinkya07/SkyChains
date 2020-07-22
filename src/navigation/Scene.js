@@ -57,6 +57,9 @@ class Scene extends React.Component {
     }
   }
 
+ 
+
+
   getLoginScene() {
     return (
       <Stack.Navigator initialRouteName={SignIn}>

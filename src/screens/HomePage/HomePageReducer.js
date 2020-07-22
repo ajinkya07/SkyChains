@@ -4,6 +4,22 @@ import {
   HOMEPAGE_DATA_ERROR,
   HOMEPAGE_DATA_RESET_REDUCER,
 
+  TOTAL_CART_COUNT_DATA,
+  TOTAL_CART_COUNT_DATA_SUCCESS,
+  TOTAL_CART_COUNT_DATA_ERROR,
+  TOTAL_CART_COUNT_DATA_RESET_REDUCER,
+
+  ADD_TO_WISHLIST_DATA,
+  ADD_TO_WISHLIST_DATA_SUCCESS,
+  ADD_TO_WISHLIST_DATA_ERROR,
+  ADD_TO_WISHLIST_DATA_RESET_REDUCER,
+
+  ADD_TO_CART_DATA,
+  ADD_TO_CART_DATA_SUCCESS,
+  ADD_TO_CART_DATA_ERROR,
+  ADD_TO_CART_DATA_RESET_REDUCER,
+
+
 } from "@redux/types";
 
 
@@ -14,6 +30,19 @@ const initialState = {
   successHomePageVersion: 0,
   errorHomePageVersion: 0,
   homePageData: [],
+
+  successTotalCartCountVersion: 0,
+  errorTotalCartCountVersion: 0,
+  totalCartCountData: [],
+
+  successAddToWishlistVersion: 0,
+  errorAddToWishlistVersion: 0,
+  addToWishlistData: [],
+
+  successAddToCartVersion: 0,
+  errorAddToCartVersion: 0,
+  addToCartData: [],
+
 };
 
 export default function dataReducer(state = initialState, action) {
@@ -45,6 +74,91 @@ export default function dataReducer(state = initialState, action) {
       };
 
     case HOMEPAGE_DATA_RESET_REDUCER:
+      return initialState;
+
+    case TOTAL_CART_COUNT_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case TOTAL_CART_COUNT_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        totalCartCountData: action.data.data,
+        successTotalCartCountVersion: ++state.successTotalCartCountVersion,
+        error: false
+      };
+
+    case TOTAL_CART_COUNT_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorTotalCartCountVersion: ++state.errorTotalCartCountVersion
+      };
+
+    case TOTAL_CART_COUNT_DATA_RESET_REDUCER:
+      return initialState;
+
+
+    case ADD_TO_WISHLIST_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case ADD_TO_WISHLIST_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        addToWishlistData: action.data,
+        successAddToWishlistVersion: ++state.successAddToWishlistVersion,
+        error: false
+      };
+
+    case ADD_TO_WISHLIST_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorAddToWishlistVersion: ++state.errorAddToWishlistVersion
+      };
+
+    case ADD_TO_WISHLIST_DATA_RESET_REDUCER:
+      return initialState;
+
+    case ADD_TO_CART_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case ADD_TO_CART_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        addToCartData: action.data,
+        successAddToCartVersion: ++state.successAddToCartVersion,
+        error: false
+      };
+
+    case ADD_TO_CART_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorAddToCartVersion: ++state.errorAddToCartVersion
+      };
+
+    case ADD_TO_CART_DATA_RESET_REDUCER:
       return initialState;
 
 

@@ -61,39 +61,41 @@ export default {
   },
 
   categoryView: {
-    alignItems: 'center', marginTop: hp(1.5),
+    alignItems: 'center', marginTop: hp(1.9),
     justifyContent: 'center',
-    width: wp(26),
-    marginRight:Platform.OS === 'ios' ? wp(4) : wp(1),
+    width: wp(23),
+    marginRight:Platform.OS === 'ios' ? wp(3) : wp(0.8),
 
   },
   
   categoryImage: {
-    height: hp(13),
-    width: hp(13),
+    height: hp(11),
+    width: hp(11),
     borderColor:color.gray,
-    borderWidth:0.4,
+    borderWidth:0.2,
     borderRadius:10
 
   },
 
+  // for latest design 
+
   horizontalLatestDesign:{
     backgroundColor:color.white,
-    height:hp(39),width:wp(48),marginTop:hp(2),
+    height:hp(40),width:wp(39),marginTop:hp(2),
     borderColor:color.gray,
-    borderWidth:0.4,borderRadius:10,
-    marginHorizontal: hp(1.5),
+    borderWidth:0.2,borderRadius:10,
+    marginHorizontal: hp(1),
   },
 
   latestDesign: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: wp(48)
+    width: wp(39)
     
   },
   latestImage: {
-    height: hp(16),
-    width: wp(47),
+    height: hp(18),
+    width: wp(38),
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderRadius: 10,
@@ -104,23 +106,25 @@ export default {
   },
   latestTextView:{
     flexDirection:'row',
-    width:wp(48),marginTop:hp(2),
-    paddingHorizontal:hp(1)
+    width:wp(39),marginTop:hp(1.5),
+    paddingHorizontal:hp(0.5)
   },
    latestTextView2:{
     flexDirection:'row',
-    width:wp(48),marginTop:hp(1),
-    paddingHorizontal:hp(1)
+    width:wp(39),marginTop:hp(1.5),
+    paddingHorizontal:hp(0.5)
   },
   border: {
-    marginTop: hp(1), borderTopColor: color.brandColor,
-    borderWidth:0.5, width: wp(40),
+    marginTop: hp(0.8), borderTopColor: color.brandColor,
+    borderWidth:0.4, width: wp(33),
 },
 iconView:{
-  width:wp(48), marginTop: hp(2.5),
+  width:wp(39), marginTop: hp(2),
   flexDirection:'row',
   justifyContent:'space-around'
 },
+
+
 folloUs:{
   flexDirection:'row',
   width:wp(90),

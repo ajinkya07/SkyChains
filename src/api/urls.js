@@ -22,6 +22,21 @@ export const urls = {
     },
     ProductGrid:{
         url: url + "Products_Grid"
+    },
+    TotalCartCount:{
+        url: url + 'Product_Cart/cart_value_count'
+    },
+    CartData:{
+        url : url + 'Product_Cart/get_cart_data'
+    },
+    addToCartWishlist:{
+        url : url + 'Product_Cart/add_to_cart_grid'
+    },
+    sortByParams:{
+        url : url + 'Sort_Parameter'
+    },
+    FilterParams:{
+        url : url + 'Filter_Parameter'
     }
 
 }

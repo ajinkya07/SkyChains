@@ -34,7 +34,7 @@ export default {
     backgroundColor: color.white,
     height: hp(43), width: wp(46),
     borderColor: color.gray,
-    borderWidth: 0.4, borderRadius: 10,
+    borderWidth: 0.4, borderRadius: 15,
     marginHorizontal: hp(1),
   },
 
@@ -49,27 +49,27 @@ export default {
     top:1,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    borderRadius: 10, 
+    borderRadius: 15, 
     alignItems: 'center',
     justifyContent: 'center',
 
   },
   latestTextView: {
     flexDirection: 'row',
-    width: wp(48), marginTop: hp(1.5),
-    paddingHorizontal: hp(1)
+    width: wp(46), marginTop: hp(1.5),
+    paddingHorizontal: hp(0.8)
   },
   latestTextView2: {
     flexDirection: 'row',
-    width: wp(48), marginTop: hp(1),
-    paddingHorizontal: hp(1)
+    width: wp(46), marginTop: hp(1.5),
+    paddingHorizontal: hp(0.8)
   },
   border: {
-    marginTop: hp(1), borderTopColor: color.brandColor,
-    borderWidth: 0.5, width: wp(40),
+    marginTop: hp(0.8), borderTopColor: color.brandColor,
+    borderWidth: 0.4, width: wp(40),
   },
   iconView: {
-    width: wp(48), marginTop: hp(2.2),
+    width: wp(48), marginTop: hp(2),
     flexDirection: 'row',
     justifyContent: 'space-around'
   }
