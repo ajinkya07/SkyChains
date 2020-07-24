@@ -20,6 +20,11 @@ import {
   ADD_TO_CART_DATA_ERROR,
   ADD_TO_CART_DATA_RESET_REDUCER,
 
+  ADD_TO_CART_PLUS_ONE_DATA,
+  ADD_TO_CART_PLUS_ONE_DATA_SUCCESS,
+  ADD_TO_CART_PLUS_ONE_DATA_ERROR,
+  ADD_TO_CART_PLUS_ONE_DATA_RESET_REDUCER,
+
 
 } from "@redux/types";
 
@@ -165,6 +170,36 @@ export function addToCart(data) {
         console.log("getHomePageData ERROR", error);
         dispatch(
           onFailure(strings.serverFailedMsg, ADD_TO_CART_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+
+export function addToCartPlusOne(data) {
+  console.log("addToCartPlusOne", data);
+
+  return dispatch => {
+    dispatch(showLoadingIndicator(ADD_TO_CART_PLUS_ONE_DATA));
+
+    axios.post(urls.addToCartGridAdd.url, data, header).then(response => {
+      console.log("addToCartPlusOne response", response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, ADD_TO_CART_PLUS_ONE_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, ADD_TO_CART_PLUS_ONE_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        console.log("addToCartPlusOne ERROR", error);
+        dispatch(
+          onFailure(strings.serverFailedMsg, ADD_TO_CART_PLUS_ONE_DATA_ERROR)
         );
       });
   }

@@ -14,6 +14,12 @@ import {
   FILTER_PARAMS_DATA_ERROR,
   FILTER_PARAMS_DATA_RESET_REDUCER,
 
+  FILTER_PRODUCT_DATA,
+  FILTER_PRODUCT_DATA_SUCCESS,
+  FILTER_PRODUCT_DATA_ERROR,
+  FILTER_PRODUCT_DATA_RESET_REDUCER,
+
+
 } from "@redux/types";
 
 import { strings } from '@values/strings'
@@ -106,7 +112,6 @@ export function getSortByParameters(data) {
 
 
 
-
 export function getfilterParameters(data) {
 
   return dispatch => {
@@ -130,6 +135,35 @@ export function getfilterParameters(data) {
 
         dispatch(
           onFailure(strings.serverFailedMsg, FILTER_PARAMS_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+export function applyFilterProducts(data) {
+console.log("applyFilterProducts formdata",data);
+  return dispatch => {
+    dispatch(showLoadingIndicator(FILTER_PRODUCT_DATA));
+
+    axios.post(urls.ProductGrid.url, data, header).then(response => {
+      console.log("applyFilterProducts", response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, FILTER_PRODUCT_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, FILTER_PRODUCT_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        console.log("getHomePageData ERROR", error);
+
+        dispatch(
+          onFailure(strings.serverFailedMsg, FILTER_PRODUCT_DATA_ERROR)
         );
       });
   }

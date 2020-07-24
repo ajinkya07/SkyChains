@@ -17,6 +17,9 @@ import _Text from '@text/_Text'
 import { color } from '@values/colors';
 import { getCartData, getWishlistData } from '@cartContainer/CartContainerAction';
 import { connect } from 'react-redux';
+import { urls } from '@api/urls'
+
+
 
 var userId = ''
 
@@ -68,14 +71,17 @@ const actionButtonRoundedStyle = StyleSheet.create({
 
 
 
-
-
 class CartContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentPage: 0,
-      isToggle: false
+      isToggle: false,
+      isToogleTwo:false,
+      cartStateData:[],
+      wishStateData:[],
+      openMoreDetailsIdwish:'',
+      openMoreDetailsIdCart:''
     };
     userId = global.userId;
 
@@ -133,15 +139,15 @@ class CartContainer extends Component {
   async componentDidUpdate(prevProps, prevState) {
     const { cartData, wishlistData } = this.props;
 
-    console.log("cartData", cartData);
-    console.log("wishlistData", wishlistData);
 
     if (this.state.successCartVersion > prevState.successCartVersion) {
-
+      this.setState({
+        cartStateData: cartData
+      })
     }
     if (this.state.successWishlistVersion > prevState.successWishlistVersion) {
       this.setState({
-        wishData: wishlistData
+        wishStateData: wishlistData
       })
     }
   }
@@ -169,35 +175,26 @@ class CartContainer extends Component {
     )
   }
 
-  setToggleView = (isToggle) => {
+  setToggleView = (data) => {
     this.setState({
-      isToggle: !this.state.isToggle
+      isToggle: !this.state.isToggle,
+      openMoreDetailsIdwish:data.cart_wish_id
     })
   }
 
 
   wishListView = (data) => {
-    // const [isToggle, setToggleView] = useState(false);
-
-    // const setToggleValue = isToggle => {
-    //   isToggle = !isToggle;
-    //   setToggleView(isToggle);
-    // };
-    const { isToggle } = this.state
-
-    console.log("data", data);
+    const { isToggle,openMoreDetailsIdwish } = this.state
+  let baseurl = urls.baseUrl + data.large_image
 
     return (
       <TouchableOpacity
-        onPress={() => this.setToggleView()}>
+        onPress={() => this.setToggleView(data)}>
         <View style={styles.tabCartTopContainer}>
           <View style={styles.imgView}>
             <Image
               style={styles.imgStyle}
-              source={{
-                uri:
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSHnx2IxXolP5b4-ZWmOhi6JgsAJDHH7Y1fnw&usqp=CAU',
-              }}
+              source={{ uri : baseurl + data.images }}
             />
           </View>
           <View style={styles.codeCollectionView}>
@@ -219,7 +216,8 @@ class CartContainer extends Component {
             />
           </View>
         </View>
-        {isToggle ? (
+        {isToggle && (openMoreDetailsIdwish === data.cart_wish_id) 
+        ? (
           <>
             <View style={styles.tabCartMiddleContainer}>
               <View style={styles.cartDetail}>
@@ -278,7 +276,6 @@ class CartContainer extends Component {
 
   favoriteDetail = (wishlistData) => {
     return (
-
       <FlatList
         data={wishlistData}
         showsVerticalScrollIndicator={false}
@@ -295,28 +292,33 @@ class CartContainer extends Component {
   };
 
 
-  cartView = (item) => {
-    const [isToggle, setToggleView] = useState(false);
+  setCartToggleView = (data) =>{
+    this.setState({ isToogleTwo: !this.state.isToogleTwo,
+    openMoreDetailsIdCart:data.cart_wish_id
+    })
+  }
 
-    const setToggleValue = isToggle => {
-      isToggle = !isToggle;
-      setToggleView(isToggle);
-    };
+
+  cartView = (item) => {
+    // const [isToggle, setToggleView] = useState(false);
+
+    // const setToggleValue = isToggle => {
+    //   isToggle = !isToggle;
+    //   setToggleView(isToggle);
+    // };
+    const { isToogleTwo,openMoreDetailsIdCart } = this.state
+    let baseurl2 = urls.baseUrl + item.thumb_image
 
     return (
       <TouchableOpacity
-        onPress={() => {
-          setToggleView(false);
-          setToggleValue(isToggle);
-        }}>
+        onPress={() => this.setCartToggleView(item)}>
+
         <View style={styles.tabCartTopContainer}>
           <View style={styles.imgView}>
             <Image
               style={styles.imgStyle}
-              source={{
-                uri:
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSHnx2IxXolP5b4-ZWmOhi6JgsAJDHH7Y1fnw&usqp=CAU',
-              }}
+              source={{ uri : baseurl2 + item.images }}
+
             />
           </View>
           <View style={styles.codeCollectionView}>
@@ -324,8 +326,8 @@ class CartContainer extends Component {
             <Text style={styles.textColor}>Collection</Text>
           </View>
           <View style={styles.chainTitleView}>
-            <Text style={styles.chainTitleText}>Dokia ASS28</Text>
-            <Text style={styles.textColor}>Assemble Dokiya Chains</Text>
+            <Text style={styles.chainTitleText}>{item.collection_sku_code}</Text>
+            <Text style={styles.textColor}>{item.collection_name}</Text>
           </View>
         </View>
         <View style={styles.moreDetailView}>
@@ -338,32 +340,33 @@ class CartContainer extends Component {
             />
           </View>
         </View>
-        {isToggle ? (
+        {isToogleTwo && (openMoreDetailsIdCart === item.cart_wish_id) 
+        ? (
           <>
             <View style={styles.tabCartMiddleContainer}>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>gross wt:</Text>
-                <Text style={styles.text}>92.500</Text>
+                <Text style={styles.text}>{item.values[0]}</Text>
               </View>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>net wt:</Text>
-                <Text style={styles.text}>0.000</Text>
+                <Text style={styles.text}>{item.values[1]}</Text>
               </View>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>quantity:</Text>
-                <Text style={styles.text}>1</Text>
+                <Text style={styles.text}>{item.values[2]}</Text>
               </View>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>remarks:</Text>
-                <Text style={styles.text} />
+                <Text style={styles.text}>{item.values[3]}</Text>
               </View>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>length:</Text>
-                <Text style={styles.text}>22</Text>
+                <Text style={styles.text}>{item.values[4]}</Text>
               </View>
               <View style={styles.cartDetail}>
                 <Text style={styles.textColor}>weight:</Text>
-                <Text style={styles.text}>92.500</Text>
+                <Text style={styles.text}>{item.values[5]}</Text>
               </View>
             </View>
             <View style={styles.tabCartBottomContainer}>
@@ -399,8 +402,9 @@ class CartContainer extends Component {
     );
   };
 
+
+
   CartDetails = (cartData) => {
-    console.log("cartData",cartData);
     return (
       <FlatList
         data={cartData}
@@ -420,7 +424,7 @@ class CartContainer extends Component {
 
   render() {
     const { cartData, wishlistData } = this.props
-    const { wishData } = this.state
+    const { wishStateData,cartStateData } = this.state
 
 
 
@@ -506,8 +510,8 @@ class CartContainer extends Component {
         }
         {this.props.isFetching ? this.renderLoader() : null}
 
-        {this.props.cartData.length === 0 && this.state.currentPage === 0 ? this.noDataFound(this.props.errorMsgCart) : null}
-        {this.props.wishlistData.length === 0 && this.state.currentPage === 1 ? this.noDataFound(this.props.errorMsgWishlist) : null}
+        {!this.props.isFetching && this.props.cartData.length === 0 && this.state.currentPage === 0 ? this.noDataFound(this.props.errorMsgCart) : null}
+        {!this.props.isFetching && this.props.wishlistData.length === 0 && this.state.currentPage === 1 ? this.noDataFound(this.props.errorMsgWishlist) : null}
 
       </Container>
     );

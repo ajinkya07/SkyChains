@@ -45,6 +45,11 @@ export const FILTER_PARAMS_DATA_SUCCESS = "filterParamsDataSuccess";
 export const FILTER_PARAMS_DATA_ERROR = "filterParamsDataError";
 export const FILTER_PARAMS_DATA_RESET_REDUCER = "filterParamsDataResetReducer";
 
+export const FILTER_PRODUCT_DATA = "filterProductData";
+export const FILTER_PRODUCT_DATA_SUCCESS = "filterProductDataSuccess";
+export const FILTER_PRODUCT_DATA_ERROR = "filterProductDataError";
+export const FILTER_PRODUCT_DATA_RESET_REDUCER = "filterProductDataResetReducer";
+
 
 
 export const TOTAL_CART_COUNT_DATA = "totalCartCountData";
@@ -76,4 +81,9 @@ export const ADD_TO_CART_DATA_SUCCESS = "addToCartDataSuccess";
 export const ADD_TO_CART_DATA_ERROR = "addToCartDataError";
 export const ADD_TO_CART_DATA_RESET_REDUCER = "addToCartDataResetReducer";
 
+
+export const ADD_TO_CART_PLUS_ONE_DATA = "addToCartPlusOneData";
+export const ADD_TO_CART_PLUS_ONE_DATA_SUCCESS = "addToCartPlusOneDataSuccess";
+export const ADD_TO_CART_PLUS_ONE_DATA_ERROR = "addToCartPlusOneDataError";
+export const ADD_TO_CART_PLUS_ONE_DATA_RESET_REDUCER = "addToCartPlusOneDataResetReducer";
 

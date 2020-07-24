@@ -19,6 +19,11 @@ import {
   ADD_TO_CART_DATA_ERROR,
   ADD_TO_CART_DATA_RESET_REDUCER,
 
+  ADD_TO_CART_PLUS_ONE_DATA,
+  ADD_TO_CART_PLUS_ONE_DATA_SUCCESS,
+  ADD_TO_CART_PLUS_ONE_DATA_ERROR,
+  ADD_TO_CART_PLUS_ONE_DATA_RESET_REDUCER,
+
 
 } from "@redux/types";
 
@@ -42,6 +47,10 @@ const initialState = {
   successAddToCartVersion: 0,
   errorAddToCartVersion: 0,
   addToCartData: [],
+
+  successAddToCartPlusOneVersion: 0,
+  errorAddToCartPlusOneVersion: 0,
+  addToCartPlusOneData: [],
 
 };
 
@@ -160,6 +169,36 @@ export default function dataReducer(state = initialState, action) {
 
     case ADD_TO_CART_DATA_RESET_REDUCER:
       return initialState;
+
+
+    case ADD_TO_CART_PLUS_ONE_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case ADD_TO_CART_PLUS_ONE_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        addToCartPlusOneData: action.data,
+        successAddToCartPlusOneVersion: ++state.successAddToCartPlusOneVersion,
+        error: false
+      };
+
+    case ADD_TO_CART_PLUS_ONE_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorAddToCartPlusOneVersion: ++state.errorAddToCartPlusOneVersion
+      };
+
+    case ADD_TO_CART_PLUS_ONE_DATA_RESET_REDUCER:
+      return initialState;
+
 
 
     default:

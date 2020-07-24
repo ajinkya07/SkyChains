@@ -15,11 +15,17 @@ import Swiper from 'react-native-swiper'
 import Modal from 'react-native-modal';
 import _CustomButton from '@customButton/_CustomButton'
 import * as Animatable from 'react-native-animatable';
-import { getHomePageData, getTotalCartCount, addToWishlist, addToCart } from '@homepage/HomePageAction';
+import {
+    getHomePageData, getTotalCartCount, addToWishlist,
+    addToCart, addToCartPlusOne
+} from '@homepage/HomePageAction';
 import { connect } from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Toast } from 'native-base';
+import _ from 'lodash';
+
+
 
 var userId = ''
 
@@ -68,8 +74,8 @@ class HomePage extends Component {
             isImageModalVisibel: false,
             imageToBeDisplayed: '',
 
-            // finalCollection: [],
-            // collection: [],
+            finalCollection: [],
+            collection: [],
             // bannerData: [],
 
             successTotalCartCountVersion: 0,
@@ -80,6 +86,11 @@ class HomePage extends Component {
 
             successAddToCartVersion: 0,
             errorAddToCartVersion: 0,
+
+            successAddToCartPlusOneVersion: 0,
+            errorAddToCartPlusOneVersion: 0,
+            plusOnecartValue: ''
+
         };
         userId = global.userId;
 
@@ -105,7 +116,8 @@ class HomePage extends Component {
         const { successHomePageVersion, errorHomePageVersion,
             successTotalCartCountVersion, errorTotalCartCountVersion,
             successAddToWishlistVersion, errorAddToWishlistVersion,
-            successAddToCartVersion, errorAddToCartVersion
+            successAddToCartVersion, errorAddToCartVersion,
+            successAddToCartPlusOneVersion, errorAddToCartPlusOneVersion
         } = nextProps;
         let newState = null;
 
@@ -158,26 +170,46 @@ class HomePage extends Component {
                 errorAddToCartVersion: nextProps.errorAddToCartVersion,
             };
         }
+
+        if (successAddToCartPlusOneVersion > prevState.successAddToCartPlusOneVersion) {
+            newState = {
+                ...newState,
+                successAddToCartPlusOneVersion: nextProps.successAddToCartPlusOneVersion,
+            };
+        }
+        if (errorAddToCartPlusOneVersion > prevState.errorAddToCartPlusOneVersion) {
+            newState = {
+                ...newState,
+                errorAddToCartPlusOneVersion: nextProps.errorAddToCartPlusOneVersion,
+            };
+        }
+
         return newState;
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        const { totalCartCountData, addToWishlistData, addToCartData, homePageData } = this.props;
+        const { totalCartCountData, addToWishlistData,
+            addToCartData, homePageData, addToCartPlusOneData } = this.props;
 
+        const { finalCollection, productId } = this.state
         // var designData = homePageData && homePageData.final_collection ? homePageData.final_collection : []
         // var banner = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
-        // var categoryData = homePageData && homePageData.collection ? homePageData.collection : []
+        //var categoryData = homePageData && homePageData.collection ? homePageData.collection : []
 
-        // if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
-        //     this.setState({
-        //         finalCollection: homePageData && homePageData.final_collection ? homePageData.final_collection : []
-        //         ,
-        //         bannerData: homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
-        //         ,
-        //         collection: homePageData && homePageData.collection ? homePageData.collection : []
+        if (this.state.successHomePageVersion > prevState.successHomePageVersion) {
+            if (homePageData && homePageData.final_collection) {
+                this.setState({
+                    finalCollection: homePageData && homePageData.final_collection ? homePageData.final_collection : []
+                })
+            }
+            if (homePageData && homePageData.collection) {
+                // bannerData: homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
+                this.setState({
+                    collection: homePageData && homePageData.collection ? homePageData.collection : []
+                })
+            }
+        }
 
-        //     })
-        // }
         if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
             //AsyncStorage.setItem("totalCartCount", totalCartCountData.count)
             global.totalCartCount = totalCartCountData.count
@@ -207,6 +239,47 @@ class HomePage extends Component {
         } if (this.state.errorAddToCartVersion > prevState.errorAddToCartVersion) {
             Toast.show({
                 text: addToCartData && addToCartData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+
+        if (this.state.successAddToCartPlusOneVersion > prevState.successAddToCartPlusOneVersion) {
+            if (addToCartPlusOneData.ack === '1') {
+                var Index
+                var id
+                homePageData && homePageData.final_collection.map((data, index) => {
+                    data.product_assign && data.product_assign.map((product, index) => {
+                        id = product.product_id
+                        Index = data.product_assign.findIndex(person => person.product_id == productId)
+                        // Index=  data.product_assign.filter(item=> item.product_id == productId)
+                        //Index = _.findIndex(product, { id: productId })
+                    })
+                })
+
+                console.log("Index", Index);
+
+                if (Index > 0) {
+                    homePageData && homePageData.final_collection.map((data, index) => {
+                        data.product_assign && data.product_assign.map((product, index) => {
+                            data.product_assign[Index].in_cart = parseInt(this.props.addToCartPlusOneData.data.quantity)
+                            console.log(" product[Index].in_cart", data.product_assign[Index].in_cart);
+                        })
+                    })
+
+                    //this.setState({ in_cart: this.props.addToCartPlusOneData.data.quantity });
+                }
+
+
+                Toast.show({
+                    text: addToCartPlusOneData ? addToCartPlusOneData.msg : strings.serverFailedMsg,
+                    duration: 2500,
+                });
+
+            }
+        } if (this.state.errorAddToCartPlusOneVersion > prevState.errorAddToCartPlusOneVersion) {
+            Toast.show({
+                text: addToCartPlusOneData && addToCartPlusOneData.msg,
                 type: 'danger',
                 duration: 2500
             })
@@ -327,15 +400,20 @@ class HomePage extends Component {
         const { latestDesign, latestTextView, latestTextView2,
             latestImage, horizontalLatestDesign, border, iconView
         } = HomePageStyle;
+
+        const { plusOnecartValue } = this.state
+
         let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <TouchableOpacity
-                onPress={() => alert("ok")}>
-                {/* onPress={() => this.props.navigation.navigate('CategoryDetails')}> */}
+                // onPress={() => alert("ok")}>
+                onPress={() => this.props.navigation.navigate('CategoryDetails', { productDetails: item })}>
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
-                        <TouchableOpacity onLongPress={() => this.showImageModal(item)}>
+                        <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('CategoryDetails', { productDetails: item })}
+                            onLongPress={() => this.showImageModal(item)}>
                             <Image
                                 // resizeMode={'cover'}
                                 style={latestImage}
@@ -402,10 +480,11 @@ class HomePage extends Component {
                                 </TouchableOpacity>
                                 <_Text numberOfLines={1}
                                     textColor={color.brandColor}
-                                    fsMedium fwHeading >{item.in_cart}
+                                    fsMedium fwHeading >
+                                    {plusOnecartValue && plusOnecartValue > '1' ? plusOnecartValue : item.in_cart}
                                 </_Text>
 
-                                <TouchableOpacity onPress={() => this.addToCart(item)}>
+                                <TouchableOpacity onPress={() => this.addToCartPlusOne(item)}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Plus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -423,8 +502,6 @@ class HomePage extends Component {
 
 
     addToWishlist = (item) => {
-
-        console.log("item", item);
         let wishlistData = new FormData()
 
         wishlistData.append('product_id', item.product_id);
@@ -454,6 +531,32 @@ class HomePage extends Component {
         data.append('image_type', type);
 
         await this.props.getHomePageData(data)
+    }
+
+
+    addToCartPlusOne = async (item) => {
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cart = new FormData()
+
+        cart.append('product_id', item.product_id);
+        cart.append('user_id', userId);
+        cart.append('cart_wish_table', 'cart');
+        cart.append('no_quantity', 1);
+        cart.append('product_inventory_table', 'product_master');
+        cart.append('plus', 1);
+
+
+        await this.props.addToCartPlusOne(cart)
+
+        this.setState({
+            productId: item.product_id
+        })
+        // const data = new FormData();
+        // data.append('user_id', userId);
+        // data.append('image_type', type);
+
+        // await this.props.getHomePageData(data)
     }
 
 
@@ -499,11 +602,11 @@ class HomePage extends Component {
         } = HomePageStyle;
 
         const { homePageData, isFetching } = this.props
-        const { imageToBeDisplayed, } = this.state
+        const { imageToBeDisplayed, finalCollection, collection } = this.state
 
-        var finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
+        // var finalCollection = homePageData && homePageData.final_collection ? homePageData.final_collection : []
         var bannerData = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
-        var collection = homePageData && homePageData.collection ? homePageData.collection : []
+        //var collection = homePageData && homePageData.collection ? homePageData.collection : []
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
@@ -744,8 +847,16 @@ function mapStateToProps(state) {
         addToCartData: state.homePageReducer.addToCartData,
 
 
+        successAddToCartPlusOneVersion: state.homePageReducer.successAddToCartPlusOneVersion,
+        errorAddToCartPlusOneVersion: state.homePageReducer.errorAddToCartPlusOneVersion,
+        addToCartPlusOneData: state.homePageReducer.addToCartPlusOneData,
+
+
     };
 }
 
-export default connect(mapStateToProps, { getHomePageData, getTotalCartCount, addToWishlist, addToCart })
+export default connect(mapStateToProps, {
+    getHomePageData, getTotalCartCount,
+    addToWishlist, addToCart, addToCartPlusOne
+})
     (HomePage);

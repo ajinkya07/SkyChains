@@ -14,6 +14,12 @@ import {
   FILTER_PARAMS_DATA_ERROR,
   FILTER_PARAMS_DATA_RESET_REDUCER,
 
+  FILTER_PRODUCT_DATA,
+  FILTER_PRODUCT_DATA_SUCCESS,
+  FILTER_PRODUCT_DATA_ERROR,
+  FILTER_PRODUCT_DATA_RESET_REDUCER,
+
+  
 } from "@redux/types";
 
 
@@ -32,6 +38,10 @@ const initialState = {
   successFilterParamsVersion: 0,
   errorFilterParamsVersion: 0,
   filterParamsData: [],
+
+  successFilteredProductVersion: 0,
+  errorFilteredProductVersion: 0,
+  filteredProductData: [],
 
 
 };
@@ -97,8 +107,6 @@ export default function dataReducer(state = initialState, action) {
       return initialState;
 
 
-
-
       case FILTER_PARAMS_DATA:
         return {
           ...state,
@@ -121,12 +129,46 @@ export default function dataReducer(state = initialState, action) {
           isFetching: false,
           error: true,
           errorMsg: action.error,
+          filterParamsData:[],
           errorFilterParamsVersion: ++state.errorFilterParamsVersion
         };
   
       case FILTER_PARAMS_DATA_RESET_REDUCER:
         return initialState;
   
+
+
+
+        case FILTER_PRODUCT_DATA:
+          return {
+            ...state,
+            isFetching: true
+          };
+    
+        case FILTER_PRODUCT_DATA_SUCCESS:
+          return {
+            ...state,
+            errorMsg: "",
+            isFetching: false,
+            filteredProductData: action.data.data,
+            successFilteredProductVersion: ++state.successFilteredProductVersion,
+            error: false
+          };
+    
+        case FILTER_PRODUCT_DATA_ERROR:
+          return {
+            ...state,
+            isFetching: false,
+            error: true,
+            errorMsg: action.error,
+            errorFilteredProductVersion: ++state.errorFilteredProductVersion
+          };
+    
+        case FILTER_PRODUCT_DATA_RESET_REDUCER:
+          return initialState;
+    
+
+
     default:
       return state;
   }

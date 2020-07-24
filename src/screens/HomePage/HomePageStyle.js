@@ -72,7 +72,7 @@ export default {
     height: hp(11),
     width: hp(11),
     borderColor:color.gray,
-    borderWidth:0.2,
+    borderWidth:0.4,
     borderRadius:10
 
   },

@@ -16,7 +16,7 @@ import { color } from '@values/colors';
 import ProductGridStyle from '@productGrid/ProductGridStyle';
 import {
     getProductSubCategoryData, getSortByParameters,
-    getfilterParameters
+    getfilterParameters, applyFilterProducts
 } from '@productGrid/ProductGridAction';
 import { Toast, CheckBox } from 'native-base';
 import Modal from 'react-native-modal';
@@ -59,7 +59,10 @@ class ProductGrid extends Component {
 
             successFilterParamsVersion: 0,
             errorFilterParamsVersion: 0,
-          
+
+            successFilteredProductVersion: 0,
+            errorFilteredProductVersion: 0,
+
         };
         userId = global.userId;
 
@@ -81,6 +84,7 @@ class ProductGrid extends Component {
             this.props.getProductSubCategoryData(data)
         }
         let data2 = new FormData();
+        data2.append('collection_id', categoryData.id);
         data2.append('table', 'product_master');
         data2.append('user_id', userId);
         data2.append('mode_type', 'all_filter');
@@ -94,7 +98,9 @@ class ProductGrid extends Component {
     static getDerivedStateFromProps(nextProps, prevState) {
         const { successProductGridVersion, errorProductGridVersion,
             successSortByParamsVersion, errorSortByParamsVersion,
-            successFilterParamsVersion,errorFilterParamsVersion
+            successFilterParamsVersion, errorFilterParamsVersion,
+            successFilteredProductVersion, errorFilteredProductVersion
+
         } = nextProps;
         let newState = null;
 
@@ -134,12 +140,26 @@ class ProductGrid extends Component {
                 errorFilterParamsVersion: nextProps.errorFilterParamsVersion,
             };
         }
+        if (successFilteredProductVersion > prevState.successFilteredProductVersion) {
+            newState = {
+                ...newState,
+                successFilteredProductVersion: nextProps.successFilteredProductVersion,
+            };
+        }
+        if (errorFilteredProductVersion > prevState.errorFilteredProductVersion) {
+            newState = {
+                ...newState,
+                errorFilteredProductVersion: nextProps.errorFilteredProductVersion,
+            };
+        }
 
         return newState;
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        const { productGridData, sortByParamsData } = this.props;
+        const { productGridData, sortByParamsData,
+            filterParamsData, filteredProductData } = this.props;
+
         if (this.state.successProductGridVersion > prevState.successProductGridVersion) {
             if (productGridData.products && productGridData.products.length > 0) {
                 this.setState({
@@ -157,6 +177,33 @@ class ProductGrid extends Component {
                 color: 'warning',
                 duration: 2500,
             });
+            this.setState({page:0})
+        }
+
+        if (this.state.successFilteredProductVersion > prevState.successFilteredProductVersion) {
+            if (filteredProductData.products && filteredProductData.products.length > 0) {
+                this.setState({
+                    gridData: this.state.page === 0 ? filteredProductData.products : [...this.state.gridData, ...filteredProductData.products]
+                })
+            } else {
+                this.showToast('Please contact admin', 'danger');
+            }
+        }
+        if (this.state.errorFilteredProductVersion > prevState.errorFilteredProductVersion) {
+            Toast.show({
+                text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+                color: 'warning',
+                duration: 2500,
+            });
+        }
+
+        if (this.state.successFilterParamsVersion > prevState.successFilterParamsVersion) {
+            if (filterParamsData && filterParamsData.length === undefined) {
+                this.setState({
+                    fromValue: filterParamsData.gross_weight[0].min_gross_weight,
+                    toValue: filterParamsData.gross_weight[0].max_gross_weight,
+                })
+            }
         }
     }
 
@@ -365,7 +412,6 @@ class ProductGrid extends Component {
     }
 
     LoadRandomData = () => {
-        console.log("LoadRandomData");
         const { categoryData, page } = this.state
 
         const data = new FormData();
@@ -411,7 +457,18 @@ class ProductGrid extends Component {
     }
 
     toggleFilterModal = () => {
-        this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible });
+        const { filterParamsData } = this.props
+
+        if (filterParamsData && filterParamsData.length === undefined) {
+            this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible });
+        }
+        else if (filterParamsData.length === 0) {
+            Toast.show({
+                text: 'No data found',
+                duration: 2500
+            })
+
+        }
     };
 
     onTextChanged = (inputKey, value) => {
@@ -421,10 +478,32 @@ class ProductGrid extends Component {
     }
 
     setFromToSliderValues = (values) => {
-        this.setState({
-            fromValue: values[0].toString(),
-            toValue: values[1].toString()
-        })
+        if (values && values.length > 0) {
+            this.setState({
+                fromValue: values[0],
+                toValue: values[1]
+            })
+        }
+    }
+
+    applyFilter = () => {
+        const { categoryData, page, fromValue, toValue } = this.state
+
+        const filterData = new FormData()
+        filterData.append('table', 'product_master');
+        filterData.append('mode_type', 'filter_data');
+        filterData.append('collection_id', categoryData.id);
+        filterData.append('user_id', userId);
+        filterData.append('record', 10);
+        filterData.append('page_no', 0);
+        filterData.append('sort_by', '2');
+        filterData.append('min_gross_weight', fromValue);
+        filterData.append('max_gross_weight', toValue);
+
+        this.props.applyFilterProducts(filterData)
+
+        this.setState({ isFilterModalVisible: false })
+
     }
 
     render() {
@@ -433,7 +512,7 @@ class ProductGrid extends Component {
             sortList,
             isProductImageModalVisibel } = this.state
 
-        const { sortByParamsData } = this.props
+        const { sortByParamsData, filterParamsData } = this.props
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
@@ -643,7 +722,7 @@ class ProductGrid extends Component {
                                                     <Text style={{ fontSize: 20 }}>Filter</Text>
                                                 </View>
                                                 <View>
-                                                    <TouchableOpacity onPress={() => alert('Apply')}>
+                                                    <TouchableOpacity onPress={() => this.applyFilter()}>
                                                         <Text style={{ fontSize: 20 }}>Apply</Text>
                                                     </TouchableOpacity>
                                                 </View>
@@ -663,16 +742,18 @@ class ProductGrid extends Component {
                                                     </View>
                                                 </View>
                                             </View>
-                                     
+
 
                                             <View style={styles.sliderContainer}>
                                                 <View style={{ flex: 1 }}></View>
                                                 <View style={{ flex: 2 }}>
-                                                    <View>
-                                                        <RangeSlider
-                                                            setsliderValues={this.setFromToSliderValues}
-                                                        />
-                                                    </View>
+                                                    {filterParamsData &&
+                                                        <View>
+                                                            <RangeSlider
+                                                                data={filterParamsData}
+                                                                setsliderValues={this.setFromToSliderValues}
+                                                            />
+                                                        </View>}
                                                     <View style={{ marginTop: 25 }}>
                                                         <Text style={styles.toText}>From</Text>
                                                         <TextInput
@@ -844,21 +925,31 @@ function mapStateToProps(state) {
         errorFilterParamsVersion: state.productGridReducer.errorFilterParamsVersion,
         filterParamsData: state.productGridReducer.filterParamsData,
 
-      
+        successFilteredProductVersion: state.productGridReducer.successFilteredProductVersion,
+        errorFilteredProductVersion: state.productGridReducer.errorFilteredProductVersion,
+        filteredProductData: state.productGridReducer.filteredProductData,
+
     };
 }
 
 export default connect(mapStateToProps, {
     getProductSubCategoryData, getSortByParameters,
-    getfilterParameters
+    getfilterParameters, applyFilterProducts
 })(ProductGrid);
 
 
 
 class RangeSlider extends React.Component {
-    state = {
-        values: [3, 7],
-    };
+    constructor(props) {
+        super(props);
+        let filter = this.props.data ? this.props.data : undefined
+        this.state = {
+            values: [filter.gross_weight[0].min_gross_weight,
+            filter.gross_weight[0].max_gross_weight]
+
+        };
+    }
+
 
     multiSliderValuesChange = values => {
         this.setState({
@@ -867,26 +958,39 @@ class RangeSlider extends React.Component {
         this.props.setsliderValues(values)
     };
 
+    
     render() {
+        const { data } = this.props
+        const { values } = this.state
+        console.log("values", values);
+
+        if (data) {
+            var min = data.gross_weight[0].min_gross_weight
+            var max = data.gross_weight[0].max_gross_weight
+        }
+
         return (
             <View>
-                <MultiSlider
-                    values={[this.state.values[0], this.state.values[1]]}
-                    sliderLength={280}
-                    onValuesChange={this.multiSliderValuesChange}
-                    min={0}
-                    max={10}
-                    step={1}
-                />
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginHorizontal: 10,
-                    }}>
-                    <Text style={{ fontSize: 16 }}>{this.state.values[0]}</Text>
-                    <Text style={{ fontSize: 16 }}>{this.state.values[1]}</Text>
-                </View>
+                {data ?
+                    <View>
+                        <MultiSlider
+                            values={[values[0], values[1]]}
+                            sliderLength={wp(65)}
+                            onValuesChange={this.multiSliderValuesChange}
+                            min={min}
+                            max={max}
+                            step={1}
+                        />
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 10,
+                            }}>
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[0]}</Text>}
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[1]}</Text>}
+                        </View>
+                    </View> : null}
             </View>
         );
     }

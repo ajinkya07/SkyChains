@@ -49,6 +49,8 @@ const CategoryDetails = props => {
     outputRange: [0, 0, 1],
     extrapolate: 'clamp',
   });
+
+  
   return (
     <View style={styles.container}>
       <AnimatedFastImage

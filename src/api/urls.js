@@ -37,6 +37,12 @@ export const urls = {
     },
     FilterParams:{
         url : url + 'Filter_Parameter'
+    },
+    ProductDetails:{
+        url : url + 'Product_Details'
+    },
+    addToCartGridAdd:{
+        url : url + 'Product_Cart/add_to_cart_grid_add'
     }
 
 }
