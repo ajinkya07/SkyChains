@@ -6,6 +6,7 @@ import registerReducer from '@register/RegisterReducer'
 import homePageReducer from '@homepage/HomePageReducer'
 import productGridReducer from '@productGrid/ProductGridReducer'
 import cartContainerReducer from '@cartContainer/CartContainerReducer'
+import productDetailsReducer from '@category/ProductDetailsReducer'
 
 
 
@@ -15,7 +16,8 @@ const appReducer = combineReducers({
     registerReducer,
     homePageReducer,
     productGridReducer,
-    cartContainerReducer
+    cartContainerReducer,
+    productDetailsReducer
 });
 
 const rootReducer = (state, action) => {

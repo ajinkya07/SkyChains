@@ -87,3 +87,28 @@ export const ADD_TO_CART_PLUS_ONE_DATA_SUCCESS = "addToCartPlusOneDataSuccess";
 export const ADD_TO_CART_PLUS_ONE_DATA_ERROR = "addToCartPlusOneDataError";
 export const ADD_TO_CART_PLUS_ONE_DATA_RESET_REDUCER = "addToCartPlusOneDataResetReducer";
 
+
+export const PRODUCT_DETAILS_DATA = "productDetailsData";
+export const PRODUCT_DETAILS_DATA_SUCCESS = "productDetailsDataSuccess";
+export const PRODUCT_DETAILS_DATA_ERROR = "productDetailsDataError";
+export const PRODUCT_DETAILS_DATA_RESET_REDUCER = "productDetailsDataResetReducer";
+
+
+
+export const ADD_PRODUCT_TO_WISHLIST_DATA = "addProductToWishlistData";
+export const ADD_PRODUCT_TO_WISHLIST_DATA_SUCCESS = "addProductToWishlistDataSuccess";
+export const ADD_PRODUCT_TO_WISHLIST_DATA_ERROR = "addProductToWishlistDataError";
+export const ADD_PRODUCT_TO_WISHLIST_DATA_RESET_REDUCER = "addProductToWishlistDataResetReducer";
+
+
+export const ADD_PRODUCT_TO_CART_DATA = "addProductToCartData";
+export const ADD_PRODUCT_TO_CART_DATA_SUCCESS = "addProductToCartDataSuccess";
+export const ADD_PRODUCT_TO_CART_DATA_ERROR = "addProductToCartDataError";
+export const ADD_PRODUCT_TO_CART_DATA_RESET_REDUCER = "addProductToCartDataResetReducer";
+
+
+export const ADD_PRODUCT_TO_CART_PLUS_ONE_DATA = "addProductToCartPlusOneData";
+export const ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_SUCCESS = "addProductToCartPlusOneDataSuccess";
+export const ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR = "addProductToCartPlusOneDataError";
+export const ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_RESET_REDUCER = "addProductToCartPlusOneDataResetReducer";
+

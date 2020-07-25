@@ -185,7 +185,7 @@ class CartContainer extends Component {
 
   wishListView = (data) => {
     const { isToggle,openMoreDetailsIdwish } = this.state
-  let baseurl = urls.baseUrl + data.large_image
+    let baseurl = urls.imageUrl + data.thumb_image
 
     return (
       <TouchableOpacity
@@ -307,7 +307,7 @@ class CartContainer extends Component {
     //   setToggleView(isToggle);
     // };
     const { isToogleTwo,openMoreDetailsIdCart } = this.state
-    let baseurl2 = urls.baseUrl + item.thumb_image
+    let baseurl2 = urls.imageUrl + item.thumb_image
 
     return (
       <TouchableOpacity
@@ -526,9 +526,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imgView: {
-    height: 70,
+    height: hp(7),
+    width: hp(9),
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth:0.4,
+    borderColor:color.gray,
+    borderRadius:5
+
   },
   imgStyle: {
     width: hp(8),

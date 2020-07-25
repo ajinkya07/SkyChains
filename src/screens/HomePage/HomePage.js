@@ -17,50 +17,20 @@ import _CustomButton from '@customButton/_CustomButton'
 import * as Animatable from 'react-native-animatable';
 import {
     getHomePageData, getTotalCartCount, addToWishlist,
-    addToCart, addToCartPlusOne
+    addToCart, addRemoveFromCartByOne
 } from '@homepage/HomePageAction';
 import { connect } from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Toast } from 'native-base';
 import _ from 'lodash';
+import { urls } from '@api/urls'
 
 
 
 var userId = ''
 
 
-const SCREENS = [
-    {
-        key: 1,
-        url: require('../../assets/image/insta.png')
-    },
-    {
-        key: 2,
-        url: require('../../assets/image/insta.png')
-    },
-    {
-        key: 3,
-        url: require('../../assets/image/backg.png')
-    }
-]
-
-const LIST = [
-    { key: 1, name: 'Choco Chains', url: require('../../assets/image/insta.png') },
-    { key: 2, name: 'Mains Italian Chains', url: require('../../assets/image/insta.png') },
-    { key: 3, name: 'IMP Assemble', url: require('../../assets/image/insta.png') },
-    { key: 4, name: 'Mains Italian Chains', url: require('../../assets/image/insta.png') },
-    { key: 5, name: 'IMP Assemble', url: require('../../assets/image/insta.png') }
-]
-
-const LIST2 = [
-    { key: 1, code: 'CHOCO 11', weight: '71.00', inches: '31' },
-    { key: 2, code: 'CHOCO 11', weight: '71.00', inches: '31' },
-    { key: 3, code: 'CHOCO 11', weight: '71.00', inches: '31' },
-    { key: 4, code: 'CHOCO 11', weight: '71.00', inches: '31' },
-    { key: 5, code: 'CHOCO 11', weight: '71.00', inches: '31' },
-
-]
 
 class HomePage extends Component {
 
@@ -96,20 +66,20 @@ class HomePage extends Component {
 
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
         const type = Platform.OS === 'ios' ? 'ios' : 'android'
 
         const data = new FormData();
         data.append('user_id', userId);
         data.append('image_type', type);
 
-        this.props.getHomePageData(data)
+        await this.props.getHomePageData(data)
 
         const data2 = new FormData();
         data2.append('user_id', userId);
         data2.append('table', 'cart');
 
-        this.props.getTotalCartCount(data2)
+        await this.props.getTotalCartCount(data2)
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -210,6 +180,15 @@ class HomePage extends Component {
             }
         }
 
+        if (this.state.errorHomePageVersion > prevState.errorHomePageVersion) {
+           // this.failedView()
+            Toast.show({
+                text: homePageData.length !== 0 ? homePageData.msg : strings.serverFailedMsg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+
         if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
             //AsyncStorage.setItem("totalCartCount", totalCartCountData.count)
             global.totalCartCount = totalCartCountData.count
@@ -247,27 +226,47 @@ class HomePage extends Component {
         if (this.state.successAddToCartPlusOneVersion > prevState.successAddToCartPlusOneVersion) {
             if (addToCartPlusOneData.ack === '1') {
                 var Index
-                var id
-                homePageData && homePageData.final_collection.map((data, index) => {
-                    data.product_assign && data.product_assign.map((product, index) => {
-                        id = product.product_id
-                        Index = data.product_assign.findIndex(person => person.product_id == productId)
-                        // Index=  data.product_assign.filter(item=> item.product_id == productId)
-                        //Index = _.findIndex(product, { id: productId })
-                    })
-                })
+                var i
+                var dex
+                for (let m = 0; m < homePageData.final_collection.length; m++) {
+                    // homePageData.final_collection[m].product_assign.map((p, c) => {
+                            Index =homePageData.final_collection[m].product_assign.findIndex(item => item.product_id == productId)
+                       
+                            console.log("Index inside ---", Index);
+                            if(Index >=0){
+                                i = m;
+                                // break;
+                                dex = Index
+                            }
+                        // })
+                }
+                // homePageData && homePageData.final_collection.map((data, j) => {
+                //     data.product_assign && data.product_assign.map((product, j) => {
+                //         id = product.product_id
+                //         Index = data.product_assign.findIndex(person => person.product_id == productId)
+                //         // Index=  data.product_assign.filter(item=> item.product_id == productId)
+                //         //Index = _.findIndex(product, { id: productId })
+                //     })
+                // })
 
+                console.log("i", i);
+                console.log("dex", dex);
                 console.log("Index", Index);
 
-                if (Index > 0) {
-                    homePageData && homePageData.final_collection.map((data, index) => {
-                        data.product_assign && data.product_assign.map((product, index) => {
-                            data.product_assign[Index].in_cart = parseInt(this.props.addToCartPlusOneData.data.quantity)
-                            console.log(" product[Index].in_cart", data.product_assign[Index].in_cart);
-                        })
-                    })
 
-                    //this.setState({ in_cart: this.props.addToCartPlusOneData.data.quantity });
+                if (dex >= 0) {
+                    // homePageData && homePageData.final_collection[i].product_assign.map((data, index) => {
+                        finalCollection[i].product_assign[dex].in_cart = 
+                            this.props.addToCartPlusOneData.data !==null ? parseInt(this.props.addToCartPlusOneData.data.quantity)
+                            : undefined
+
+                    console.log(" data.product_assign[dex].in_cart",  finalCollection[i].product_assign[dex].in_cart);
+                // })
+
+                    this.setState({ in_cart: finalCollection[i].product_assign[dex].in_cart},
+                        ()=>{
+                            console.log(JSON.stringify(finalCollection));
+                        });
                 }
 
 
@@ -286,7 +285,20 @@ class HomePage extends Component {
         }
     }
 
-    showToast = (msg, type, duration) => {
+    failedView =()=>{
+        return (
+            <View style={{ height:hp(100),justifyContent: 'center', alignItems: 'center', }}>
+              <Image
+                source={require("../../assets/gif/noData.gif")}
+                style={{ height: hp(20), width: hp(20) }}
+              />
+              <Text style={{ fontSize: 18, fontWeight: '400' }}>{strings.serverFailedMsg}</Text>
+            </View>
+          )
+    }
+
+
+     showToast = (msg, type, duration) => {
         Toast.show({
             text: msg ? msg : strings.serverFailedMsg,
             type: type ? type : 'danger',
@@ -299,13 +311,13 @@ class HomePage extends Component {
     }
 
 
-    renderScreen = (data, index) => {
+    renderScreen = (data, k) => {
         const { homePageData } = this.props
         let baseUrl = homePageData && homePageData.base_path
 
         return (
             <TouchableOpacity onPress={() => this.props.navigation.navigate('Banner', { bannerData: data, baseUrl: baseUrl })}>
-                <View key={index}>
+                <View key={k}>
                     {/* <Image style={{ height: hp(25), width: wp(100) }}
                         source={{ uri: baseUrl + data.brand_image }}
                         defaultSource={require('../../assets/image/default.png')}
@@ -329,8 +341,9 @@ class HomePage extends Component {
     carausalView = (bannerData) => {
         return (
             <View style={{
-                height: hp(25), width: wp(100), borderBottomColor: color.gray,
-                borderWidth: !this.props.isFetching ? 0.5 : 0
+                height: hp(25), width: wp(100),
+                //borderBottomColor: color.gray,
+                //borderWidth: !this.props.isFetching ? 0.5 : 0
             }}>
                 {bannerData ?
                     <Swiper
@@ -402,17 +415,18 @@ class HomePage extends Component {
         } = HomePageStyle;
 
         const { plusOnecartValue } = this.state
+        // let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
+        let url = urls.imageUrl + 'public/backend/product_images/zoom_image/'
 
-        let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <TouchableOpacity
                 // onPress={() => alert("ok")}>
-                onPress={() => this.props.navigation.navigate('CategoryDetails', { productDetails: item })}>
+                onPress={() => this.props.navigation.navigate('ProductDetails', { productDetails: item })}>
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('CategoryDetails', { productDetails: item })}
+                            onPress={() => this.props.navigation.navigate('ProductDetails', { productDetails: item })}
                             onLongPress={() => this.showImageModal(item)}>
                             <Image
                                 // resizeMode={'cover'}
@@ -471,7 +485,7 @@ class HomePage extends Component {
 
                         {item.in_cart > 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => alert('minus')}>
+                                <TouchableOpacity onPress={() => this.removeFromCartByOne(item)}>
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Minus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -481,7 +495,7 @@ class HomePage extends Component {
                                 <_Text numberOfLines={1}
                                     textColor={color.brandColor}
                                     fsMedium fwHeading >
-                                    {plusOnecartValue && plusOnecartValue > '1' ? plusOnecartValue : item.in_cart}
+                                    {item.in_cart}
                                 </_Text>
 
                                 <TouchableOpacity onPress={() => this.addToCartPlusOne(item)}>
@@ -530,7 +544,7 @@ class HomePage extends Component {
         data.append('user_id', userId);
         data.append('image_type', type);
 
-        await this.props.getHomePageData(data)
+       // await this.props.getHomePageData(data)
     }
 
 
@@ -547,18 +561,45 @@ class HomePage extends Component {
         cart.append('plus', 1);
 
 
-        await this.props.addToCartPlusOne(cart)
+        await this.props.addRemoveFromCartByOne(cart)
 
-        this.setState({
-            productId: item.product_id
-        })
+
         // const data = new FormData();
         // data.append('user_id', userId);
         // data.append('image_type', type);
 
         // await this.props.getHomePageData(data)
+
+        this.setState({
+            productId: item.product_id
+        })
     }
 
+    removeFromCartByOne = async (item) => {
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cart1 = new FormData()
+
+        cart1.append('product_id', item.product_id);
+        cart1.append('user_id', userId);
+        cart1.append('cart_wish_table', 'cart');
+        cart1.append('no_quantity', 1);
+        cart1.append('product_inventory_table', 'product_master');
+        cart1.append('plus', 0);
+
+
+        await this.props.addRemoveFromCartByOne(cart1)
+
+        // const data = new FormData();
+        // data.append('user_id', userId);
+        // data.append('image_type', type);
+
+       // await this.props.getHomePageData(data)
+
+        this.setState({
+            productId: item.product_id
+        })
+    }
 
     showImageModal = (item) => {
         this.setState({
@@ -609,6 +650,7 @@ class HomePage extends Component {
         //var collection = homePageData && homePageData.collection ? homePageData.collection : []
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
+
 
         return (
             <View style={mainContainer}>
@@ -715,8 +757,8 @@ class HomePage extends Component {
                             paddingLeft: Platform.OS === 'ios' ? hp(2.2) : hp(1),
                             flexDirection: 'row'
                         }}>
-                            {collection && collection.map((item, index) => (
-                                this.getCategoryDesigns(item, index)
+                            {collection && collection.map((item, i) => (
+                                this.getCategoryDesigns(item, i)
                             ))}
                         </View>
                     </ScrollView>
@@ -857,6 +899,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     getHomePageData, getTotalCartCount,
-    addToWishlist, addToCart, addToCartPlusOne
+    addToWishlist, addToCart, addRemoveFromCartByOne
 })
     (HomePage);

@@ -177,14 +177,14 @@ export function addToCart(data) {
 
 
 
-export function addToCartPlusOne(data) {
-  console.log("addToCartPlusOne", data);
+export function addRemoveFromCartByOne(data) {
+  console.log("addRemoveFromCartByOne", data);
 
   return dispatch => {
     dispatch(showLoadingIndicator(ADD_TO_CART_PLUS_ONE_DATA));
 
     axios.post(urls.addToCartGridAdd.url, data, header).then(response => {
-      console.log("addToCartPlusOne response", response.data);
+      console.log("addRemoveFromCartByOne response", response.data);
       if (response.data.ack === '1') {
         dispatch(
           onSuccess(response.data, ADD_TO_CART_PLUS_ONE_DATA_SUCCESS)

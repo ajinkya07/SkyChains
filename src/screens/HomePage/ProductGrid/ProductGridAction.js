@@ -19,6 +19,21 @@ import {
   FILTER_PRODUCT_DATA_ERROR,
   FILTER_PRODUCT_DATA_RESET_REDUCER,
 
+  ADD_PRODUCT_TO_WISHLIST_DATA,
+  ADD_PRODUCT_TO_WISHLIST_DATA_SUCCESS,
+  ADD_PRODUCT_TO_WISHLIST_DATA_ERROR,
+  ADD_PRODUCT_TO_WISHLIST_DATA_RESET_REDUCER,
+
+  ADD_PRODUCT_TO_CART_DATA,
+  ADD_PRODUCT_TO_CART_DATA_SUCCESS,
+  ADD_PRODUCT_TO_CART_DATA_ERROR,
+  ADD_PRODUCT_TO_CART_DATA_RESET_REDUCER,
+
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_SUCCESS,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_RESET_REDUCER,
+
 
 } from "@redux/types";
 
@@ -168,3 +183,91 @@ console.log("applyFilterProducts formdata",data);
       });
   }
 }
+
+
+export function addProductToWishlist(data) {
+  console.log("addProductToWishlist formdata", data);
+  return dispatch => {
+    dispatch(showLoadingIndicator(ADD_PRODUCT_TO_WISHLIST_DATA));
+
+    axios.post(urls.addToCartWishlist.url, data, header).then(response => {
+      console.log("addProductToWishlist success", response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, ADD_PRODUCT_TO_WISHLIST_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, ADD_PRODUCT_TO_WISHLIST_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        console.log("getHomePageData ERROR", error);
+
+        dispatch(
+          onFailure(strings.serverFailedMsg, ADD_PRODUCT_TO_WISHLIST_DATA_ERROR)
+        );
+      });
+  }
+}
+  
+export function addProductToCart(data) {
+  console.log("addProductToCart formdata",data);
+    return dispatch => {
+      dispatch(showLoadingIndicator(ADD_PRODUCT_TO_CART_DATA));
+  
+      axios.post(urls.addToCartWishlist.url, data, header).then(response => {
+        console.log("addProductToCart success", response.data);
+        if (response.data.ack === '1') {
+          dispatch(
+            onSuccess(response.data, ADD_PRODUCT_TO_CART_DATA_SUCCESS)
+          )
+        }
+        else {
+          dispatch(
+            onFailure(response.data.msg, ADD_PRODUCT_TO_CART_DATA_ERROR)
+          )
+        }
+      })
+        .catch(function (error) {
+          console.log("getHomePageData ERROR", error);
+  
+          dispatch(
+            onFailure(strings.serverFailedMsg, ADD_PRODUCT_TO_CART_DATA_ERROR)
+          );
+        });
+    }
+  }
+
+
+
+  export function addRemoveProductFromCartByOne(data) {
+    console.log("addRemoveProductFromCartByOne formdata",data);
+      return dispatch => {
+        dispatch(showLoadingIndicator(ADD_PRODUCT_TO_CART_PLUS_ONE_DATA));
+    
+        axios.post(urls.addToCartGridAdd.url, data, header).then(response => {
+          console.log("addRemoveProductFromCartByOne success", response.data);
+          if (response.data.ack === '1') {
+            dispatch(
+              onSuccess(response.data, ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_SUCCESS)
+            )
+          }
+          else {
+            dispatch(
+              onFailure(response.data.msg, ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR)
+            )
+          }
+        })
+          .catch(function (error) {
+            console.log("getHomePageData ERROR", error);
+    
+            dispatch(
+              onFailure(strings.serverFailedMsg, ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR)
+            );
+          });
+      }
+    }
+  

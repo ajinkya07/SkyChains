@@ -19,7 +19,22 @@ import {
   FILTER_PRODUCT_DATA_ERROR,
   FILTER_PRODUCT_DATA_RESET_REDUCER,
 
-  
+  ADD_PRODUCT_TO_WISHLIST_DATA,
+  ADD_PRODUCT_TO_WISHLIST_DATA_SUCCESS,
+  ADD_PRODUCT_TO_WISHLIST_DATA_ERROR,
+  ADD_PRODUCT_TO_WISHLIST_DATA_RESET_REDUCER,
+
+
+  ADD_PRODUCT_TO_CART_DATA,
+  ADD_PRODUCT_TO_CART_DATA_SUCCESS,
+  ADD_PRODUCT_TO_CART_DATA_ERROR,
+  ADD_PRODUCT_TO_CART_DATA_RESET_REDUCER,
+
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_SUCCESS,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR,
+  ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_RESET_REDUCER,
+
 } from "@redux/types";
 
 
@@ -43,6 +58,17 @@ const initialState = {
   errorFilteredProductVersion: 0,
   filteredProductData: [],
 
+  successAddProductToWishlistVersion: 0,
+  errorAddProductToWishlistVersion: 0,
+  addProductToWishlistData: [],
+
+  successAddProductToCartVersion: 0,
+  errorAddProductToCartVersion: 0,
+  addProductToCartData: [],
+
+  successProductAddToCartPlusOneVersion: 0,
+  errorProductAddToCartPlusOneVersion: 0,
+  productAddToCartPlusOneData: [],
 
 };
 
@@ -107,66 +133,153 @@ export default function dataReducer(state = initialState, action) {
       return initialState;
 
 
-      case FILTER_PARAMS_DATA:
+    case FILTER_PARAMS_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case FILTER_PARAMS_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        filterParamsData: action.data.data,
+        successFilterParamsVersion: ++state.successFilterParamsVersion,
+        error: false
+      };
+
+    case FILTER_PARAMS_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        filterParamsData: [],
+        errorFilterParamsVersion: ++state.errorFilterParamsVersion
+      };
+
+    case FILTER_PARAMS_DATA_RESET_REDUCER:
+      return initialState;
+
+
+    case FILTER_PRODUCT_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case FILTER_PRODUCT_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        filteredProductData: action.data.data,
+        successFilteredProductVersion: ++state.successFilteredProductVersion,
+        error: false
+      };
+
+    case FILTER_PRODUCT_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorFilteredProductVersion: ++state.errorFilteredProductVersion
+      };
+
+    case FILTER_PRODUCT_DATA_RESET_REDUCER:
+      return initialState;
+
+
+    case ADD_PRODUCT_TO_WISHLIST_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case ADD_PRODUCT_TO_WISHLIST_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: "",
+        isFetching: false,
+        addProductToWishlistData: action.data,
+        successAddProductToWishlistVersion: ++state.successAddProductToWishlistVersion,
+        error: false
+      };
+
+    case ADD_PRODUCT_TO_WISHLIST_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorAddProductToWishlistVersion: ++state.errorAddProductToWishlistVersion
+      };
+
+    case ADD_PRODUCT_TO_WISHLIST_DATA_RESET_REDUCER:
+      return initialState;
+
+
+
+      case ADD_PRODUCT_TO_CART_DATA:
         return {
           ...state,
           isFetching: true
         };
   
-      case FILTER_PARAMS_DATA_SUCCESS:
+      case ADD_PRODUCT_TO_CART_DATA_SUCCESS:
         return {
           ...state,
           errorMsg: "",
           isFetching: false,
-          filterParamsData: action.data.data,
-          successFilterParamsVersion: ++state.successFilterParamsVersion,
+          addProductToCartData: action.data,
+          successAddProductToCartVersion: ++state.successAddProductToCartVersion,
           error: false
         };
   
-      case FILTER_PARAMS_DATA_ERROR:
+      case ADD_PRODUCT_TO_CART_DATA_ERROR:
         return {
           ...state,
           isFetching: false,
           error: true,
           errorMsg: action.error,
-          filterParamsData:[],
-          errorFilterParamsVersion: ++state.errorFilterParamsVersion
+          errorAddProductToCartVersion: ++state.errorAddProductToCartVersion
         };
   
-      case FILTER_PARAMS_DATA_RESET_REDUCER:
+      case ADD_PRODUCT_TO_CART_DATA_RESET_REDUCER:
         return initialState;
+
+
+      case ADD_PRODUCT_TO_CART_PLUS_ONE_DATA:
+        return {
+          ...state,
+          isFetching: true
+        };
   
+      case ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_SUCCESS:
+        return {
+          ...state,
+          errorMsg: "",
+          isFetching: false,
+          productAddToCartPlusOneData: action.data,
+          successProductAddToCartPlusOneVersion: ++state.successProductAddToCartPlusOneVersion,
+          error: false
+        };
+  
+      case ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_ERROR:
+        return {
+          ...state,
+          isFetching: false,
+          error: true,
+          errorMsg: action.error,
+          errorProductAddToCartPlusOneVersion: ++state.errorProductAddToCartPlusOneVersion
+        };
+  
+      case ADD_PRODUCT_TO_CART_PLUS_ONE_DATA_RESET_REDUCER:
+        return initialState;
 
 
-
-        case FILTER_PRODUCT_DATA:
-          return {
-            ...state,
-            isFetching: true
-          };
-    
-        case FILTER_PRODUCT_DATA_SUCCESS:
-          return {
-            ...state,
-            errorMsg: "",
-            isFetching: false,
-            filteredProductData: action.data.data,
-            successFilteredProductVersion: ++state.successFilteredProductVersion,
-            error: false
-          };
-    
-        case FILTER_PRODUCT_DATA_ERROR:
-          return {
-            ...state,
-            isFetching: false,
-            error: true,
-            errorMsg: action.error,
-            errorFilteredProductVersion: ++state.errorFilteredProductVersion
-          };
-    
-        case FILTER_PRODUCT_DATA_RESET_REDUCER:
-          return initialState;
-    
 
 
     default:

@@ -135,8 +135,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 export default function _Tabs() {
     var totalCartCount = 0
-     totalCartCount =  global.totalCartCount
-     console.log("totalCartCount",totalCartCount);
+    totalCartCount = global.totalCartCount
     return (
 
         <Tab.Navigator initialRouteName="Home"
@@ -207,8 +206,8 @@ export default function _Tabs() {
                 options={{
                     tabBarLabel: 'Cart',
                     activeTintColor: color.brandColor,
-                    tabBarBadge:totalCartCount ? totalCartCount : '' ,
-                    
+                    tabBarBadge: totalCartCount ? totalCartCount : '',
+
                     tabBarIcon: ({ color, size, focused }) => {
 
                         if (focused) {

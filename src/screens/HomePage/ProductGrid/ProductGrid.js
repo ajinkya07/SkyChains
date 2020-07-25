@@ -16,7 +16,8 @@ import { color } from '@values/colors';
 import ProductGridStyle from '@productGrid/ProductGridStyle';
 import {
     getProductSubCategoryData, getSortByParameters,
-    getfilterParameters, applyFilterProducts
+    getfilterParameters, applyFilterProducts,
+    addProductToWishlist, addProductToCart, addRemoveProductFromCartByOne
 } from '@productGrid/ProductGridAction';
 import { Toast, CheckBox } from 'native-base';
 import Modal from 'react-native-modal';
@@ -62,6 +63,16 @@ class ProductGrid extends Component {
 
             successFilteredProductVersion: 0,
             errorFilteredProductVersion: 0,
+            successAddProductToWishlistVersion: 0,
+            errorAddProductToWishlistVersion: 0,
+            clickedLoadMore: false,
+
+            successAddProductToCartVersion: 0,
+            errorAddProductToCartVersion: 0,
+
+            successProductAddToCartPlusOneVersion: 0,
+            errorProductAddToCartPlusOneVersion: 0,
+
 
         };
         userId = global.userId;
@@ -99,7 +110,10 @@ class ProductGrid extends Component {
         const { successProductGridVersion, errorProductGridVersion,
             successSortByParamsVersion, errorSortByParamsVersion,
             successFilterParamsVersion, errorFilterParamsVersion,
-            successFilteredProductVersion, errorFilteredProductVersion
+            successFilteredProductVersion, errorFilteredProductVersion,
+            successAddProductToWishlistVersion, errorAddProductToWishlistVersion,
+            successAddProductToCartVersion, errorAddProductToCartVersion,
+            successProductAddToCartPlusOneVersion, errorProductAddToCartPlusOneVersion
 
         } = nextProps;
         let newState = null;
@@ -153,12 +167,54 @@ class ProductGrid extends Component {
             };
         }
 
+        if (successAddProductToWishlistVersion > prevState.successAddProductToWishlistVersion) {
+            newState = {
+                ...newState,
+                successAddProductToWishlistVersion: nextProps.successAddProductToWishlistVersion,
+            };
+        }
+        if (errorAddProductToWishlistVersion > prevState.errorAddProductToWishlistVersion) {
+            newState = {
+                ...newState,
+                errorAddProductToWishlistVersion: nextProps.errorAddProductToWishlistVersion,
+            };
+        }
+
+        if (successAddProductToCartVersion > prevState.successAddProductToCartVersion) {
+            newState = {
+                ...newState,
+                successAddProductToCartVersion: nextProps.successAddProductToCartVersion,
+            };
+        }
+        if (errorAddProductToCartVersion > prevState.errorAddProductToCartVersion) {
+            newState = {
+                ...newState,
+                errorAddProductToCartVersion: nextProps.errorAddProductToCartVersion,
+            };
+        }
+
+
+        if (successProductAddToCartPlusOneVersion > prevState.successProductAddToCartPlusOneVersion) {
+            newState = {
+                ...newState,
+                successProductAddToCartPlusOneVersion: nextProps.successProductAddToCartPlusOneVersion,
+            };
+        }
+        if (errorProductAddToCartPlusOneVersion > prevState.errorProductAddToCartPlusOneVersion) {
+            newState = {
+                ...newState,
+                errorProductAddToCartPlusOneVersion: nextProps.errorProductAddToCartPlusOneVersion,
+            };
+        }
+
         return newState;
     }
 
     async componentDidUpdate(prevProps, prevState) {
         const { productGridData, sortByParamsData,
-            filterParamsData, filteredProductData } = this.props;
+            filterParamsData, filteredProductData, addProductToWishlistData,
+            addProductToCartData, productAddToCartPlusOneData
+        } = this.props;
 
         if (this.state.successProductGridVersion > prevState.successProductGridVersion) {
             if (productGridData.products && productGridData.products.length > 0) {
@@ -177,7 +233,7 @@ class ProductGrid extends Component {
                 color: 'warning',
                 duration: 2500,
             });
-            this.setState({page:0})
+            this.setState({ page: 0 })
         }
 
         if (this.state.successFilteredProductVersion > prevState.successFilteredProductVersion) {
@@ -205,7 +261,55 @@ class ProductGrid extends Component {
                 })
             }
         }
+
+        if (this.state.successAddProductToWishlistVersion > prevState.successAddProductToWishlistVersion) {
+            if (addProductToWishlistData.ack === '1') {
+                Toast.show({
+                    text: addProductToWishlistData && addProductToWishlistData.msg,
+                    duration: 2500
+                })
+            }
+        } if (this.state.errorAddProductToWishlistVersion > prevState.errorAddProductToWishlistVersion) {
+            Toast.show({
+                text: addProductToWishlistData && addProductToWishlistData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+
+        if (this.state.successAddProductToCartVersion > prevState.successAddProductToCartVersion) {
+            if (addProductToCartData.ack === '1') {
+                Toast.show({
+                    text: addProductToCartData && addProductToCartData.msg,
+                    duration: 2500
+                })
+            }
+        } if (this.state.errorAddProductToCartVersion > prevState.errorAddProductToCartVersion) {
+            Toast.show({
+                text: addProductToCartData && addProductToCartData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
+
+        if (this.state.successProductAddToCartPlusOneVersion > prevState.successProductAddToCartPlusOneVersion) {
+            if (productAddToCartPlusOneData.ack === '1') {
+                Toast.show({
+                    text: productAddToCartPlusOneData && productAddToCartPlusOneData.msg,
+                    duration: 2500
+                })
+            }
+        } if (this.state.errorProductAddToCartPlusOneVersion > prevState.errorProductAddToCartPlusOneVersion) {
+            Toast.show({
+                text: productAddToCartPlusOneData && productAddToCartPlusOneData.msg,
+                type: 'danger',
+                duration: 2500
+            })
+        }
     }
+
+
+
 
     renderLoader = () => {
         return (
@@ -223,7 +327,7 @@ class ProductGrid extends Component {
         });
     };
 
-
+    //GRID UI HERE
     gridView = (item) => {
         const { gridItemDesign, latestTextView, latestTextView2,
             gridImage, gridDesign, border, iconView
@@ -290,14 +394,14 @@ class ProductGrid extends Component {
 
                         {item.in_cart === 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                <TouchableOpacity onPress={() => this.addProductToWishlist(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Heart.png')}
                                         style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => alert('cart')}>
+                                <TouchableOpacity onPress={() => this.addProductToCart(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/DarkCart.png')}
                                         style={{ height: hp(3), width: hp(3) }}
@@ -309,7 +413,7 @@ class ProductGrid extends Component {
 
                         {item.in_cart > 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => alert('wishlist')}>
+                                <TouchableOpacity onPress={() => this.removeProductFromCartByOne(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Minus.png')}
                                         style={{ height: hp(3), width: hp(3) }}
@@ -318,9 +422,10 @@ class ProductGrid extends Component {
                                 </TouchableOpacity>
                                 <_Text numberOfLines={1}
                                     textColor={color.brandColor}
-                                    fsMedium fwHeading >{item.in_cart}</_Text>
+                                    fsMedium fwHeading >
+                                    {item.quantity > 1 ? item.quantity : item.in_cart}</_Text>
 
-                                <TouchableOpacity onPress={() => alert('cart')}>
+                                <TouchableOpacity onPress={() => this.addProductToCartPlusOne(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Plus.png')}
                                         style={{ height: hp(3), width: hp(3) }}
@@ -334,6 +439,125 @@ class ProductGrid extends Component {
             </TouchableOpacity>
         );
     }
+
+
+    addProductToWishlist = async (item) => {
+        const { categoryData, page, selectedSortById } = this.state
+        let wishlistData = new FormData()
+
+        wishlistData.append('product_id', item.product_inventory_id);
+        wishlistData.append('user_id', userId);
+        wishlistData.append('cart_wish_table', 'wishlist');
+        wishlistData.append('no_quantity', 1);
+        wishlistData.append('product_inventory_table', 'product_master');
+
+        await this.props.addProductToWishlist(wishlistData)
+
+        const data1 = new FormData();
+        data1.append('table', 'product_master');
+        data1.append('mode_type', 'normal');
+        data1.append('collection_id', categoryData.id);
+        data1.append('user_id', userId);
+        data1.append('record', 10);
+        data1.append('page_no', page);
+        data1.append('sort_by', selectedSortById)
+
+        await this.props.getProductSubCategoryData(data1)
+    }
+
+    addProductToCart = async (item) => {
+        const { categoryData, page, selectedSortById } = this.state
+
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cartData = new FormData()
+
+        cartData.append('product_id', item.product_inventory_id);
+        cartData.append('user_id', userId);
+        cartData.append('cart_wish_table', 'cart');
+        cartData.append('no_quantity', 1);
+        cartData.append('product_inventory_table', 'product_master');
+
+        await this.props.addProductToCart(cartData)
+
+        const data2 = new FormData();
+        data2.append('table', 'product_master');
+        data2.append('mode_type', 'normal');
+        data2.append('collection_id', categoryData.id);
+        data2.append('user_id', userId);
+        data2.append('record', 10);
+        data2.append('page_no', page);
+        data2.append('sort_by', selectedSortById);
+
+        await this.props.getProductSubCategoryData(data2)
+    }
+
+
+    addProductToCartPlusOne = async (item) => {
+        const { categoryData, page, selectedSortById } = this.state
+
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cart = new FormData()
+
+        cart.append('product_id', item.product_inventory_id);
+        cart.append('user_id', userId);
+        cart.append('cart_wish_table', 'cart');
+        cart.append('no_quantity', 1);
+        cart.append('product_inventory_table', 'product_master');
+        cart.append('plus', 1);
+
+
+        await this.props.addRemoveProductFromCartByOne(cart)
+
+        const data3 = new FormData();
+        data3.append('table', 'product_master');
+        data3.append('mode_type', 'normal');
+        data3.append('collection_id', categoryData.id);
+        data3.append('user_id', userId);
+        data3.append('record', 10);
+        data3.append('page_no', page);
+        data3.append('sort_by', selectedSortById);
+
+        await this.props.getProductSubCategoryData(data3)
+
+        this.setState({
+            productId: item.product_id
+        })
+    }
+
+    removeProductFromCartByOne = async (item) => {
+        const { categoryData, page, selectedSortById } = this.state
+
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        let cart1 = new FormData()
+
+        cart1.append('product_id', item.product_inventory_id);
+        cart1.append('user_id', userId);
+        cart1.append('cart_wish_table', 'cart');
+        cart1.append('no_quantity', 1);
+        cart1.append('product_inventory_table', 'product_master');
+        cart1.append('plus', 0);
+
+        await this.props.addRemoveProductFromCartByOne(cart1)
+
+        const data4 = new FormData();
+        data4.append('table', 'product_master');
+        data4.append('mode_type', 'normal');
+        data4.append('collection_id', categoryData.id);
+        data4.append('user_id', userId);
+        data4.append('record', 10);
+        data4.append('page_no', page);
+        data4.append('sort_by', selectedSortById);
+
+        await this.props.getProductSubCategoryData(data4)
+
+        this.setState({
+            productId: item.product_id
+        })
+    }
+
 
 
     showProductImageModal = (item) => {
@@ -407,7 +631,8 @@ class ProductGrid extends Component {
 
     LoadMoreData = () => {
         this.setState({
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            clickedLoadMore: true
         }, () => this.LoadRandomData())
     }
 
@@ -441,7 +666,7 @@ class ProductGrid extends Component {
                     </TouchableOpacity>
                     : null
                 }
-                {this.props.isFetching && this.state.gridData.length >= 10 ?
+                {this.state.clickedLoadMore && this.props.isFetching && this.state.gridData.length >= 10 ?
                     <View style={{
                         flex: 1, height: 40, width: wp(100), backgroundColor: '#EEF8F7',
                         justifyContent: 'center',
@@ -516,6 +741,7 @@ class ProductGrid extends Component {
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
+        console.log("gridData", gridData);
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
                 <_CustomHeader
@@ -929,12 +1155,27 @@ function mapStateToProps(state) {
         errorFilteredProductVersion: state.productGridReducer.errorFilteredProductVersion,
         filteredProductData: state.productGridReducer.filteredProductData,
 
+        successAddProductToWishlistVersion: state.productGridReducer.successAddProductToWishlistVersion,
+        errorAddProductToWishlistVersion: state.productGridReducer.errorAddProductToWishlistVersion,
+        addProductToWishlistData: state.productGridReducer.addProductToWishlistData,
+
+        successAddProductToCartVersion: state.productGridReducer.successAddProductToCartVersion,
+        errorAddProductToCartVersion: state.productGridReducer.errorAddProductToCartVersion,
+        addProductToCartData: state.productGridReducer.addProductToCartData,
+
+        successProductAddToCartPlusOneVersion: state.productGridReducer.successProductAddToCartPlusOneVersion,
+        errorProductAddToCartPlusOneVersion: state.productGridReducer.errorProductAddToCartPlusOneVersion,
+        productAddToCartPlusOneData: state.productGridReducer.productAddToCartPlusOneData,
+
+
+
     };
 }
 
 export default connect(mapStateToProps, {
     getProductSubCategoryData, getSortByParameters,
-    getfilterParameters, applyFilterProducts
+    getfilterParameters, applyFilterProducts,
+    addProductToWishlist, addProductToCart, addRemoveProductFromCartByOne
 })(ProductGrid);
 
 
@@ -958,7 +1199,7 @@ class RangeSlider extends React.Component {
         this.props.setsliderValues(values)
     };
 
-    
+
     render() {
         const { data } = this.props
         const { values } = this.state

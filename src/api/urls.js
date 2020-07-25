@@ -3,6 +3,8 @@ var url = "http://jewel.jewelmarts.in/webservices/"
 
 export const urls = {
     baseUrl: "http://jewel.jewelmarts.in/webservices/",
+    
+    imageUrl: "http://jewel.jewelmarts.in/",
 
     Login: {
         url: url + "User_registration/userLogin",
