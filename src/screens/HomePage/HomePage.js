@@ -181,7 +181,7 @@ class HomePage extends Component {
         }
 
         if (this.state.errorHomePageVersion > prevState.errorHomePageVersion) {
-           // this.failedView()
+            // this.failedView()
             Toast.show({
                 text: homePageData.length !== 0 ? homePageData.msg : strings.serverFailedMsg,
                 type: 'danger',
@@ -230,41 +230,23 @@ class HomePage extends Component {
                 var dex
                 for (let m = 0; m < homePageData.final_collection.length; m++) {
                     // homePageData.final_collection[m].product_assign.map((p, c) => {
-                            Index =homePageData.final_collection[m].product_assign.findIndex(item => item.product_id == productId)
-                       
-                            console.log("Index inside ---", Index);
-                            if(Index >=0){
-                                i = m;
-                                // break;
-                                dex = Index
-                            }
-                        // })
+                    Index = homePageData.final_collection[m].product_assign.findIndex(item => item.product_id == productId)
+                    if (Index >= 0) {
+                        i = m;
+                        // break;
+                        dex = Index
+                    }
+                    // })
                 }
-                // homePageData && homePageData.final_collection.map((data, j) => {
-                //     data.product_assign && data.product_assign.map((product, j) => {
-                //         id = product.product_id
-                //         Index = data.product_assign.findIndex(person => person.product_id == productId)
-                //         // Index=  data.product_assign.filter(item=> item.product_id == productId)
-                //         //Index = _.findIndex(product, { id: productId })
-                //     })
-                // })
-
-                console.log("i", i);
-                console.log("dex", dex);
-                console.log("Index", Index);
-
-
                 if (dex >= 0) {
                     // homePageData && homePageData.final_collection[i].product_assign.map((data, index) => {
-                        finalCollection[i].product_assign[dex].in_cart = 
-                            this.props.addToCartPlusOneData.data !==null ? parseInt(this.props.addToCartPlusOneData.data.quantity)
+                    finalCollection[i].product_assign[dex].in_cart =
+                        this.props.addToCartPlusOneData.data !== null ? parseInt(this.props.addToCartPlusOneData.data.quantity)
                             : undefined
+                    // })
 
-                    console.log(" data.product_assign[dex].in_cart",  finalCollection[i].product_assign[dex].in_cart);
-                // })
-
-                    this.setState({ in_cart: finalCollection[i].product_assign[dex].in_cart},
-                        ()=>{
+                    this.setState({ in_cart: finalCollection[i].product_assign[dex].in_cart },
+                        () => {
                             console.log(JSON.stringify(finalCollection));
                         });
                 }
@@ -285,20 +267,20 @@ class HomePage extends Component {
         }
     }
 
-    failedView =()=>{
+    failedView = () => {
         return (
-            <View style={{ height:hp(100),justifyContent: 'center', alignItems: 'center', }}>
-              <Image
-                source={require("../../assets/gif/noData.gif")}
-                style={{ height: hp(20), width: hp(20) }}
-              />
-              <Text style={{ fontSize: 18, fontWeight: '400' }}>{strings.serverFailedMsg}</Text>
+            <View style={{ height: hp(100), justifyContent: 'center', alignItems: 'center', }}>
+                <Image
+                    source={require("../../assets/gif/noData.gif")}
+                    style={{ height: hp(20), width: hp(20) }}
+                />
+                <Text style={{ fontSize: 18, fontWeight: '400' }}>{strings.serverFailedMsg}</Text>
             </View>
-          )
+        )
     }
 
 
-     showToast = (msg, type, duration) => {
+    showToast = (msg, type, duration) => {
         Toast.show({
             text: msg ? msg : strings.serverFailedMsg,
             type: type ? type : 'danger',
@@ -464,16 +446,21 @@ class HomePage extends Component {
                             </View>
                         </View>
                         <View style={border}></View>
-                        {item.in_cart === 0 &&
+
+                        {/* {item.in_cart === 0 && */}
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => this.addToWishlist(item)}>
+                                <TouchableOpacity
+                                    onPress={() => alert('inProgress')}>
+                                    {/* onPress={() => this.addToWishlist(item)}> */}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Heart.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.addToCart(item)}>
+                                <TouchableOpacity
+                                    onPress={() => alert('inProgress')}>
+                                    {/* onPress={() => this.addToCart(item)}> */}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/DarkCart.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -481,11 +468,13 @@ class HomePage extends Component {
                                     />
                                 </TouchableOpacity>
                             </View>
-                        }
+                        {/* } */}
 
-                        {item.in_cart > 0 &&
+                        {/* {item.in_cart > 0 &&
                             <View style={iconView}>
-                                <TouchableOpacity onPress={() => this.removeFromCartByOne(item)}>
+                                <TouchableOpacity
+                                    onPress={() => alert('inProgress')}>
+                                    onPress={() => this.removeFromCartByOne(item)}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Minus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -498,7 +487,9 @@ class HomePage extends Component {
                                     {item.in_cart}
                                 </_Text>
 
-                                <TouchableOpacity onPress={() => this.addToCartPlusOne(item)}>
+                                <TouchableOpacity
+                                    onPress={() => alert('inProgress')}>
+                                    onPress={() => this.addToCartPlusOne(item)}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Plus.png')}
                                         style={{ height: hp(3.3), width: hp(3.3) }}
@@ -506,7 +497,7 @@ class HomePage extends Component {
                                     />
                                 </TouchableOpacity>
                             </View>
-                        }
+                        } */}
 
                     </View>
                 </View>
@@ -544,7 +535,7 @@ class HomePage extends Component {
         data.append('user_id', userId);
         data.append('image_type', type);
 
-       // await this.props.getHomePageData(data)
+        // await this.props.getHomePageData(data)
     }
 
 
@@ -594,7 +585,7 @@ class HomePage extends Component {
         // data.append('user_id', userId);
         // data.append('image_type', type);
 
-       // await this.props.getHomePageData(data)
+        // await this.props.getHomePageData(data)
 
         this.setState({
             productId: item.product_id
@@ -901,4 +892,4 @@ export default connect(mapStateToProps, {
     getHomePageData, getTotalCartCount,
     addToWishlist, addToCart, addRemoveFromCartByOne
 })
-    (HomePage);
+(HomePage);

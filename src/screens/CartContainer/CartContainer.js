@@ -81,26 +81,32 @@ class CartContainer extends Component {
       cartStateData:[],
       wishStateData:[],
       openMoreDetailsIdwish:'',
-      openMoreDetailsIdCart:''
+      openMoreDetailsIdCart:'',
+
+      successCartVersion: 0,
+      errorCartVersion: 0,
+
+      successWishlistVersion: 0,
+      errorWishlistVersion: 0,
     };
     userId = global.userId;
 
   }
 
-  componentDidMount = () => {
+  componentDidMount = async() => {
     const type = Platform.OS === 'ios' ? 'ios' : 'android'
 
     const data = new FormData();
     data.append('user_id', userId);
     data.append('table', 'cart');
 
-    this.props.getCartData(data)
+    await this.props.getCartData(data)
 
     const data2 = new FormData();
     data2.append('user_id', userId);
     data2.append('table', 'wishlist');
 
-    this.props.getWishlistData(data2)
+    await this.props.getWishlistData(data2)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -138,7 +144,6 @@ class CartContainer extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { cartData, wishlistData } = this.props;
-
 
     if (this.state.successCartVersion > prevState.successCartVersion) {
       this.setState({
@@ -278,6 +283,8 @@ class CartContainer extends Component {
     return (
       <FlatList
         data={wishlistData}
+        refreshing={this.props.isFetching}
+       onRefresh={()=>this.scrollDownToRefreshWishList()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={{ marginBottom: hp(1), marginTop: hp(1), }}>
@@ -290,6 +297,16 @@ class CartContainer extends Component {
 
     );
   };
+
+  scrollDownToRefreshWishList = ()=>{
+
+    const wishDataRefresh = new FormData();
+    wishDataRefresh.append('user_id', userId);
+    wishDataRefresh.append('table', 'wishlist');
+
+    this.props.getWishlistData(wishDataRefresh)
+
+  }
 
 
   setCartToggleView = (data) =>{
@@ -408,6 +425,8 @@ class CartContainer extends Component {
     return (
       <FlatList
         data={cartData}
+        refreshing={this.props.isFetching}
+        onRefresh={()=>this.scrollDownToRefreshCart()}      
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={{ marginBottom: hp(1), marginTop: hp(1), }}>
@@ -420,10 +439,20 @@ class CartContainer extends Component {
     );
   };
 
+  scrollDownToRefreshCart = ()=>{
+
+    const refreshData = new FormData();
+    refreshData.append('user_id', userId);
+    refreshData.append('table', 'cart');
+
+     this.props.getCartData(refreshData)
+
+  }
+
 
 
   render() {
-    const { cartData, wishlistData } = this.props
+    const { cartData, wishlistData, isFetching } = this.props
     const { wishStateData,cartStateData } = this.state
 
 
@@ -447,7 +476,7 @@ class CartContainer extends Component {
                 />
               </TabHeading>
             }>
-            {cartData.length > 0 && this.CartDetails(cartData)}
+            {cartData.length > 0 && !isFetching && this.CartDetails(cartData)}
           </Tab>
 
           <Tab
@@ -464,7 +493,7 @@ class CartContainer extends Component {
                 />
               </TabHeading>
             }>
-            {wishlistData.length > 0 && this.favoriteDetail(wishlistData)}
+            {wishlistData.length > 0 && !isFetching &&  this.favoriteDetail(wishlistData)}
           </Tab>
         </Tabs>
 
@@ -533,7 +562,6 @@ const styles = StyleSheet.create({
     borderWidth:0.4,
     borderColor:color.gray,
     borderRadius:5
-
   },
   imgStyle: {
     width: hp(8),
