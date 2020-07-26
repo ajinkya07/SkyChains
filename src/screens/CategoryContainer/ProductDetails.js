@@ -21,7 +21,7 @@ const MINUS_TOP_LESS = MINUS_TOP - 49;
 
 
 
-const CategoryDetails = props => {
+const ProductDetails = props => {
   const [scrollY, setscrollY] = useState(new Animated.Value(0));
   const headerHeight = useHeaderHeight();
   props.navigation.setOptions({
@@ -49,6 +49,8 @@ const CategoryDetails = props => {
     outputRange: [0, 0, 1],
     extrapolate: 'clamp',
   });
+
+  
   return (
     <View style={styles.container}>
       <AnimatedFastImage
@@ -219,4 +221,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryDetails;
+export default ProductDetails;

@@ -61,10 +61,10 @@ export default class _CustomHeader extends Component {
                             <Title style={{ color: color.black, fontSize: hp(2.6) }}>
                                 {this.props.Title ? this.props.Title  : ''}
                             </Title>
-                            {/* {this.props.Subtitle &&
+                            {this.props.Subtitle &&
                                 <Subtitle style={{ color: color.black, fontSize: hp(2) }}>{this.props.Subtitle ? this.props.Subtitle : ''}
                                 </Subtitle>
-                            } */}
+                            }
 
                         </Body>
                     }

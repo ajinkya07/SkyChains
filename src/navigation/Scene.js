@@ -16,7 +16,7 @@ import CustomOrder from '@accountCustomOrder/CustomOrder';
 import ProductGrid from '@productGrid/ProductGrid';
 import SubCategoryList from '@subCategoryList/SubCategoryList';
 import CategoryContainer from '@category/CategoryContainer';
-import CategoryDetails from '@category/CategoryDetails';
+import ProductDetails from '@category/ProductDetails';
 import SearchScreen from '@search/SearchScreen';
 import Notification from '@notification/Notification';
 import Banner from '@homepage/Banner';
@@ -56,6 +56,8 @@ class Scene extends React.Component {
       this.setState({ isLoginValue: false });
     }
   }
+
+
 
   getLoginScene() {
     return (
@@ -99,8 +101,8 @@ class Scene extends React.Component {
         <Stack.Screen name="CategoryContainer"
           component={CategoryContainer} options={{ headerShown: false }}
         />
-        <Stack.Screen name="CategoryDetails"
-          component={CategoryDetails} options={{ headerShown: true }}
+        <Stack.Screen name="ProductDetails"
+          component={ProductDetails} options={{ headerShown: true }}
         />
         <Stack.Screen name="SearchScreen"
           component={SearchScreen} options={{ headerShown: false }}
@@ -162,8 +164,8 @@ class Scene extends React.Component {
         <Stack.Screen name="CategoryContainer"
           component={CategoryContainer} options={{ headerShown: false }}
         />
-        <Stack.Screen name="CategoryDetails"
-          component={CategoryDetails} options={{ headerShown: true }}
+        <Stack.Screen name="ProductDetails"
+          component={ProductDetails} options={{ headerShown: true }}
         />
         <Stack.Screen name="SearchScreen"
           component={SearchScreen} options={{ headerShown: false }}

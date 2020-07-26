@@ -465,7 +465,7 @@ const loginFieldsStyles = StyleSheet.create({
     paddingLeft: 42,
   },
   whiteColor: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   mainContainerStyle: {
     height: 70,

@@ -6,6 +6,7 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 import _Container from '@container/_Container'
@@ -129,11 +130,12 @@ class AccountScreen extends React.Component {
     }
 }
 
-
 //const Tab = createBottomTabNavigator();
 const Tab = createMaterialBottomTabNavigator();
 
 export default function _Tabs() {
+    var totalCartCount = 0
+    totalCartCount = global.totalCartCount
     return (
 
         <Tab.Navigator initialRouteName="Home"
@@ -204,8 +206,8 @@ export default function _Tabs() {
                 options={{
                     tabBarLabel: 'Cart',
                     activeTintColor: color.brandColor,
-                    tabBarBadge:true,
-                    
+                    tabBarBadge: totalCartCount ? totalCartCount : '',
+
                     tabBarIcon: ({ color, size, focused }) => {
 
                         if (focused) {
