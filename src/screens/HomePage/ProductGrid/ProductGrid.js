@@ -73,7 +73,9 @@ class ProductGrid extends Component {
 
             successProductAddToCartPlusOneVersion: 0,
             errorProductAddToCartPlusOneVersion: 0,
-            productInventoryId: ''
+            productInventoryId: '',
+            isGrossWtSelected: true,
+
 
         };
         userId = global.userId;
@@ -262,6 +264,11 @@ class ProductGrid extends Component {
                 this.setState({
                     fromValue: filterParamsData.gross_weight[0].min_gross_weight,
                     toValue: filterParamsData.gross_weight[0].max_gross_weight,
+
+                    fromValue1: filterParamsData.net_weight[0].min_net_weight,
+                    toValue1: filterParamsData.net_weight[0].max_net_weight,
+
+                    
                 })
             }
         }
@@ -283,7 +290,7 @@ class ProductGrid extends Component {
 
         if (this.state.successAddProductToCartVersion > prevState.successAddProductToCartVersion) {
             if (addProductToCartData.ack === '1') {
-                
+
                 const data2 = new FormData();
                 data2.append('table', 'product_master');
                 data2.append('mode_type', 'normal');
@@ -292,7 +299,7 @@ class ProductGrid extends Component {
                 data2.append('record', 10);
                 data2.append('page_no', page);
                 data2.append('sort_by', selectedSortById);
-        
+
                 await this.props.getProductSubCategoryData(data2)
 
                 Toast.show({
@@ -317,30 +324,32 @@ class ProductGrid extends Component {
 
                 var Index = this.state.gridData.findIndex(item => item.product_inventory_id == this.state.productInventoryId)
 
-                console.log("Index",Index);
+                console.log("Index", Index);
                 if (Index !== -1) {
                     if (productAddToCartPlusOneData.data && productAddToCartPlusOneData.data.quantity !== null) {
                         console.log("in if");
 
                         this.state.gridData[Index].quantity = parseInt(productAddToCartPlusOneData.data.quantity)
 
-                           this.setState({
+                        this.setState({
                             quantity: productAddToCartPlusOneData.data.quantity,
-                        },() => { console.log(JSON.stringify(this.state.gridData));
+                        }, () => {
+                            console.log(JSON.stringify(this.state.gridData));
                         },
-                    );
+                        );
                     }
                     else if (productAddToCartPlusOneData.data == null) {
                         console.log("in else");
                         this.state.gridData[Index].quantity = parseInt(0)
                         this.setState({
                             quantity: '0',
-                        },() => { console.log(JSON.stringify(this.state.gridData));
+                        }, () => {
+                            console.log(JSON.stringify(this.state.gridData));
                         },
-                    );
+                        );
                     }
 
-                 
+
                 }
 
                 Toast.show({
@@ -388,8 +397,8 @@ class ProductGrid extends Component {
 
         return (
             <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
-            <View style={{
+                onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
+                <View style={{
                     backgroundColor: color.white,
                     height: item.value[2] && (item.value[2]).length > 11 ? hp(44) : hp(42), width: wp(46),
                     borderColor: color.gray,
@@ -398,8 +407,8 @@ class ProductGrid extends Component {
                 }}>
                     <View style={gridItemDesign}>
                         <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
-                        onLongPress={() => this.showProductImageModal(item)}>
+                            onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
+                            onLongPress={() => this.showProductImageModal(item)}>
                             {/* <Image
                             resizeMode={'cover'}
                             style={gridImage}
@@ -451,14 +460,14 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => this.addProductToWishlist(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Heart.png')}
-                                        style={{ height: hp(3), width: hp(3),marginTop:2 }}
+                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.addProductToCart(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/DarkCart.png')}
-                                        style={{ height: hp(3), width: hp(3),marginTop:2 }}
+                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -781,20 +790,20 @@ class ProductGrid extends Component {
 
     render() {
         const { categoryData, gridData, isSortByModal, isFilterModalVisible,
-            selectedSortById, toValue, fromValue, productImageToBeDisplayed,
-            sortList,
+            selectedSortById, toValue, fromValue,toValue1,fromValue1, productImageToBeDisplayed,
+            sortList, isGrossWtSelected,
             isProductImageModalVisibel } = this.state
 
         const { sortByParamsData, filterParamsData } = this.props
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
-        console.log("gridData",gridData);
+        console.log("gridData", gridData);
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
                 <_CustomHeader
-                    Title={`(${(gridData.length).toString()})` + ' '+ categoryData.col_name}
-                   // Subtitle={ `(${(gridData.length).toString()})`}
+                    Title={`(${(gridData.length).toString()})` + ' ' + categoryData.col_name}
+                    // Subtitle={ `(${(gridData.length).toString()})`}
                     RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
                     RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
                     RightBtnPressOne={() => this.props.navigation.navigate('SearchScreen')}
@@ -987,13 +996,10 @@ class ProductGrid extends Component {
                                         <View style={styles.content}>
                                             <View style={styles.filterContainer}>
                                                 <View style={styles.filter}>
-                                                    {/* <TouchableOpacity
-                                                        onPress={() => alert('FilterPressed')}>
-                                                        <Image
-                                                            style={styles.filterImg}
-                                                            source={require('../../../assets/image/BlueIcons/Filter.png')}
-                                                        />
-                                                    </TouchableOpacity> */}
+                                                    <Image
+                                                        style={styles.filterImg}
+                                                        source={require('../../../assets/image/BlueIcons/Filter.png')}
+                                                    />
                                                     <Text style={{ fontSize: 20 }}>Filter</Text>
                                                 </View>
                                                 <View>
@@ -1002,58 +1008,143 @@ class ProductGrid extends Component {
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
-                                            <View style={styles.border} />
 
-                                            <View style={styles.grossWeightContainer}>
-                                                <View style={styles.leftGrossWeight}>
+                                            <View style={styles.filterTabContainer}>
+                                                <View>
                                                     <TouchableOpacity
-                                                        onPress={() => alert('grossWeight')}>
-                                                        <Text style={styles.toText}>Gross weight</Text>
+                                                        onPress={() =>
+                                                            this.setState({ isGrossWtSelected: true })
+                                                        }>
+                                                        <Text
+                                                            style={{
+                                                                fontSize: 16,
+                                                                color: this.state.isGrossWtSelected
+                                                                    ? '#fbcb84'
+                                                                    : '#000',
+                                                            }}>
+                                                            Gross weight
+                          </Text>
                                                     </TouchableOpacity>
                                                 </View>
-                                                <View style={styles.rightGrossWeight}>
-                                                    <View>
-                                                        <Text style={styles.toText}>Gross weight</Text>
-                                                    </View>
-                                                </View>
+                                                <View style={styles.grosswt}></View>
+
+                                                <TouchableOpacity
+                                                    onPress={() =>
+                                                        this.setState({ isGrossWtSelected: false })}>
+                                                    <Text style={{
+                                                        fontSize: 16,
+                                                        color: this.state.isGrossWtSelected ? '#000' : '#fbcb84',
+                                                    }}>
+                                                        Net weight
+                          </Text>
+                                                </TouchableOpacity>
+
                                             </View>
+                                            <View style={styles.border} />
 
 
-                                            <View style={styles.sliderContainer}>
-                                                <View style={{ flex: 1 }}></View>
-                                                <View style={{ flex: 2 }}>
-                                                    {filterParamsData &&
-                                                        <View>
-                                                            <RangeSlider
-                                                                data={filterParamsData}
-                                                                setsliderValues={this.setFromToSliderValues}
-                                                            />
-                                                        </View>}
-                                                    <View style={{ marginTop: 25 }}>
-                                                        <Text style={styles.toText}>From</Text>
-                                                        <TextInput
-                                                            editable={false}
-                                                            style={styles.textInputStyle}
-                                                            //onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
-                                                            value={fromValue}
-                                                            placeholder="0.000"
-                                                            placeholderTextColor="#000"
-                                                        />
+                                            {this.state.isGrossWtSelected ? (
+                                                <>
+                                                    <View style={styles.grossWeightContainer}>
+                                                        <View style={styles.leftGrossWeight}>
+                                                            <TouchableOpacity
+                                                                onPress={() => Alert.alert('grossWeight')}>
+                                                                <Text style={styles.toText}>gross weight</Text>
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                        <View style={styles.rightGrossWeight}>
+                                                            <View>
+                                                                <Text style={styles.toText}>gross weight</Text>
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                    <View style={{ marginTop: 25, marginBottom: 15 }}>
-                                                        <Text style={styles.toText}>To</Text>
-                                                        <TextInput
-                                                            editable={false}
-                                                            style={styles.textInputStyle}
-                                                            // onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
-                                                            value={toValue}
-                                                            placeholder="0.000"
-                                                            placeholderTextColor="#000"
-                                                        // keyboardType={'numeric'}
-                                                        />
+                                                    <View style={styles.sliderContainer}>
+                                                        <View style={{ flex: 1 }}></View>
+                                                        <View style={{ flex: 2 }}>
+                                                            {filterParamsData &&
+                                                                <View>
+                                                                    <RangeSlider
+                                                                        data={filterParamsData}
+                                                                        setsliderValues={this.setFromToSliderValues}
+                                                                    />
+                                                                </View>}
+
+                                                            <View style={{ marginTop: 25 }}>
+                                                                <Text style={styles.toText}>From</Text>
+                                                                <TextInput
+                                                                    editable={false}
+                                                                    style={styles.textInputStyle}
+                                                                    //onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
+                                                                    value={fromValue}
+                                                                    placeholder="0.000"
+                                                                    placeholderTextColor="#000"
+                                                                />
+                                                            </View>
+                                                            <View style={{ marginTop: 25, marginBottom: 15 }}>
+                                                                <Text style={styles.toText}>To</Text>
+                                                                <TextInput
+                                                                    editable={false}
+                                                                    style={styles.textInputStyle}
+                                                                    // onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
+                                                                    value={toValue}
+                                                                    placeholder="0.000"
+                                                                    placeholderTextColor="#000"
+                                                                />
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                </View>
-                                            </View>
+                                                </>
+                                            ) : (
+                                                    <>
+                                                        <View style={styles.grossWeightContainer}>
+                                                            <View style={styles.leftGrossWeight}>
+                                                                <TouchableOpacity
+                                                                    onPress={() => Alert.alert('grossWeight')}>
+                                                                    <Text style={styles.toText}>net weight</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            <View style={styles.rightGrossWeight}>
+                                                                <View>
+                                                                    <Text style={styles.toText}>net weight</Text>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                        <View style={styles.sliderContainer}>
+                                                            <View style={{ flex: 1 }}></View>
+                                                            <View style={{ flex: 2 }}>
+
+                                                                {filterParamsData &&
+                                                                    <View>
+                                                                        <NetWeightRangeSlider
+                                                                            data={filterParamsData}
+                                                                            setsliderValues={this.setFromToSliderValues}
+                                                                        />
+                                                                    </View>}
+                                                                <View style={{ marginTop: 25 }}>
+                                                                    <Text style={styles.toText}>From</Text>
+                                                                    <TextInput
+                                                                        editable={false}
+                                                                        style={styles.textInputStyle}
+                                                                        value={fromValue1}
+                                                                        placeholder="0.000"
+                                                                        placeholderTextColor="#000"
+                                                                    />
+                                                                </View>
+                                                                <View style={{ marginTop: 25, marginBottom: 15 }}>
+                                                                    <Text style={styles.toText}>To</Text>
+                                                                    <TextInput
+                                                                        editable={false}
+                                                                        style={styles.textInputStyle}
+                                                                        value={toValue1}
+                                                                        placeholder="0.000"
+                                                                        placeholderTextColor="#000"
+                                                                    />
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                    </>
+                                                )}
+
                                             <SafeAreaView />
                                         </View>
                                     </TouchableWithoutFeedback>
@@ -1180,6 +1271,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         fontSize: 16
     },
+    filterTabContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 46,
+        alignItems: 'center',
+        backgroundColor: '#11255a',
+    },
+    grosswt: {
+        borderWidth: 1,
+        borderRightColor: '#fbcb84',
+        height: '90%',
+    },
+
 });
 
 
@@ -1260,14 +1364,102 @@ class RangeSlider extends React.Component {
         return (
             <View>
                 {data ?
-                    <View>
+                    <View style={{ marginLeft: 10 }}>
                         <MultiSlider
                             values={[values[0], values[1]]}
-                            sliderLength={wp(65)}
+                            sliderLength={wp(60)}
                             onValuesChange={this.multiSliderValuesChange}
                             min={min}
                             max={max}
                             step={1}
+                            selectedStyle={{
+                                backgroundColor: '#11255a',
+                            }}
+                            unselectedStyle={{
+                                backgroundColor: 'silver',
+                            }}
+                            trackStyle={{
+                                height: 4,
+                            }}
+                            markerStyle={{
+                                backgroundColor: '#11255a',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 13,
+                            }}
+
+                        />
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 10,
+                            }}>
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[0]}</Text>}
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[1]}</Text>}
+                        </View>
+                    </View> : null}
+            </View>
+        );
+    }
+}
+
+
+class NetWeightRangeSlider extends React.Component {
+    constructor(props) {
+        super(props);
+        let filter = this.props.data ? this.props.data : undefined
+        this.state = {
+            values: [filter.net_weight[0].min_net_weight,
+            filter.net_weight[0].max_net_weight]
+
+        };
+    }
+
+
+    multiSliderValuesChange = values => {
+        this.setState({
+            values,
+        });
+        this.props.setsliderValues(values)
+    };
+
+
+    render() {
+        const { data } = this.props
+        const { values } = this.state
+        if (data) {
+            var min = data.net_weight[0].min_net_weight
+            var max = data.net_weight[0].max_net_weight
+        }
+
+        return (
+            <View>
+                {data ?
+                    <View style={{ marginLeft: 10 }}>
+                        <MultiSlider
+                            values={[values[0], values[1]]}
+                            sliderLength={wp(60)}
+                            onValuesChange={this.multiSliderValuesChange}
+                            min={min}
+                            max={max}
+                            step={1}
+                            selectedStyle={{
+                                backgroundColor: '#11255a',
+                            }}
+                            unselectedStyle={{
+                                backgroundColor: 'silver',
+                            }}
+                            trackStyle={{
+                                height: 4,
+                            }}
+                            markerStyle={{
+                                backgroundColor: '#11255a',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 13,
+                            }}
+
                         />
                         <View
                             style={{
