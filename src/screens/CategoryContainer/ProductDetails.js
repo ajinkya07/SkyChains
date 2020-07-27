@@ -28,6 +28,7 @@ import { strings } from '@values/strings'
 import Swiper from 'react-native-swiper'
 import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
+import _CustomHeader from '@customHeader/_CustomHeader'
 
 
 
@@ -214,7 +215,7 @@ class ProductDetails extends React.Component {
       <TouchableOpacity onPress={() => this.props.navigation.navigate('BannerImage', { bannerDataImagePath: productDetailsStateData, baseUrl: url2 })}>
         <View key={k}>
           <FastImage
-            style={{ height: hp(25), width: wp(100) }}
+            style={{ height: hp(30), width: wp(100) }}
             source={{
               uri: url2 + data,
             }}
@@ -230,7 +231,7 @@ class ProductDetails extends React.Component {
   carausalView = (item) => {
     return (
       <View style={{
-        height: hp(35), width: wp(100),
+        height: hp(33), width: wp(100),
         //borderBottomColor: color.gray,
         //borderWidth: !this.props.isFetching ? 0.5 : 0
       }}>
@@ -287,13 +288,15 @@ class ProductDetails extends React.Component {
               iosBarStyle="default"
               androidStatusBarColor="default">
               <View style={styles.textViewStyle}>
+                <TouchableOpacity onPress={()=>this.props.navigation.goBack()}>
+                  <Image
+                    source={require('../../assets/image/back.png')}
+                    style={{marginLeft: 10,height: hp(2.2),width:  hp(2.2)
+                    }}
+                  />
+             </TouchableOpacity>
                 <Animated.Text
-                  style={[
-                    styles.headerTextStyle,
-                    {
-                      opacity: headerOpacity,
-                    },
-                  ]}>
+                  style={[styles.headerTextStyle,{opacity: headerOpacity}]}>
                   {productDetailsStateData.product_name}
                 </Animated.Text>
               </View>
@@ -400,7 +403,7 @@ class ProductDetails extends React.Component {
                                 }
                               </View>
 
-                              <View style={{ flexDirection: 'column', marginTop: 12 }}>
+                              <View style={{ flexDirection: 'column', }}>
                                 {(productDetailsStateData.key_value).map((value, j) => {
                                   return <Text style={{ marginTop: 10, fontSize: 17, color: 'gray' }}>{value}</Text>
                                 })
@@ -559,14 +562,14 @@ const styles = StyleSheet.create({
   textViewStyle: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
 
   headerTextStyle: {
     color: color.brandColor,
     fontSize: 22,
     //top: 3,
-    left: 5
+    marginLeft: 12
   },
   mainContainerStyle: {
     backgroundColor: '#fbcb84',

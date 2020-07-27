@@ -19,6 +19,10 @@ import {
     getfilterParameters, applyFilterProducts,
     addProductToWishlist, addProductToCart, addRemoveProductFromCartByOne
 } from '@productGrid/ProductGridAction';
+
+import { getTotalCartCount } from '@homepage/HomePageAction';
+
+
 import { Toast, CheckBox } from 'native-base';
 import Modal from 'react-native-modal';
 import { strings } from '@values/strings'
@@ -73,7 +77,11 @@ class ProductGrid extends Component {
 
             successProductAddToCartPlusOneVersion: 0,
             errorProductAddToCartPlusOneVersion: 0,
-            productInventoryId: ''
+            productInventoryId: '',
+            isGrossWtSelected: true,
+            successTotalCartCountVersion: 0,
+            errorTotalCartCountVersion: 0,
+
 
         };
         userId = global.userId;
@@ -114,7 +122,8 @@ class ProductGrid extends Component {
             successFilteredProductVersion, errorFilteredProductVersion,
             successAddProductToWishlistVersion, errorAddProductToWishlistVersion,
             successAddProductToCartVersion, errorAddProductToCartVersion,
-            successProductAddToCartPlusOneVersion, errorProductAddToCartPlusOneVersion
+            successProductAddToCartPlusOneVersion, errorProductAddToCartPlusOneVersion,
+            successTotalCartCountVersion, errorTotalCartCountVersion
 
         } = nextProps;
         let newState = null;
@@ -208,16 +217,30 @@ class ProductGrid extends Component {
             };
         }
 
+        if (successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+            newState = {
+                ...newState,
+                successTotalCartCountVersion: nextProps.successTotalCartCountVersion,
+            };
+        }
+        if (errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+            newState = {
+                ...newState,
+                errorTotalCartCountVersion: nextProps.errorTotalCartCountVersion,
+            };
+        }
+
         return newState;
     }
 
     async componentDidUpdate(prevProps, prevState) {
         const { productGridData, sortByParamsData,
             filterParamsData, filteredProductData, addProductToWishlistData,
-            addProductToCartData, productAddToCartPlusOneData
+            addProductToCartData, productAddToCartPlusOneData,
+            totalCartCountData
         } = this.props;
 
-        const { categoryData, page, selectedSortById } = this.state
+        const { categoryData, page, selectedSortById, gridData } = this.state
 
 
         if (this.state.successProductGridVersion > prevState.successProductGridVersion) {
@@ -242,11 +265,17 @@ class ProductGrid extends Component {
 
         if (this.state.successFilteredProductVersion > prevState.successFilteredProductVersion) {
             if (filteredProductData.products && filteredProductData.products.length > 0) {
+                let array = []
+                let array2 = []
+                array = this.state.page === 0 ? filteredProductData.products : [...this.state.gridData, ...filteredProductData.products]
+                array2.push(...array)
+
                 this.setState({
-                    gridData: this.state.page === 0 ? filteredProductData.products : [...this.state.gridData, ...filteredProductData.products]
+                    gridData: array2
+                    // gridData: this.state.page === 0 ? filteredProductData.products : [...this.state.gridData, ...filteredProductData.products]
                 })
             } else {
-                this.showToast('Please contact admin', 'danger');
+                this.showToast(strings.serverFailedMsg, 'danger');
             }
         }
         if (this.state.errorFilteredProductVersion > prevState.errorFilteredProductVersion) {
@@ -262,6 +291,11 @@ class ProductGrid extends Component {
                 this.setState({
                     fromValue: filterParamsData.gross_weight[0].min_gross_weight,
                     toValue: filterParamsData.gross_weight[0].max_gross_weight,
+
+                    fromValue1: filterParamsData.net_weight[0].min_net_weight,
+                    toValue1: filterParamsData.net_weight[0].max_net_weight,
+
+
                 })
             }
         }
@@ -283,7 +317,7 @@ class ProductGrid extends Component {
 
         if (this.state.successAddProductToCartVersion > prevState.successAddProductToCartVersion) {
             if (addProductToCartData.ack === '1') {
-                
+
                 const data2 = new FormData();
                 data2.append('table', 'product_master');
                 data2.append('mode_type', 'normal');
@@ -292,7 +326,7 @@ class ProductGrid extends Component {
                 data2.append('record', 10);
                 data2.append('page_no', page);
                 data2.append('sort_by', selectedSortById);
-        
+
                 await this.props.getProductSubCategoryData(data2)
 
                 Toast.show({
@@ -317,30 +351,28 @@ class ProductGrid extends Component {
 
                 var Index = this.state.gridData.findIndex(item => item.product_inventory_id == this.state.productInventoryId)
 
-                console.log("Index",Index);
                 if (Index !== -1) {
                     if (productAddToCartPlusOneData.data && productAddToCartPlusOneData.data.quantity !== null) {
-                        console.log("in if");
-
                         this.state.gridData[Index].quantity = parseInt(productAddToCartPlusOneData.data.quantity)
 
-                           this.setState({
+                        this.setState({
                             quantity: productAddToCartPlusOneData.data.quantity,
-                        },() => { console.log(JSON.stringify(this.state.gridData));
+                        }, () => {
+                            console.log(JSON.stringify(this.state.gridData));
                         },
-                    );
+                        );
                     }
                     else if (productAddToCartPlusOneData.data == null) {
-                        console.log("in else");
                         this.state.gridData[Index].quantity = parseInt(0)
                         this.setState({
                             quantity: '0',
-                        },() => { console.log(JSON.stringify(this.state.gridData));
+                        }, () => {
+                            console.log(JSON.stringify(this.state.gridData));
                         },
-                    );
+                        );
                     }
 
-                 
+
                 }
 
                 Toast.show({
@@ -356,6 +388,11 @@ class ProductGrid extends Component {
                 duration: 2500
             })
         }
+
+        if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+            global.totalCartCount = totalCartCountData.count
+        }
+
     }
 
 
@@ -383,13 +420,12 @@ class ProductGrid extends Component {
         const { gridItemDesign, latestTextView, latestTextView2,
             gridImage, gridDesign, border, iconView
         } = ProductGridStyle;
-
         let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
             <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
-            <View style={{
+                onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
+                <View style={{
                     backgroundColor: color.white,
                     height: item.value[2] && (item.value[2]).length > 11 ? hp(44) : hp(42), width: wp(46),
                     borderColor: color.gray,
@@ -398,8 +434,8 @@ class ProductGrid extends Component {
                 }}>
                     <View style={gridItemDesign}>
                         <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
-                        onLongPress={() => this.showProductImageModal(item)}>
+                            onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
+                            onLongPress={() => this.showProductImageModal(item)}>
                             {/* <Image
                             resizeMode={'cover'}
                             style={gridImage}
@@ -451,14 +487,14 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => this.addProductToWishlist(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Heart.png')}
-                                        style={{ height: hp(3), width: hp(3),marginTop:2 }}
+                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.addProductToCart(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/DarkCart.png')}
-                                        style={{ height: hp(3), width: hp(3),marginTop:2 }}
+                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -534,6 +570,13 @@ class ProductGrid extends Component {
 
         await this.props.addProductToCart(cartData)
 
+
+        const countData = new FormData();
+        countData.append('user_id', userId);
+        countData.append('table', 'cart');
+
+        await this.props.getTotalCartCount(countData)
+
     }
 
 
@@ -586,6 +629,13 @@ class ProductGrid extends Component {
 
         await this.props.addRemoveProductFromCartByOne(cart1)
 
+        if(item.quantity == 1){
+        const countData1 = new FormData();
+        countData1.append('user_id', userId);
+        countData1.append('table', 'cart');
+
+        await this.props.getTotalCartCount(countData1)
+        }
 
         // const data4 = new FormData();
         // data4.append('table', 'product_master');
@@ -759,8 +809,20 @@ class ProductGrid extends Component {
         }
     }
 
+
+    setFromToSliderValuesNet = (values) => {
+        if (values && values.length > 0) {
+            this.setState({
+                fromValue1: values[0],
+                toValue1: values[1]
+
+            })
+        }
+    }
+
     applyFilter = () => {
-        const { categoryData, page, fromValue, toValue } = this.state
+        const { categoryData, page, fromValue, fromValue1, toValue1,
+            toValue, isGrossWtSelected } = this.state
 
         const filterData = new FormData()
         filterData.append('table', 'product_master');
@@ -770,8 +832,8 @@ class ProductGrid extends Component {
         filterData.append('record', 10);
         filterData.append('page_no', 0);
         filterData.append('sort_by', '2');
-        filterData.append('min_gross_weight', fromValue);
-        filterData.append('max_gross_weight', toValue);
+        filterData.append(isGrossWtSelected ? 'min_gross_weight' : 'min_gross_weight', isGrossWtSelected ? fromValue : fromValue1);
+        filterData.append(isGrossWtSelected ? 'max_gross_weight' : 'max_gross_weight', isGrossWtSelected ? toValue : toValue1);
 
         this.props.applyFilterProducts(filterData)
 
@@ -779,22 +841,24 @@ class ProductGrid extends Component {
 
     }
 
+
+
     render() {
         const { categoryData, gridData, isSortByModal, isFilterModalVisible,
-            selectedSortById, toValue, fromValue, productImageToBeDisplayed,
-            sortList,
+            selectedSortById, toValue, fromValue, toValue1, fromValue1, productImageToBeDisplayed,
+            sortList, isGrossWtSelected,
             isProductImageModalVisibel } = this.state
 
         const { sortByParamsData, filterParamsData } = this.props
 
         let imageUrl = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
-        console.log("gridData",gridData);
+
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: color.white }}>
                 <_CustomHeader
-                    Title={`(${(gridData.length).toString()})` + ' '+ categoryData.col_name}
-                   // Subtitle={ `(${(gridData.length).toString()})`}
+                    Title={`(${(gridData.length).toString()})` + ' ' + categoryData.col_name}
+                    // Subtitle={ `(${(gridData.length).toString()})`}
                     RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
                     RightBtnIcon2={require('../../../assets/image/BlueIcons/Notification.png')}
                     RightBtnPressOne={() => this.props.navigation.navigate('SearchScreen')}
@@ -811,7 +875,7 @@ class ProductGrid extends Component {
                     backgroundColor: color.white
                 }}>
                     <TouchableOpacity
-                        //disabled={this.props.error}
+                        disabled={(!this.state.gridData || this.state.gridData.length===0)}
                         onPress={() => this.openSortByModal()}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
@@ -825,6 +889,7 @@ class ProductGrid extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
+                      disabled={(!this.state.gridData || this.state.gridData.length===0)}
                         onPress={() => this.toggleFilterModal()}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
@@ -837,7 +902,8 @@ class ProductGrid extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity disabled={this.props.error}>
+                    <TouchableOpacity
+                    disabled={(!this.state.gridData || this.state.gridData.length===0)}>
                         <View style={{
                             width: wp(33), flex: 1, flexDirection: 'row',
                             justifyContent: 'center', alignItems: 'center'
@@ -987,13 +1053,10 @@ class ProductGrid extends Component {
                                         <View style={styles.content}>
                                             <View style={styles.filterContainer}>
                                                 <View style={styles.filter}>
-                                                    {/* <TouchableOpacity
-                                                        onPress={() => alert('FilterPressed')}>
-                                                        <Image
-                                                            style={styles.filterImg}
-                                                            source={require('../../../assets/image/BlueIcons/Filter.png')}
-                                                        />
-                                                    </TouchableOpacity> */}
+                                                    <Image
+                                                        style={styles.filterImg}
+                                                        source={require('../../../assets/image/BlueIcons/Filter.png')}
+                                                    />
                                                     <Text style={{ fontSize: 20 }}>Filter</Text>
                                                 </View>
                                                 <View>
@@ -1002,58 +1065,139 @@ class ProductGrid extends Component {
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>
-                                            <View style={styles.border} />
 
-                                            <View style={styles.grossWeightContainer}>
-                                                <View style={styles.leftGrossWeight}>
+                                            <View style={styles.filterTabContainer}>
+                                                <View>
                                                     <TouchableOpacity
-                                                        onPress={() => alert('grossWeight')}>
-                                                        <Text style={styles.toText}>Gross weight</Text>
+                                                        onPress={() =>
+                                                            this.setState({ isGrossWtSelected: true })
+                                                        }>
+                                                        <Text
+                                                            style={{
+                                                                fontSize: 16,
+                                                                color: this.state.isGrossWtSelected
+                                                                    ? '#fbcb84'
+                                                                    : '#000',
+                                                            }}>
+                                                            Gross weight
+                                                        </Text>
                                                     </TouchableOpacity>
                                                 </View>
-                                                <View style={styles.rightGrossWeight}>
-                                                    <View>
-                                                        <Text style={styles.toText}>Gross weight</Text>
-                                                    </View>
-                                                </View>
+                                                <View style={styles.grosswt}></View>
+
+                                                <TouchableOpacity
+                                                    onPress={() =>
+                                                        this.setState({ isGrossWtSelected: false })}>
+                                                    <Text style={{
+                                                        fontSize: 16,
+                                                        color: this.state.isGrossWtSelected ? '#000' : '#fbcb84',
+                                                    }}>
+                                                        Net weight
+                                                    </Text>
+                                                </TouchableOpacity>
+
                                             </View>
+                                            <View style={styles.border} />
 
 
-                                            <View style={styles.sliderContainer}>
-                                                <View style={{ flex: 1 }}></View>
-                                                <View style={{ flex: 2 }}>
-                                                    {filterParamsData &&
-                                                        <View>
-                                                            <RangeSlider
-                                                                data={filterParamsData}
-                                                                setsliderValues={this.setFromToSliderValues}
-                                                            />
-                                                        </View>}
-                                                    <View style={{ marginTop: 25 }}>
-                                                        <Text style={styles.toText}>From</Text>
-                                                        <TextInput
-                                                            editable={false}
-                                                            style={styles.textInputStyle}
-                                                            //onChangeText={(fromValue) => this.onTextChanged('fromValue', fromValue)}
-                                                            value={fromValue}
-                                                            placeholder="0.000"
-                                                            placeholderTextColor="#000"
-                                                        />
+                                            {this.state.isGrossWtSelected ? (
+                                                <>
+                                                    <View style={styles.grossWeightContainer}>
+                                                        <View style={styles.leftGrossWeight}>
+                                                            <TouchableOpacity>
+                                                                <Text style={styles.toText}>Gross weight</Text>
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                        <View style={styles.rightGrossWeight}>
+                                                            <View>
+                                                                <Text style={styles.toText}>Gross weight</Text>
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                    <View style={{ marginTop: 25, marginBottom: 15 }}>
-                                                        <Text style={styles.toText}>To</Text>
-                                                        <TextInput
-                                                            editable={false}
-                                                            style={styles.textInputStyle}
-                                                            // onChangeText={(toValue) => this.onTextChanged('toValue', toValue)}
-                                                            value={toValue}
-                                                            placeholder="0.000"
-                                                            placeholderTextColor="#000"
-                                                        // keyboardType={'numeric'}
-                                                        />
+                                                    <View style={styles.sliderContainer}>
+                                                        <View style={{ flex: 1 }}></View>
+                                                        <View style={{ flex: 2 }}>
+                                                            {filterParamsData &&
+                                                                <View>
+                                                                    <RangeSlider
+                                                                        data={filterParamsData}
+                                                                        setsliderValues={this.setFromToSliderValues}
+                                                                    />
+                                                                </View>}
+
+                                                            <View style={{ marginTop: 25 }}>
+                                                                <Text style={styles.toText}>From</Text>
+                                                                <TextInput
+                                                                    editable={false}
+                                                                    style={styles.textInputStyle}
+                                                                    value={fromValue}
+                                                                    placeholder="0.000"
+                                                                    placeholderTextColor="#000"
+                                                                />
+                                                            </View>
+                                                            <View style={{ marginTop: 25, marginBottom: 15 }}>
+                                                                <Text style={styles.toText}>To</Text>
+                                                                <TextInput
+                                                                    editable={false}
+                                                                    style={styles.textInputStyle}
+                                                                    value={toValue}
+                                                                    placeholder="0.000"
+                                                                    placeholderTextColor="#000"
+                                                                />
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                </View>
-                                            </View>
+                                                </>
+                                            ) : (
+                                                    <>
+                                                        <View style={styles.grossWeightContainer}>
+                                                            <View style={styles.leftGrossWeight}>
+                                                                <TouchableOpacity>
+                                                                    <Text style={styles.toText}>Net weight</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            <View style={styles.rightGrossWeight}>
+                                                                <View>
+                                                                    <Text style={styles.toText}>Net weight</Text>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                        <View style={styles.sliderContainer}>
+                                                            <View style={{ flex: 1 }}></View>
+                                                            <View style={{ flex: 2 }}>
+
+                                                                {filterParamsData &&
+                                                                    <View>
+                                                                        <NetWeightRangeSlider
+                                                                            data={filterParamsData}
+                                                                            setsliderValuesNet={this.setFromToSliderValuesNet}
+                                                                        />
+                                                                    </View>}
+                                                                <View style={{ marginTop: 25 }}>
+                                                                    <Text style={styles.toText}>From</Text>
+                                                                    <TextInput
+                                                                        editable={false}
+                                                                        style={styles.textInputStyle}
+                                                                        value={fromValue1}
+                                                                        placeholder="0.000"
+                                                                        placeholderTextColor="#000"
+                                                                    />
+                                                                </View>
+                                                                <View style={{ marginTop: 25, marginBottom: 15 }}>
+                                                                    <Text style={styles.toText}>To</Text>
+                                                                    <TextInput
+                                                                        editable={false}
+                                                                        style={styles.textInputStyle}
+                                                                        value={toValue1}
+                                                                        placeholder="0.000"
+                                                                        placeholderTextColor="#000"
+                                                                    />
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                    </>
+                                                )}
+
                                             <SafeAreaView />
                                         </View>
                                     </TouchableWithoutFeedback>
@@ -1180,6 +1324,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         fontSize: 16
     },
+    filterTabContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 46,
+        alignItems: 'center',
+        backgroundColor: '#11255a',
+    },
+    grosswt: {
+        borderWidth: 1,
+        borderRightColor: '#fbcb84',
+        height: '90%',
+    },
+
 });
 
 
@@ -1216,6 +1373,9 @@ function mapStateToProps(state) {
         errorProductAddToCartPlusOneVersion: state.productGridReducer.errorProductAddToCartPlusOneVersion,
         productAddToCartPlusOneData: state.productGridReducer.productAddToCartPlusOneData,
 
+        successTotalCartCountVersion: state.homePageReducer.successTotalCartCountVersion,
+        errorTotalCartCountVersion: state.homePageReducer.errorTotalCartCountVersion,
+        totalCartCountData: state.homePageReducer.totalCartCountData,
 
 
     };
@@ -1224,7 +1384,8 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getProductSubCategoryData, getSortByParameters,
     getfilterParameters, applyFilterProducts,
-    addProductToWishlist, addProductToCart, addRemoveProductFromCartByOne
+    addProductToWishlist, addProductToCart, addRemoveProductFromCartByOne,
+    getTotalCartCount
 })(ProductGrid);
 
 
@@ -1260,14 +1421,102 @@ class RangeSlider extends React.Component {
         return (
             <View>
                 {data ?
-                    <View>
+                    <View style={{ marginLeft: 10 }}>
                         <MultiSlider
                             values={[values[0], values[1]]}
-                            sliderLength={wp(65)}
+                            sliderLength={wp(60)}
                             onValuesChange={this.multiSliderValuesChange}
                             min={min}
                             max={max}
                             step={1}
+                            selectedStyle={{
+                                backgroundColor: '#11255a',
+                            }}
+                            unselectedStyle={{
+                                backgroundColor: 'silver',
+                            }}
+                            trackStyle={{
+                                height: 4,
+                            }}
+                            markerStyle={{
+                                backgroundColor: '#11255a',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 13,
+                            }}
+
+                        />
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 10,
+                            }}>
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[0]}</Text>}
+                            {values && <Text style={{ fontSize: 16 }}>{this.state.values[1]}</Text>}
+                        </View>
+                    </View> : null}
+            </View>
+        );
+    }
+}
+
+
+class NetWeightRangeSlider extends React.Component {
+    constructor(props) {
+        super(props);
+        let filter = this.props.data ? this.props.data : undefined
+        this.state = {
+            values: [filter.net_weight[0].min_net_weight,
+            filter.net_weight[0].max_net_weight]
+
+        };
+    }
+
+
+    multiSliderValuesChange = values => {
+        this.setState({
+            values,
+        });
+        this.props.setsliderValuesNet(values)
+    };
+
+
+    render() {
+        const { data } = this.props
+        const { values } = this.state
+        if (data) {
+            var min = data.net_weight[0].min_net_weight
+            var max = data.net_weight[0].max_net_weight
+        }
+
+        return (
+            <View>
+                {data ?
+                    <View style={{ marginLeft: 10 }}>
+                        <MultiSlider
+                            values={[values[0], values[1]]}
+                            sliderLength={wp(60)}
+                            onValuesChange={this.multiSliderValuesChange}
+                            min={min}
+                            max={max}
+                            step={1}
+                            selectedStyle={{
+                                backgroundColor: '#11255a',
+                            }}
+                            unselectedStyle={{
+                                backgroundColor: 'silver',
+                            }}
+                            trackStyle={{
+                                height: 4,
+                            }}
+                            markerStyle={{
+                                backgroundColor: '#11255a',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 13,
+                            }}
+
                         />
                         <View
                             style={{
