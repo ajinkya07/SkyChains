@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     View, Text, ScrollView, Dimensions, SafeAreaView,
-    Image, ActivityIndicator, TouchableOpacity, Platform
+    Image, ActivityIndicator, TouchableOpacity, Platform,
+    RefreshControl
 } from 'react-native';
 import HomePageStyle from '@homepage/HomePageStyle';
 import { color } from '@values/colors';
@@ -626,6 +627,21 @@ class HomePage extends Component {
         );
     };
 
+    onRefresh = async() =>{
+        const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+        const refreshData = new FormData();
+        refreshData.append('user_id', userId);
+        refreshData.append('image_type', type);
+
+        await this.props.getHomePageData(refreshData)
+
+        const data3 = new FormData();
+        data3.append('user_id', userId);
+        data3.append('table', 'cart');
+
+        await this.props.getTotalCartCount(data3)
+    }
 
     render() {
         const { mainContainer,
@@ -646,7 +662,13 @@ class HomePage extends Component {
         return (
             <View style={mainContainer}>
 
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView 
+                    refreshControl={
+                        <RefreshControl 
+                        refreshing={isFetching} 
+                        onRefresh={()=>this.onRefresh()} />
+                      }
+                showsVerticalScrollIndicator={false}>
 
                     {this.state.isModalVisible &&
                         <View>
