@@ -5,7 +5,7 @@ import {
 } from 'react-native-responsive-screen';
 import {
     View,
-    Text, Image,
+    Text, Image,Dimensions,
     Button, ActivityIndicator,
     FlatList, SafeAreaView, Alert,
     TouchableOpacity,
@@ -17,6 +17,7 @@ import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import Swiper from 'react-native-swiper'
 import { urls } from '@api/urls'
+import ImageZoom from 'react-native-image-pan-zoom';
 
 
 
@@ -58,19 +59,23 @@ export default class BannerImage extends Component {
 
 
         return (
-            <TouchableOpacity>
                 <View key={k}>
+                <ImageZoom 
+                    cropWidth={wp(100)}
+                       cropHeight={hp(70)}
+                       imageWidth={wp(100)}
+                       imageHeight={hp(70)}>
                     <FastImage
                         style={{ height: hp(70), width: wp(100) }}
                         source={{
                             uri: url2 + data,
                         }}
+                        defaultSource={require('../../assets/image/default.png')}
                         resizeMode={FastImage.resizeMode.contain}
                     />
+                    </ImageZoom>
 
                 </View>
-            </TouchableOpacity>
-
         )
     }
 
