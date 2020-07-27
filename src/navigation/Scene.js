@@ -20,7 +20,7 @@ import ProductDetails from '@category/ProductDetails';
 import SearchScreen from '@search/SearchScreen';
 import Notification from '@notification/Notification';
 import Banner from '@homepage/Banner';
-
+import BannerImage from '@category/BannerImage'
 
 
 
@@ -102,7 +102,7 @@ class Scene extends React.Component {
           component={CategoryContainer} options={{ headerShown: false }}
         />
         <Stack.Screen name="ProductDetails"
-          component={ProductDetails} options={{ headerShown: true }}
+          component={ProductDetails} options={{ headerShown: false }}
         />
         <Stack.Screen name="SearchScreen"
           component={SearchScreen} options={{ headerShown: false }}
@@ -114,7 +114,9 @@ class Scene extends React.Component {
         <Stack.Screen name="Notification"
           component={Notification} options={{ headerShown: false }}
         />
-
+<Stack.Screen name="BannerImage"
+          component={BannerImage} options={{ headerShown: false }}
+        />
       </Stack.Navigator>
 
     );
@@ -165,7 +167,7 @@ class Scene extends React.Component {
           component={CategoryContainer} options={{ headerShown: false }}
         />
         <Stack.Screen name="ProductDetails"
-          component={ProductDetails} options={{ headerShown: true }}
+          component={ProductDetails} options={{ headerShown: false }}
         />
         <Stack.Screen name="SearchScreen"
           component={SearchScreen} options={{ headerShown: false }}
@@ -176,6 +178,10 @@ class Scene extends React.Component {
         <Stack.Screen name="Notification"
           component={Notification} options={{ headerShown: false }}
         />
+<Stack.Screen name="BannerImage"
+          component={BannerImage} options={{ headerShown: false }}
+        />
+
 
       </Stack.Navigator>
 

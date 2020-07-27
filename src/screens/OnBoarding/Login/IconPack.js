@@ -35,4 +35,12 @@ export default {
   DELETE: require('../../../assets/image/BlueIcons/Delete.png'),
   CLOSE: require('../../../assets/image/close1.png'),
 
+  GRAY_DOWN_ARROW:require('../../../assets/image/DownArrow.png'),
+  BLUE_PLUS:require('../../../assets/image/BlueIcons/Plus.png'),
+  BLUE_MINUS:require('../../../assets/image/BlueIcons/Minus.png'),
+  BLUE_CART:require('../../../assets/image/BlueIcons/DarkCart.png'),
+  BLUE_WISHLIST:require('../../../assets/image/BlueIcons/Heart.png')
+
+
+
 };

@@ -71,8 +71,8 @@ export default {
   categoryImage: {
     height: hp(11),
     width: hp(11),
-    borderColor:color.gray,
-    borderWidth:0.4,
+    borderColor:'gray',
+    borderWidth:0.3,
     borderRadius:10
 
   },
@@ -82,8 +82,8 @@ export default {
   horizontalLatestDesign:{
     backgroundColor:color.white,
     height:hp(40),width:wp(39),marginTop:hp(2),
-    borderColor:color.gray,
-    borderWidth:0.2,borderRadius:10,
+    borderColor:'gray',
+    borderWidth:0.3,borderRadius:10,
     marginHorizontal: hp(1),
   },
 
@@ -116,7 +116,7 @@ export default {
   },
   border: {
     marginTop: hp(0.8), borderTopColor: color.brandColor,
-    borderWidth:0.4, width: wp(33),
+    borderWidth:0.5, width: wp(33),
 },
 iconView:{
   width:wp(39), marginTop: hp(2),

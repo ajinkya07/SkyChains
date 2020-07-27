@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator,
-  Dimensions, ScrollView
+  Dimensions, ScrollView, SafeAreaView
 } from 'react-native';
 import { Container, Tab, Tabs, TabHeading, Icon } from 'native-base';
 import IconPack from '@login/IconPack';
@@ -18,6 +18,7 @@ import { color } from '@values/colors';
 import { getCartData, getWishlistData } from '@cartContainer/CartContainerAction';
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
+import Modal from 'react-native-modal';
 
 
 
@@ -77,23 +78,27 @@ class CartContainer extends Component {
     this.state = {
       currentPage: 0,
       isToggle: false,
-      isToogleTwo:false,
-      cartStateData:[],
-      wishStateData:[],
-      openMoreDetailsIdwish:'',
-      openMoreDetailsIdCart:'',
+      isToogleTwo: false,
+      cartStateData: [],
+      wishStateData: [],
+      openMoreDetailsIdwish: '',
+      openMoreDetailsIdCart: '',
 
       successCartVersion: 0,
       errorCartVersion: 0,
 
       successWishlistVersion: 0,
       errorWishlistVersion: 0,
+
+      isCartImageModalVisibel: false,
+      imageToBeDisplayed: '',
+
     };
     userId = global.userId;
 
   }
 
-  componentDidMount = async() => {
+  componentDidMount = async () => {
     const type = Platform.OS === 'ios' ? 'ios' : 'android'
 
     const data = new FormData();
@@ -175,7 +180,7 @@ class CartContainer extends Component {
           source={require("../../assets/gif/noData.gif")}
           style={{ height: hp(20), width: hp(20) }}
         />
-        <Text style={{ fontSize: 18, fontWeight: '400' }}>{msg}</Text>
+        <Text style={{ fontSize: 18, fontWeight: '400', textAlign: 'center' }}>{msg}</Text>
       </View>
     )
   }
@@ -183,24 +188,28 @@ class CartContainer extends Component {
   setToggleView = (data) => {
     this.setState({
       isToggle: !this.state.isToggle,
-      openMoreDetailsIdwish:data.cart_wish_id
+      openMoreDetailsIdwish: data.cart_wish_id
     })
   }
 
 
   wishListView = (data) => {
-    const { isToggle,openMoreDetailsIdwish } = this.state
-    let baseurl = urls.imageUrl + data.thumb_image
+    const { isToggle, openMoreDetailsIdwish } = this.state
+
+    let baseurl = urls.imageUrl + data.zoom_image
 
     return (
       <TouchableOpacity
         onPress={() => this.setToggleView(data)}>
         <View style={styles.tabCartTopContainer}>
           <View style={styles.imgView}>
-            <Image
-              style={styles.imgStyle}
-              source={{ uri : baseurl + data.images }}
-            />
+            <TouchableOpacity
+              onLongPress={() => this.showImageModal(data)}>
+              <Image
+                style={styles.imgStyle}
+                source={{ uri: baseurl + data.images }}
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.codeCollectionView}>
             <Text style={styles.codeText}>Code</Text>
@@ -221,57 +230,57 @@ class CartContainer extends Component {
             />
           </View>
         </View>
-        {isToggle && (openMoreDetailsIdwish === data.cart_wish_id) 
-        ? (
-          <>
-            <View style={styles.tabCartMiddleContainer}>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>gross wt:</Text>
-                <Text style={styles.text}>{data.values[0]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>net wt:</Text>
-                <Text style={styles.text}>{data.values[1]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>quantity:</Text>
-                <Text style={styles.text}>{data.values[2]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>remarks:</Text>
-                <Text style={styles.text}>{data.values[3]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>length:</Text>
-                <Text style={styles.text}>{data.values[4]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>weight:</Text>
-                <Text style={styles.text}>{data.values[5]}</Text>
-              </View>
-            </View>
-            <View style={styles.tabCartBottomContainer}>
-              <TouchableOpacity onPress={() => alert('MoveToCart')}>
-                <View style={styles.tabCartBottomImgView}>
-                  <Image
-                    style={styles.tabCartBottomImg}
-                    source={IconPack.MOVE_TO}
-                  />
-                  <Text style={styles.btnText}>MOVE TO CART</Text>
+        {isToggle && (openMoreDetailsIdwish === data.cart_wish_id)
+          ? (
+            <>
+              <View style={styles.tabCartMiddleContainer}>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>gross wt:</Text>
+                  <Text style={styles.text}>{data.values[0]}</Text>
                 </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => alert('Delete')}>
-                <View style={styles.tabCartBottomImgView}>
-                  <Image
-                    style={styles.tabCartBottomImg}
-                    source={IconPack.DELETE}
-                  />
-                  <Text style={styles.btnText}>DELETE</Text>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>net wt:</Text>
+                  <Text style={styles.text}>{data.values[1]}</Text>
                 </View>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : null}
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>quantity:</Text>
+                  <Text style={styles.text}>{data.values[2]}</Text>
+                </View>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>remarks:</Text>
+                  <Text style={styles.text}>{data.values[3]}</Text>
+                </View>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>length:</Text>
+                  <Text style={styles.text}>{data.values[4]}</Text>
+                </View>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>weight:</Text>
+                  <Text style={styles.text}>{data.values[5]}</Text>
+                </View>
+              </View>
+              <View style={styles.tabCartBottomContainer}>
+                <TouchableOpacity onPress={() => alert('MoveToCart')}>
+                  <View style={styles.tabCartBottomImgView}>
+                    <Image
+                      style={styles.tabCartBottomImg}
+                      source={IconPack.MOVE_TO}
+                    />
+                    <Text style={styles.btnText}>MOVE TO CART</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => alert('Delete')}>
+                  <View style={styles.tabCartBottomImgView}>
+                    <Image
+                      style={styles.tabCartBottomImg}
+                      source={IconPack.DELETE}
+                    />
+                    <Text style={styles.btnText}>DELETE</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : null}
         <View style={styles.border} />
       </TouchableOpacity>
     );
@@ -284,7 +293,7 @@ class CartContainer extends Component {
       <FlatList
         data={wishlistData}
         refreshing={this.props.isFetching}
-       onRefresh={()=>this.scrollDownToRefreshWishList()}
+        onRefresh={() => this.scrollDownToRefreshWishList()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={{ marginBottom: hp(1), marginTop: hp(1), }}>
@@ -298,7 +307,7 @@ class CartContainer extends Component {
     );
   };
 
-  scrollDownToRefreshWishList = ()=>{
+  scrollDownToRefreshWishList = () => {
 
     const wishDataRefresh = new FormData();
     wishDataRefresh.append('user_id', userId);
@@ -309,9 +318,10 @@ class CartContainer extends Component {
   }
 
 
-  setCartToggleView = (data) =>{
-    this.setState({ isToogleTwo: !this.state.isToogleTwo,
-    openMoreDetailsIdCart:data.cart_wish_id
+  setCartToggleView = (data) => {
+    this.setState({
+      isToogleTwo: !this.state.isToogleTwo,
+      openMoreDetailsIdCart: data.cart_wish_id
     })
   }
 
@@ -323,8 +333,9 @@ class CartContainer extends Component {
     //   isToggle = !isToggle;
     //   setToggleView(isToggle);
     // };
-    const { isToogleTwo,openMoreDetailsIdCart } = this.state
-    let baseurl2 = urls.imageUrl + item.thumb_image
+    const { isToogleTwo, openMoreDetailsIdCart } = this.state
+
+    let baseurl2 = urls.imageUrl + item.zoom_image
 
     return (
       <TouchableOpacity
@@ -332,11 +343,13 @@ class CartContainer extends Component {
 
         <View style={styles.tabCartTopContainer}>
           <View style={styles.imgView}>
-            <Image
-              style={styles.imgStyle}
-              source={{ uri : baseurl2 + item.images }}
-
-            />
+            <TouchableOpacity
+              onLongPress={() => this.showImageModal(item)}>
+              <Image
+                style={styles.imgStyle}
+                source={{ uri: baseurl2 + item.images }}
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.codeCollectionView}>
             <Text style={styles.codeText}>Code</Text>
@@ -357,63 +370,63 @@ class CartContainer extends Component {
             />
           </View>
         </View>
-        {isToogleTwo && (openMoreDetailsIdCart === item.cart_wish_id) 
-        ? (
-          <>
-            <View style={styles.tabCartMiddleContainer}>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>gross wt:</Text>
-                <Text style={styles.text}>{item.values[0]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>net wt:</Text>
-                <Text style={styles.text}>{item.values[1]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>quantity:</Text>
-                <Text style={styles.text}>{item.values[2]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>remarks:</Text>
-                <Text style={styles.text}>{item.values[3]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>length:</Text>
-                <Text style={styles.text}>{item.values[4]}</Text>
-              </View>
-              <View style={styles.cartDetail}>
-                <Text style={styles.textColor}>weight:</Text>
-                <Text style={styles.text}>{item.values[5]}</Text>
-              </View>
-            </View>
-            <View style={styles.tabCartBottomContainer}>
-              <TouchableOpacity onPress={() => alert('edit')}>
-                <View style={styles.tabCartBottomImgView}>
-                  <Image style={styles.tabCartBottomImg} source={IconPack.EDIT} />
-                  <Text style={styles.btnText}>EDIT</Text>
+        {isToogleTwo && (openMoreDetailsIdCart === item.cart_wish_id)
+          ? (
+            <>
+              <View style={styles.tabCartMiddleContainer}>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>gross wt:</Text>
+                  <Text style={styles.text}>{item.values[0]}</Text>
                 </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => alert('MoveToWishList')}>
-                <View style={styles.tabCartBottomImgView}>
-                  <Image
-                    style={styles.tabCartBottomImg}
-                    source={IconPack.MOVE_TO}
-                  />
-                  <Text style={styles.btnText}>MOVE TO WISHLIST</Text>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>net wt:</Text>
+                  <Text style={styles.text}>{item.values[1]}</Text>
                 </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => alert('Delete')}>
-                <View style={styles.tabCartBottomImgView}>
-                  <Image
-                    style={styles.tabCartBottomImg}
-                    source={IconPack.DELETE}
-                  />
-                  <Text style={styles.btnText}>DELETE</Text>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>quantity:</Text>
+                  <Text style={styles.text}>{item.values[2]}</Text>
                 </View>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : null}
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>remarks:</Text>
+                  <Text style={styles.text}>{item.values[3]}</Text>
+                </View>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>length:</Text>
+                  <Text style={styles.text}>{item.values[4]}</Text>
+                </View>
+                <View style={styles.cartDetail}>
+                  <Text style={styles.textColor}>weight:</Text>
+                  <Text style={styles.text}>{item.values[5]}</Text>
+                </View>
+              </View>
+              <View style={styles.tabCartBottomContainer}>
+                <TouchableOpacity onPress={() => alert('edit')}>
+                  <View style={styles.tabCartBottomImgView}>
+                    <Image style={styles.tabCartBottomImg} source={IconPack.EDIT} />
+                    <Text style={styles.btnText}>EDIT</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => alert('MoveToWishList')}>
+                  <View style={styles.tabCartBottomImgView}>
+                    <Image
+                      style={styles.tabCartBottomImg}
+                      source={IconPack.MOVE_TO}
+                    />
+                    <Text style={styles.btnText}>MOVE TO WISHLIST</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => alert('Delete')}>
+                  <View style={styles.tabCartBottomImgView}>
+                    <Image
+                      style={styles.tabCartBottomImg}
+                      source={IconPack.DELETE}
+                    />
+                    <Text style={styles.btnText}>DELETE</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : null}
         <View style={styles.border} />
       </TouchableOpacity>
     );
@@ -426,7 +439,7 @@ class CartContainer extends Component {
       <FlatList
         data={cartData}
         refreshing={this.props.isFetching}
-        onRefresh={()=>this.scrollDownToRefreshCart()}      
+        onRefresh={() => this.scrollDownToRefreshCart()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={{ marginBottom: hp(1), marginTop: hp(1), }}>
@@ -439,23 +452,29 @@ class CartContainer extends Component {
     );
   };
 
-  scrollDownToRefreshCart = ()=>{
+  scrollDownToRefreshCart = () => {
 
     const refreshData = new FormData();
     refreshData.append('user_id', userId);
     refreshData.append('table', 'cart');
 
-     this.props.getCartData(refreshData)
+    this.props.getCartData(refreshData)
 
   }
 
 
+  showImageModal = (item) => {
+    this.setState({
+      imageToBeDisplayed: item,
+      isCartImageModalVisibel: true
+    })
+  }
 
   render() {
     const { cartData, wishlistData, isFetching } = this.props
-    const { wishStateData,cartStateData } = this.state
+    const { wishStateData, cartStateData, isCartImageModalVisibel, imageToBeDisplayed } = this.state
 
-
+    let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
     return (
       <Container style={{ flex: 1 }}>
@@ -493,7 +512,7 @@ class CartContainer extends Component {
                 />
               </TabHeading>
             }>
-            {wishlistData.length > 0 && !isFetching &&  this.favoriteDetail(wishlistData)}
+            {wishlistData.length > 0 && !isFetching && this.favoriteDetail(wishlistData)}
           </Tab>
         </Tabs>
 
@@ -542,6 +561,37 @@ class CartContainer extends Component {
         {!this.props.isFetching && this.props.cartData.length === 0 && this.state.currentPage === 0 ? this.noDataFound(this.props.errorMsgCart) : null}
         {!this.props.isFetching && this.props.wishlistData.length === 0 && this.state.currentPage === 1 ? this.noDataFound(this.props.errorMsgWishlist) : null}
 
+
+        {this.state.isCartImageModalVisibel &&
+          <View>
+            <Modal style={{ justifyContent: 'center' }}
+              isVisible={this.state.isCartImageModalVisibel}
+              onRequestClose={() => this.setState({ isCartImageModalVisibel: false })}
+              onBackdropPress={() => this.setState({ isCartImageModalVisibel: false })}
+              onBackButtonPress={() => this.setState({ isCartImageModalVisibel: false })}
+            >
+              <SafeAreaView>
+                <View style={{
+                  height: hp(42), backgroundColor: 'white', alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10
+                }}>
+                  <_Text fsMedium style={{ marginTop: hp(0.5) }}>Code: {imageToBeDisplayed.collection_sku_code}</_Text>
+                  <View style={{ marginTop: 5, borderBottomColor: 'gray', borderBottomWidth: 1, width: wp(90) }} />
+                  <Image
+                    source={{ uri: url + imageToBeDisplayed.images }}
+                    defaultSource={require('../../assets/image/default.png')}
+                    style={{
+                      height: hp(35), width: wp(90), marginTop: hp(1),
+                    }}
+                    resizeMode='cover'
+                  />
+                </View>
+              </SafeAreaView>
+            </Modal>
+          </View>
+        }
+
       </Container>
     );
   }
@@ -559,9 +609,9 @@ const styles = StyleSheet.create({
     width: hp(9),
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth:0.4,
-    borderColor:color.gray,
-    borderRadius:5
+    borderWidth: 0.4,
+    borderColor: color.gray,
+    borderRadius: 5
   },
   imgStyle: {
     width: hp(8),

@@ -56,14 +56,13 @@ class CategoryContainer extends Component {
     const { homePageData } = this.props
     const { fromSeeMore } = this.state
 
-    if (!fromSeeMore && homePageData && (homePageData.collection).length > 0) {
+    if (!fromSeeMore && homePageData.collection && (homePageData.collection).length > 0) {
       this.setState({
         categories: homePageData.collection
       })
     }
 
   }
-
 
 
   showToast = (msg, type, duration) => {
@@ -78,6 +77,7 @@ class CategoryContainer extends Component {
   showNotification = () => {
     alert('showNotification from category')
   }
+
   onSearchPress = () => {
     alert('onSearch from category')
   }
@@ -98,10 +98,24 @@ class CategoryContainer extends Component {
     }
   }
 
+  
+  noDataFound = (msg) => {
+    return (
+      <View style={{flex:1, justifyContent: 'center', alignItems: 'center', bottom: hp(5) }}>
+        <Image
+          source={require("../../assets/gif/noData.gif")}
+          style={{ height: hp(20), width: hp(20) }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: '400',textAlign:'center' }}>{msg}</Text>
+      </View>
+    )
+  }
+
+
+
   render() {
     const { categories, fromSeeMore } = this.state
 
-    console.log("categories", this.state.categories);
     let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
 
     return (
@@ -168,7 +182,7 @@ class CategoryContainer extends Component {
           />
         </View>
 
-        {(!categories || categories.length === 0) ? this.renderLoader() : null}
+        {(!categories || categories.length === 0) ? this.noDataFound(this.props.errorMsg) : null}
 
       </SafeAreaView>
 

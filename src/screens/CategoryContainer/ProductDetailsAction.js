@@ -68,30 +68,30 @@ console.log("getProductDetails data",data);
 }
 
 
-export function afterOtpRequest(data) {
-  console.log("SendOtp data",data);
+// export function afterOtpRequest(data) {
+//   console.log("SendOtp data",data);
   
-    return dispatch => {
-      dispatch(showLoadingIndicator(OTP_DATA));
-      axios.post(urls.ChangePassword.url, data, header).then(response => {
-          console.log("afterOtpRequest", response.data);
-          if (response.data.ack ==='1') {
-            dispatch(
-              onSuccess(response.data, OTP_DATA_SUCCESS)
-            )
-          }
-          else {
-            dispatch(
-              onFailure(response.data.msg, OTP_DATA_ERROR)
-            )
-          }
-        })
-        .catch(function (error) {
-          console.log("AFTER OTP WITH MOB AND PASS ERROR ", error);
-          dispatch(
-            onFailure(strings.serverFailedMsg, OTP_DATA_ERROR)
-          );
-        });
-    }
-  }
+//     return dispatch => {
+//       dispatch(showLoadingIndicator(OTP_DATA));
+//       axios.post(urls.ChangePassword.url, data, header).then(response => {
+//           console.log("afterOtpRequest", response.data);
+//           if (response.data.ack ==='1') {
+//             dispatch(
+//               onSuccess(response.data, OTP_DATA_SUCCESS)
+//             )
+//           }
+//           else {
+//             dispatch(
+//               onFailure(response.data.msg, OTP_DATA_ERROR)
+//             )
+//           }
+//         })
+//         .catch(function (error) {
+//           console.log("AFTER OTP WITH MOB AND PASS ERROR ", error);
+//           dispatch(
+//             onFailure(strings.serverFailedMsg, OTP_DATA_ERROR)
+//           );
+//         });
+//     }
+//   }
   

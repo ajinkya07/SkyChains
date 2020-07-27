@@ -403,12 +403,12 @@ class HomePage extends Component {
 
         return (
             <TouchableOpacity
-                // onPress={() => alert("ok")}>
-                onPress={() => this.props.navigation.navigate('ProductDetails', { productDetails: item })}>
+            onPress={()=>alert('inProgress')}>
+                {/* onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}> */}
                 <View style={horizontalLatestDesign}>
                     <View style={latestDesign}>
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('ProductDetails', { productDetails: item })}
+                           // onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
                             onLongPress={() => this.showImageModal(item)}>
                             <Image
                                 // resizeMode={'cover'}
@@ -844,9 +844,6 @@ class HomePage extends Component {
                             </Modal>
                         </View>
                     }
-
-
-
 
                 </ScrollView>
 
