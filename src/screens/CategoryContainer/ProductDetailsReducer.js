@@ -31,7 +31,7 @@ export default function dataReducer(state = initialState, action) {
         ...state,
         errorMsg: "",
         isFetching: false,
-        productDetailsData: action.data.data,
+        productDetailsData: action.data,
         successProductDetailsVersion: ++state.successProductDetailsVersion,
         error: false
       };

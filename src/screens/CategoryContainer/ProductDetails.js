@@ -1,224 +1,717 @@
-import React, {useState, useEffect} from 'react';
+import React, { Component, useState } from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  ScrollView,
-  Animated,
   Image,
-  Dimensions,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
+  ScrollView,
+  Platform,
   StyleSheet,
+  TextInput, ActivityIndicator,
+  Alert,
 } from 'react-native';
-import {useHeaderHeight} from '@react-navigation/stack';
+import { Container, Header, Toast, Picker, Icon } from 'native-base';
+import IconPack from '@login/IconPack';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import { connect } from 'react-redux';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import _Text from '@text/_Text'
+import { color } from '@values/colors';
+import { getProductDetails } from "@category/ProductDetailsAction";
+import { urls } from '@api/urls'
+import { strings } from '@values/strings'
+import Swiper from 'react-native-swiper'
+import Modal from 'react-native-modal';
+import FastImage from 'react-native-fast-image';
 
-const {width, height} = Dimensions.get('window');
-const hRem = height / 1600;
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-const AnimatedFastImage = Animated.createAnimatedComponent(Image);
-const BG_IMAGE_MAX_HEIGHT = width * 0.9026162791;
-const MINUS_TOP = BG_IMAGE_MAX_HEIGHT;
-const MINUS_TOP_LESS = MINUS_TOP - 49;
 
 
 
-const ProductDetails = props => {
-  const [scrollY, setscrollY] = useState(new Animated.Value(0));
-  const headerHeight = useHeaderHeight();
-  props.navigation.setOptions({
-    headerTitle: () => (
-      <Animated.Text
-        style={[{opacity: titleOpacity}, styles.headerExpertNameStyle]}>
-        Virat Kohli
-      </Animated.Text>
-    ),
-    headerTitleStyle: {
-      fontSize: 18,
-    },
-    headerTransparent: true,
-    // headerLeft: () => <null />
-  });
+var userId = ''
 
-  const imageScale = scrollY.interpolate({
-    inputRange: [-150, 0],
-    outputRange: [1.8, 1],
-    extrapolate: 'clamp',
-  });
 
-  const titleOpacity = scrollY.interpolate({
-    inputRange: [0, MINUS_TOP_LESS, MINUS_TOP],
-    outputRange: [0, 0, 1],
-    extrapolate: 'clamp',
-  });
+const AnimatedContent = Animated.createAnimatedComponent(ScrollView);
 
-  
+const PickerDropDown = () => {
+  const [selectedValue, setSelectedValue] = useState('18k');
   return (
-    <View style={styles.container}>
-      <AnimatedFastImage
-        source={{
-          uri:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTsq6ySNxF--9epg-z285B8gDfy68WgGdAoDQ&usqp=CAU',
-        }}
-        style={[
-          styles.absImageStyle,
-          {
-            transform: [
-              {
-                scale: imageScale,
-              },
-            ],
-            zIndex: -1,
-          },
-        ]}
-      />
-      <Animated.View
-        style={{
-          width: '100%',
-          height: headerHeight,
-          backgroundColor: '#fff',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          opacity: titleOpacity,
-          zIndex: 0,
-        }}
-      />
-      <AnimatedScrollView
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: scrollY}}}],
-          {
-            useNativeDriver: true,
-          },
-        )}
-        scrollEventThrottle={16}
-        overScrollMode="always"
-        style={{zIndex: -1}}>
-        <View style={styles.contentViewStyle}>
-          <View style={styles.contentStyle}>
-            <View style={styles.nameContainer}>
-              <Text style={styles.expertNameStyle} numberOfLines={1}>
-                Virat Kohli
-              </Text>
-            </View>
-            <Text style={styles.tagTextStyle}>India</Text>
-            <View style={styles.dividerLine} />
-            <Text style={styles.livesInTextStyle}>Lives in Mumbai</Text>
-            <Text style={styles.descTextStyle}>
-              In fall 2017, something odd happened to Fredrik Backman, the
-              bestselling Swedish author of 2012â€™s A Man Called Ove. He was
-              scheduled to be at a book fair in Copenhagen, but suddenly nothing
-              made sense. â€œAll the dates were confused, I didnâ€™t know where I
-              was supposed to be,â€ the 39-year-old says via WhatsApp from his
-              home in Stockholm. â€œThereâ€™s an expression in Swedish when youâ€™re
-              burned out. They say, â€˜This person hit the wall.â€™ Thatâ€™s what I
-              did.â€ In adulthood, Backmanâ€™s gigs included being a forklift
-              driver and a blogger. â€œI still donâ€™t feel, â€˜Oh, Iâ€™m an author,â€™â€‰â€
-              he says. â€œIf these were medieval times, I would be the guy
-              wandering from village to village telling stories for coins.â€ Itâ€™s
-              pretty much the only thing heâ€™s been doing since the age of 25,
-              but he still assumes it could all go away tomorrow. â€œThe only
-              thing that people have to decide is, â€˜Weâ€™re done with this,â€™ and
-              that part of my life is over. But Iâ€™ll still tell stories. I donâ€™t
-              have much in the way of hobbies. I donâ€™t have a lot of friends. I
-              donâ€™t do a lot of things. Iâ€™m with my family, I write, and I
-              read.â€ And Backman prefers that, really. But in 2017, another
-              strange thing happened: the movie adaptation of A Man Called Ove
-              was nominated for an Academy Award for best foreign film. (Tom
-              Hanks is starring in an English-language adaptation scheduled to
-              be released later this year.) Backman and his wife, who handles
-              the business aspects of his career, flew to L.A. for the Oscars,
-              but theyâ€™d only gotten one ticket, and Backman wasnâ€™t keen to go
-              to the event by himself. â€œThere was no way Iâ€™d be there without my
-              wife,â€ he says. â€œSo she went with the film crew, which they were
-              very happy about; they were like, â€˜We get the fun one!â€™â€‰â€
-            </Text>
-            <Text style={styles.expertsPhiolosyStyle}>NewsDetails</Text>
-            <Text style={styles.quoteStyle}>
-              Fredrik Backman Steals From Himself
-            </Text>
-          </View>
-          <View style={styles.getInTouchContainer}>
-            <Text style={styles.getInTouchText}>Information</Text>
-          </View>
-        </View>
-      </AnimatedScrollView>
+    <View>
+      <Picker
+        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 20 }} />}
+        mode="dropdown"
+        style={{ height: 50, width: wp(55) }}
+        selectedValue={selectedValue}
+        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+
+        <Picker.Item label="18k" value="18k" />
+        <Picker.Item label="22k" value="22k" />
+      </Picker>
     </View>
   );
 };
+
+
+const PickerWeightDropDown = (props) => {
+  const [selectedValue, setSelectedValue] = useState(props.weight);
+  return (
+    <View >
+      {/* <Picker
+        selectedValue={selectedValue}
+        style={{ height: 50, width: 200 }}
+        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+        <Picker.Item label={props.weight} value={props.weight} />
+      </Picker> */}
+
+      <Picker
+        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 20 }} />}
+        mode="dropdown"
+        style={{ height: 50, width: wp(55) }}
+        selectedValue={selectedValue}
+        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+        <Picker.Item label={props.weight} value={props.weight} />
+      </Picker>
+    </View>
+  );
+};
+
+
+
+
+
+
+class ProductDetails extends React.Component {
+
+  fullHeight = EStyleSheet.value('375rem');
+  fixHeader = EStyleSheet.value('0rem');
+  topContentHeight = 550;
+
+
+  constructor(props) {
+    super(props);
+    this.scrollY = new Animated.Value(0);
+
+    const productItem = this.props.route.params.productItemDetails;
+    this.state = {
+      count: 1,
+      remark: '',
+      isHideDetail: true,
+      length: '',
+      productItem: productItem,
+      successProductDetailsVersion: 0,
+      errorProductDetailsVersion: 0,
+      currentPage: 0
+
+    };
+    userId = global.userId;
+
+  }
+
+  componentDidMount = () => {
+    const { productItem } = this.state
+
+    const data = new FormData();
+    data.append('table', 'product_master');
+    data.append('mode_type', 'normal');
+    data.append('collection_id', productItem.collection_id);
+    data.append('user_id', userId);
+    data.append('product_id', productItem.product_inventory_id);
+
+    this.props.getProductDetails(data)
+  }
+
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { successProductDetailsVersion, errorProductDetailsVersion } = nextProps;
+    let newState = null;
+
+    if (successProductDetailsVersion > prevState.successProductDetailsVersion) {
+      newState = {
+        ...newState,
+        successProductDetailsVersion: nextProps.successProductDetailsVersion,
+      };
+    }
+    if (errorProductDetailsVersion > prevState.errorProductDetailsVersion) {
+      newState = {
+        ...newState,
+        errorProductDetailsVersion: nextProps.errorProductDetailsVersion,
+      };
+    }
+    return newState;
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    const { productDetailsData } = this.props;
+
+    if (this.state.successProductDetailsVersion > prevState.successProductDetailsVersion) {
+      if (productDetailsData.ack == '1') {
+        this.setState({
+          productDetailsStateData: productDetailsData.data[0],
+          length: productDetailsData !== undefined ? productDetailsData.data[0].length : '',
+
+        })
+      } else {
+        this.showToast(strings.serverFailedMsg, 'danger');
+      }
+    }
+    if (this.state.errorProductDetailsVersion > prevState.errorProductDetailsVersion) {
+      this.showToast(this.props.errorMsg, 'danger');
+    }
+  }
+
+
+  showToast = (msg, type, duration) => {
+    Toast.show({
+      text: msg ? msg : strings.serverFailedMsg,
+      type: type ? type : 'danger',
+      duration: duration ? duration : 2500,
+    });
+  };
+
+
+
+  _incrementCount() {
+    this.setState({
+      count: this.state.count + 1,
+    });
+  }
+  _decrementCount() {
+    if (this.state.count >= 2) {
+      this.setState({
+        count: this.state.count - 1,
+      });
+    }
+  }
+
+  toggleDescriptionDetails() {
+    this.setState({
+      isHideDetail: !this.state.isHideDetail,
+    });
+  }
+
+  renderLoader = () => {
+    return (
+      <View style={styles.loaderView}>
+        <ActivityIndicator size="large" color={color.white} />
+      </View>
+    );
+  };
+
+  setCurrentPage = (position) => {
+    this.setState({ currentPage: position });
+  }
+
+  renderScreen = (data, k) => {
+    const { productDetailsStateData } = this.state
+    let url2 = urls.imageUrl + (productDetailsStateData !== undefined && productDetailsStateData.zoom_image)
+
+
+    return (
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('BannerImage', { bannerDataImagePath: productDetailsStateData, baseUrl: url2 })}>
+        <View key={k}>
+          <FastImage
+            style={{ height: hp(25), width: wp(100) }}
+            source={{
+              uri: url2 + data,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+
+        </View>
+      </TouchableOpacity>
+
+    )
+  }
+
+  carausalView = (item) => {
+    return (
+      <View style={{
+        height: hp(35), width: wp(100),
+        //borderBottomColor: color.gray,
+        //borderWidth: !this.props.isFetching ? 0.5 : 0
+      }}>
+        {item ?
+          <Swiper
+            removeClippedSubviews={false}
+            style={{ flexGrow: 1, }}
+            autoplayTimeout={10}
+            ref={(swiper) => { this.swiper = swiper; }}
+            index={this.state.currentPage}
+            autoplay={false}
+            showsPagination={true}
+            loadMinimal={true}
+            loadMinimalLoader={<ActivityIndicator size="small" color='gray' />}
+            dot={<View style={{
+              backgroundColor: 'gray', width: 8, height: 8,
+              borderRadius: 4, marginLeft: 3,
+              marginRight: 3, top: 10
+            }} />}
+            activeDot={<View style={{
+              backgroundColor: color.brandColor, width: 10, height: 10, borderRadius: 5,
+              marginLeft: 3, marginRight: 3, top: 10
+            }} />}
+            onIndexChanged={(page) => this.setCurrentPage(page)}
+          >
+            {(item.image_name).map((page, index) => this.renderScreen(page, index))}
+          </Swiper>
+          : this.renderLoader()
+        }
+      </View>
+    )
+  }
+
+
+
+  render() {
+    const headerOpacity = this.scrollY.interpolate({
+      inputRange: [0, 282, 283],
+      outputRange: [0, 0, 1],
+      extrapolate: 'clamp',
+    });
+
+    const { productDetailsStateData } = this.state
+
+    let url = urls.imageUrl + (productDetailsStateData !== undefined && productDetailsStateData.zoom_image)
+
+    return (
+      <SafeAreaView style={styles.flex}>
+
+        {productDetailsStateData ?
+          <Container style={styles.flex}>
+            <Header
+              style={styles.headerStyle}
+              iosBarStyle="default"
+              androidStatusBarColor="default">
+              <View style={styles.textViewStyle}>
+                <Animated.Text
+                  style={[
+                    styles.headerTextStyle,
+                    {
+                      opacity: headerOpacity,
+                    },
+                  ]}>
+                  {productDetailsStateData.product_name}
+                </Animated.Text>
+              </View>
+            </Header>
+
+            <AnimatedContent
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
+                {
+                  useNativeDriver: true,
+                },
+              )}
+              scrollEventThrottle={16}>
+              <SafeAreaView style={styles.safeAreaViewStyle}>
+                <View style={{ flex: 1 }}>
+                  <View>
+                    {/* <Image
+                      source={{ uri: url + productDetailsStateData.image_name[0] }}
+                      style={{ width: '100%', height: hp(38) }}
+                      resizeMode='cover'
+                    /> */}
+                    {this.carausalView(productDetailsStateData)}
+                  </View>
+
+                  <View style={styles.mainContainerStyle}>
+                    <View style={styles.topTitleContainer}>
+                      <View style={{ width: wp(78) }}>
+                        <Text style={{ fontSize: 20, color: color.brandColor }}>{productDetailsStateData.product_name}</Text>
+                      </View>
+                      <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
+                        <Image
+                          source={IconPack.BLUE_WISHLIST}
+                          style={styles.ImageStyle}
+                        />
+                        <Image
+                          source={IconPack.BLUE_CART}
+                          style={styles.ImageStyle}
+                        />
+                      </View>
+                    </View>
+
+
+                    <View style={styles.topBorderStyle}></View>
+                    <View style={styles.quantityContainer}>
+                      <View>
+                        <Text style={{ fontSize: 20, color: 'gray' }}>Quantity</Text>
+                      </View>
+                      <View style={styles.quantitySubcontainer}>
+                        <TouchableOpacity onPress={() => this._decrementCount()}>
+                          <Image
+                            source={IconPack.BLUE_MINUS}
+                            style={styles.decrementCount}
+                          />
+                        </TouchableOpacity>
+                        <TextInput
+                          style={styles.countTextInput}
+                          keyboardType={'numeric'}
+                          onChangeText={count => this.setState({ count })}
+                          value={String(this.state.count)}
+                        />
+                        <TouchableOpacity onPress={() => this._incrementCount()}>
+                          <Image
+                            source={IconPack.BLUE_PLUS}
+                            style={styles.incrementCountIcon}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.remarkContainer}>
+                      <Image
+                        source={IconPack.BLUE_CART}
+                        style={styles.remarkIcon}
+                      />
+                      <TextInput
+                        style={styles.remarksInput}
+                        onChangeText={remark => this.setState({ remark })}
+                        value={String(this.state.remark)}
+                        placeholder="Remarks"
+                        placeholderTextColor="gray"
+                      />
+                    </View>
+
+
+                    <View style={styles.descriptionContainer}>
+                      <TouchableOpacity
+                        onPress={() => this.toggleDescriptionDetails()}>
+                        <View style={styles.descriptionRowContainer}>
+                          <Text style={{ fontSize: 20, color: 'gray' }}>Description</Text>
+                          <Image
+                            source={IconPack.GRAY_DOWN_ARROW}
+                            style={styles.downArrow}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      {this.state.isHideDetail ? (
+                        <>
+                          <View style={{ marginTop: 10 }}>
+                            <View style={styles.descriptionSubContainer}>
+                              <View style={{ flexDirection: 'column' }}>
+                                {(productDetailsStateData.key_label).map((key, i) => {
+                                  return <Text style={{ marginTop: 10, fontSize: 17, color: 'gray' }}>{key.replace('_', ' ')}</Text>
+                                })
+                                }
+                              </View>
+
+                              <View style={{ flexDirection: 'column', marginTop: 12 }}>
+                                {(productDetailsStateData.key_value).map((value, j) => {
+                                  return <Text style={{ marginTop: 10, fontSize: 17, color: 'gray' }}>{value}</Text>
+                                })
+                                }
+                              </View>
+
+                            </View>
+                          </View>
+                        </>
+                      ) : null}
+
+                      <View style={styles.customerDetailTopborder}></View>
+                      <Text
+                        style={{
+                          fontSize: 20, color: 'gray',
+                          marginBottom: 10,
+                          marginHorizontal: 10,
+                        }}>
+                        Customizable Detail
+                  </Text>
+
+                      {/* Melting */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginLeft: hp(3),
+                          justifyContent: 'space-between',
+                        }}>
+                        <View style={styles.customizableContainer}>
+                          <Text style={{ fontSize: 17, color: 'gray' }} >Melting</Text>
+                        </View>
+                        <PickerDropDown />
+                      </View>
+
+
+                      {/* WEIGHT */}
+
+
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginLeft: hp(3),
+                          justifyContent: 'space-between',
+                        }}>
+                        <View style={styles.customizableContainer}>
+                          <Text style={{ fontSize: 17, color: 'gray' }}>Weight</Text>
+                        </View>
+                        <View>
+                          <PickerWeightDropDown weight={productDetailsStateData.weight[0]} />
+                        </View>
+                      </View>
+
+                      {/* LENGTH */}
+
+                      <View style={styles.lenghtContainer}>
+                        <View style={styles.customizableContainer}>
+                          <Text style={{ fontSize: 17, color: 'gray' }}>Length</Text>
+                        </View>
+                        <View
+                          style={{
+                            width: '80%',
+                            marginLeft: 110,
+                          }}>
+                          <TextInput
+                            style={styles.lengthTextInput}
+                            keyboardType={'numeric'}
+                            onChangeText={length => this.setState({ length })}
+                            value={String(this.state.length)}
+                          />
+                        </View>
+                      </View>
+                      <View style={styles.bottomTextContainer}>
+                        <Text style={{ fontSize: 18, color: 'gray', textAlign: 'left' }}>
+                          Note: * There may be 10% variation (+/-) in the actual
+                      weight.{' '}
+                        </Text>
+                      </View>
+                      {/* Footer buttons */}
+
+
+                      <View
+                        style={{
+                          backgroundColor: '#11255a',
+                          height: hp(6),
+                          borderTopLeftRadius: 18,
+                          borderTopRightRadius: 18,
+                          flexDirection: 'row',
+                          flex: 1,
+                        }}>
+                        <View
+                          style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flex: 1.4,
+                            borderRightWidth: 2,
+                            borderRightColor: '#fbcb84',
+                            margin: 3,
+                          }}>
+                          <Text
+                            style={{ textAlign: 'center', color: '#fbcb84', fontWeight: '400' }}
+                            onPress={() => Alert.alert('cart')}>
+                            ADD TO CART
+                      </Text>
+                        </View>
+                        <View
+                          style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flex: 1,
+                          }}>
+                          <Text
+                            style={{ textAlign: 'center', color: '#fbcb84', fontWeight: '400' }}
+                            onPress={() => Alert.alert('wishlist')}>
+                            WISHLIST
+                      </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </SafeAreaView>
+            </AnimatedContent>
+
+          </Container>
+          :
+          null
+        }
+      </SafeAreaView>
+
+    );
+  }
+}
+
 const styles = StyleSheet.create({
-  absImageStyle: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    width: '100%',
-    height: undefined,
-    aspectRatio: 0.9026162791,
-  },
-  container: {
+  safeAreaViewStyle: {
     flex: 1,
   },
-  contentViewStyle: {
+  loaderView: {
+    position: 'absolute',
+    height: hp(100),
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex: {
+    flex: 1,
     backgroundColor: '#fff',
-    marginTop: MINUS_TOP,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
   },
-  contentStyle: {marginHorizontal: 16},
-  nameContainer: {
+  headerStyle: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    borderBottomWidth: 0,
+    alignItems: 'center',
+  },
+  textViewStyle: {
+    flex: 1,
     flexDirection: 'row',
-    marginTop: 18,
+    alignItems: 'flex-end',
   },
-  expertNameStyle: {
-    fontSize: 21,
-    color: 'black',
+
+  headerTextStyle: {
+    color: color.brandColor,
+    fontSize: 22,
+    //top: 3,
+    left: 5
   },
-  dividerLine: {
-    width: '100%',
-    height: 0.5,
-    backgroundColor: '#2d2e2f55',
-    marginTop: 27 * hRem,
+  mainContainerStyle: {
+    backgroundColor: '#fbcb84',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
   },
-  livesInTextStyle: {
-    fontSize: 16,
-    color: '#000000',
-    opacity: 0.55,
-    marginTop: 15 * hRem,
+  topTitleContainer: {
+    marginLeft: 10,
+    marginTop: hp(1),
+    flexDirection: 'row',
+    width: wp(90),
+    alignItems: 'center',
+    marginBottom: hp(1),
   },
-  descTextStyle: {
-    fontSize: 16,
-    color: 'black',
-    marginTop: 23 * hRem,
+  ImageStyle: {
+    width: hp(3),
+    height: hp(3),
+    resizeMode: 'contain',
+    marginRight: 20,
   },
-  expertsPhiolosyStyle: {
-    fontSize: 16,
-    color: '#000000',
-    marginTop: 46 * hRem,
+  topBorderStyle: {
+    borderBottomColor: color.gray,
+    borderBottomWidth: 0.5,
+    marginHorizontal: 10
   },
-  quoteStyle: {
-    fontSize: 21,
-    color: '#000000',
+  quantityContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    alignItems: 'center',
+  },
+  quantitySubcontainer: {
+    flexDirection: 'row',
+    marginLeft: hp(5),
+    height: 50,
+    alignItems: 'center',
+    marginTop: hp(0.5)
+  },
+  decrementCount: {
+    width: hp(5),
+    height: hp(5),
+    resizeMode: 'contain',
+  },
+  countTextInput: {
+    borderBottomWidth: 0.5,
+    height: 50,
+    marginHorizontal: 10,
+    width: wp(30),
     textAlign: 'center',
-    marginTop: 40 * hRem,
-    lineHeight: 28,
+    fontSize: 22,
+    color: color.brandColor
   },
-  getInTouchContainer: {
-    backgroundColor: '#ece9df',
-    marginTop: 39 * hRem,
-    paddingTop: 43 * hRem,
-    paddingBottom: 37 * hRem,
-    paddingHorizontal: 16,
+  incrementCountIcon: {
+    width: hp(5),
+    height: hp(5),
+    resizeMode: 'contain',
   },
-  headerExpertNameStyle: {
+  remarkContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    alignItems: 'center',
+    height: hp(9),
+  },
+  remarkIcon: {
+    width: hp(4),
+    height: hp(4),
+    resizeMode: 'contain',
+  },
+  remarksInput: {
+    borderBottomWidth: 1,
+    height: 50,
+    marginHorizontal: 15,
+    width: wp(80),
+    fontSize: 20,
+    color: color.brandColor
+  },
+  descriptionContainer: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    marginTop: hp(1)
+  },
+  descriptionRowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 10,
+    marginTop: 20,
+  },
+  downArrow: {
+    width: 15,
+    height: 15,
+    top: 5,
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
+  descriptionSubContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    marginVertical: hp(1),
+  },
+  border: {
+    borderBottomColor: '#D3D3D3',
+    borderBottomWidth: 0.5,
+    marginHorizontal: 20,
+  },
+  customerDetailTopborder: {
+    borderBottomColor: '#D3D3D3',
+    marginVertical: hp(3.5),
+    borderBottomWidth: 1.5,
+  },
+  customizableContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lenghtContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    marginLeft: hp(3),
+
+  },
+  lengthTextInput: {
+    borderBottomWidth: 1,
+    height: 40,
+    marginHorizontal: 10,
+    width: '65%',
     fontSize: 18,
-    color: '#000000',
   },
-  tagTextStyle: {
-    fontSize: 16,
-    color: '#000000',
-    opacity: 0.55,
-    marginTop: 10 * hRem,
+  bottomTextContainer: {
+    marginHorizontal: 10,
+    marginTop: hp(3),
+    marginBottom: hp(3),
   },
 });
 
-export default ProductDetails;
+
+function mapStateToProps(state) {
+  return {
+    isFetching: state.productDetailsReducer.isFetching,
+    error: state.productDetailsReducer.error,
+    errorMsg: state.productDetailsReducer.errorMsg,
+    successProductDetailsVersion: state.productDetailsReducer.successProductDetailsVersion,
+    errorProductDetailsVersion: state.productDetailsReducer.errorProductDetailsVersion,
+    productDetailsData: state.productDetailsReducer.productDetailsData,
+
+  }
+}
+
+export default connect(mapStateToProps, { getProductDetails })(ProductDetails)

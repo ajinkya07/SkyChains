@@ -387,8 +387,9 @@ class ProductGrid extends Component {
         let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
         return (
-            <TouchableOpacity onPress={() => alert("latest design")}>
-                <View style={{
+            <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
+            <View style={{
                     backgroundColor: color.white,
                     height: item.value[2] && (item.value[2]).length > 11 ? hp(44) : hp(42), width: wp(46),
                     borderColor: color.gray,
@@ -396,7 +397,9 @@ class ProductGrid extends Component {
                     marginHorizontal: hp(1),
                 }}>
                     <View style={gridItemDesign}>
-                        <TouchableOpacity onLongPress={() => this.showProductImageModal(item)}>
+                        <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}
+                        onLongPress={() => this.showProductImageModal(item)}>
                             {/* <Image
                             resizeMode={'cover'}
                             style={gridImage}
