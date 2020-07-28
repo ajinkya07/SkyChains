@@ -62,11 +62,11 @@ export default class BannerImage extends Component {
                 <View key={k}>
                 <ImageZoom 
                     cropWidth={wp(100)}
-                       cropHeight={hp(70)}
+                       cropHeight={hp(90)}
                        imageWidth={wp(100)}
-                       imageHeight={hp(70)}>
+                       imageHeight={hp(90)}>
                     <FastImage
-                        style={{ height: hp(70), width: wp(100) }}
+                        style={{ height: hp(80), width: wp(100) }}
                         source={{
                             uri: url2 + data,
                         }}
@@ -80,10 +80,9 @@ export default class BannerImage extends Component {
     }
 
     carausalView = (item) => {
-        console.log("item",item);
         return (
             <View style={{
-                height: hp(75), width: wp(100),
+                height: hp(80), width: wp(100),
             }}>
                 {item.image_name ?
                     <Swiper
@@ -124,7 +123,7 @@ export default class BannerImage extends Component {
 
 
 
-                <View style={{ height: hp(10), backgroundColor: color.white }}>
+                <View style={{ height: hp(7), backgroundColor: color.white }}>
                     <View
                         style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <TouchableOpacity

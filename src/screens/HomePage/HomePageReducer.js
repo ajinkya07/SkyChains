@@ -107,6 +107,7 @@ export default function dataReducer(state = initialState, action) {
         isFetching: false,
         error: true,
         errorMsg: action.error,
+        totalCartCountData:{count:0},
         errorTotalCartCountVersion: ++state.errorTotalCartCountVersion
       };
 

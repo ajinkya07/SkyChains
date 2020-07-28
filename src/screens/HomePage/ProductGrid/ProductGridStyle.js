@@ -32,7 +32,7 @@ export default {
 
   gridDesign: {
     backgroundColor: color.white,
-    height: hp(43), width: wp(46),
+    height: hp(42), width: wp(46),
     borderColor: color.gray,
     borderWidth: 0.4, borderRadius: 15,
     marginHorizontal: hp(1),
@@ -44,7 +44,7 @@ export default {
     width: wp(46)
   },
   gridImage: {
-    height: hp(19),
+    height: hp(18),
     width: wp(45),
     top:1,
     borderBottomLeftRadius: 0,
@@ -56,12 +56,12 @@ export default {
   },
   latestTextView: {
     flexDirection: 'row',
-    width: wp(46), marginTop: hp(1.5),
+    width: wp(46), marginTop: hp(1.2),
     paddingHorizontal: hp(0.8)
   },
   latestTextView2: {
     flexDirection: 'row',
-    width: wp(46), marginTop: hp(1.5),
+    width: wp(46), marginTop: hp(1.2),
     paddingHorizontal: hp(0.8)
   },
   border: {
@@ -69,7 +69,7 @@ export default {
     borderWidth: 0.4, width: wp(40),
   },
   iconView: {
-    width: wp(48), marginTop: hp(2),
+    width: wp(48), marginTop: hp(1.6),
     flexDirection: 'row',
     justifyContent: 'space-around'
   }

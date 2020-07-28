@@ -26,6 +26,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Toast } from 'native-base';
 import _ from 'lodash';
 import { urls } from '@api/urls'
+import { withNavigationFocus } from "@react-navigation/compat";
 
 
 
@@ -159,13 +160,22 @@ class HomePage extends Component {
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        const { totalCartCountData, addToWishlistData,
+        const { totalCartCountData, addToWishlistData,errorMsg,
             addToCartData, homePageData, addToCartPlusOneData } = this.props;
 
         const { finalCollection, productId } = this.state
         // var designData = homePageData && homePageData.final_collection ? homePageData.final_collection : []
         // var banner = homePageData && homePageData.brand_banner ? homePageData.brand_banner : []
         //var categoryData = homePageData && homePageData.collection ? homePageData.collection : []
+
+        if (prevProps.isFocused !== this.props.isFocused) {
+            const data4 = new FormData();
+            data4.append('user_id', userId);
+            data4.append('table', 'cart');
+    
+            await this.props.getTotalCartCount(data4)
+          }
+
 
         if (this.state.successHomePageVersion > prevState.successHomePageVersion) {
             if (homePageData && homePageData.final_collection) {
@@ -191,9 +201,14 @@ class HomePage extends Component {
         }
 
         if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
-            //AsyncStorage.setItem("totalCartCount", totalCartCountData.count)
-            global.totalCartCount = totalCartCountData.count
+            console.log("okok here ",totalCartCountData);
+                    global.totalCartCount = totalCartCountData.count
         }
+        if (this.state.errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+            console.log("okok here errorTotalCartCountVersion ",totalCartCountData);
+                    global.totalCartCount = totalCartCountData.count
+        }
+
         if (this.state.successAddToWishlistVersion > prevState.successAddToWishlistVersion) {
             if (addToWishlistData.ack === '1') {
                 Toast.show({
@@ -261,7 +276,7 @@ class HomePage extends Component {
             }
         } if (this.state.errorAddToCartPlusOneVersion > prevState.errorAddToCartPlusOneVersion) {
             Toast.show({
-                text: addToCartPlusOneData && addToCartPlusOneData.msg,
+                text: errorMsg && errorMsg,
                 type: 'danger',
                 duration: 2500
             })
@@ -455,7 +470,7 @@ class HomePage extends Component {
                                     {/* onPress={() => this.addToWishlist(item)}> */}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Heart.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -464,7 +479,7 @@ class HomePage extends Component {
                                     {/* onPress={() => this.addToCart(item)}> */}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/DarkCart.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3), width: hp(3) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -478,7 +493,7 @@ class HomePage extends Component {
                                     onPress={() => this.removeFromCartByOne(item)}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Minus.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3.1), width: hp(3.1) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -493,7 +508,7 @@ class HomePage extends Component {
                                     onPress={() => this.addToCartPlusOne(item)}
                                     <Image
                                         source={require('../../assets/image/BlueIcons/Plus.png')}
-                                        style={{ height: hp(3.3), width: hp(3.3) }}
+                                        style={{ height: hp(3.1), width: hp(3.1) }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
@@ -910,5 +925,4 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getHomePageData, getTotalCartCount,
     addToWishlist, addToCart, addRemoveFromCartByOne
-})
-(HomePage);
+})(withNavigationFocus(HomePage));

@@ -19,6 +19,7 @@ import { getCartData, getWishlistData } from '@cartContainer/CartContainerAction
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
 import Modal from 'react-native-modal';
+import { withNavigationFocus } from "@react-navigation/compat";
 
 
 
@@ -149,6 +150,22 @@ class CartContainer extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { cartData, wishlistData } = this.props;
+
+
+    if (prevProps.isFocused !== this.props.isFocused) {
+
+      const data3 = new FormData();
+      data3.append('user_id', userId);
+      data3.append('table', 'cart');
+
+      await this.props.getCartData(data3)
+
+      const data4 = new FormData();
+      data4.append('user_id', userId);
+      data4.append('table', 'wishlist');
+
+      await this.props.getWishlistData(data4)
+    }
 
     if (this.state.successCartVersion > prevState.successCartVersion) {
       this.setState({
@@ -476,6 +493,8 @@ class CartContainer extends Component {
 
     let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
+    console.log("cartData",cartData);
+    
     return (
       <Container style={{ flex: 1 }}>
         <Tabs
@@ -609,7 +628,7 @@ const styles = StyleSheet.create({
     width: hp(9),
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.4,
+    borderWidth: 0.3,
     borderColor: color.gray,
     borderRadius: 5
   },
@@ -710,4 +729,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { getCartData, getWishlistData })(CartContainer);
+export default connect(mapStateToProps, { getCartData, getWishlistData })(withNavigationFocus(CartContainer));

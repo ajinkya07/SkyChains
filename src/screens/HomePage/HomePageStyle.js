@@ -81,7 +81,7 @@ export default {
 
   horizontalLatestDesign:{
     backgroundColor:color.white,
-    height:hp(40),width:wp(39),marginTop:hp(2),
+    height:hp(38),width:wp(39),marginTop:hp(2),
     borderColor:'gray',
     borderWidth:0.3,borderRadius:10,
     marginHorizontal: hp(1),
@@ -94,7 +94,7 @@ export default {
     
   },
   latestImage: {
-    height: hp(18),
+    height: hp(17),
     width: wp(38),
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
@@ -106,12 +106,12 @@ export default {
   },
   latestTextView:{
     flexDirection:'row',
-    width:wp(39),marginTop:hp(1.5),
+    width:wp(39),marginTop:hp(1.2),
     paddingHorizontal:hp(0.5)
   },
    latestTextView2:{
     flexDirection:'row',
-    width:wp(39),marginTop:hp(1.5),
+    width:wp(39),marginTop:hp(1.2),
     paddingHorizontal:hp(0.5)
   },
   border: {
