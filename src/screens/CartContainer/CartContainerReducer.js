@@ -51,6 +51,7 @@ export default function dataReducer(state = initialState, action) {
                 isFetching: false,
                 error: true,
                 errorMsgCart: action.error,
+                cartData:[],
                 errorCartVersion: ++state.errorCartVersion
             };
 

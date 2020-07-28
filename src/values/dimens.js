@@ -5,7 +5,7 @@ export const fontSize = {
 
     fsHeading: hp(2.2),  
 
-    fsPrimary: hp(2), 
+    fsPrimary: hp(1.9), 
 
     fsSmall: hp(1.8), 
 

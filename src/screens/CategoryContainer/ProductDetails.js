@@ -43,7 +43,7 @@ const PickerDropDown = () => {
   return (
     <View>
       <Picker
-        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 20 }} />}
+        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
         mode="dropdown"
         style={{ height: 50, width: wp(55) }}
         selectedValue={selectedValue}
@@ -59,6 +59,7 @@ const PickerDropDown = () => {
 
 const PickerWeightDropDown = (props) => {
   const [selectedValue, setSelectedValue] = useState(props.weight);
+  console.log("weight",props.weight);
   return (
     <View >
       {/* <Picker
@@ -69,7 +70,7 @@ const PickerWeightDropDown = (props) => {
       </Picker> */}
 
       <Picker
-        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 20 }} />}
+        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
         mode="dropdown"
         style={{ height: 50, width: wp(55) }}
         selectedValue={selectedValue}
@@ -102,6 +103,7 @@ class ProductDetails extends React.Component {
       remark: '',
       isHideDetail: true,
       length: '',
+      weight:'',
       productItem: productItem,
       successProductDetailsVersion: 0,
       errorProductDetailsVersion: 0,
@@ -153,10 +155,14 @@ class ProductDetails extends React.Component {
         this.setState({
           productDetailsStateData: productDetailsData.data[0],
           length: productDetailsData !== undefined ? productDetailsData.data[0].length : '',
+          weight: productDetailsData !== undefined ?  
+                  productDetailsData.data[0].weight && (productDetailsData.data[0].weight).length !== 0
+                  ? productDetailsData.data[0].weight : '' : '',
 
         })
       } else {
         this.showToast(strings.serverFailedMsg, 'danger');
+
       }
     }
     if (this.state.errorProductDetailsVersion > prevState.errorProductDetailsVersion) {
@@ -194,13 +200,6 @@ class ProductDetails extends React.Component {
     });
   }
 
-  renderLoader = () => {
-    return (
-      <View style={styles.loaderView}>
-        <ActivityIndicator size="large" color={color.white} />
-      </View>
-    );
-  };
 
   setCurrentPage = (position) => {
     this.setState({ currentPage: position });
@@ -265,7 +264,28 @@ class ProductDetails extends React.Component {
     )
   }
 
+  noDataFound = () => {
+    return (
+      <View style={{ height: hp(100), justifyContent: 'center', alignItems: 'center', }}>
+        <Image
+          source={require("../../assets/gif/noData.gif")}
+          style={{ height: hp(20), width: hp(20) }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: '400' }}>{strings.serverFailedMsg}</Text>
+      </View>
+    )
+  }
 
+  renderLoader = () => {
+    return (
+        <View style={{
+            position: 'absolute', height: hp(100), width: wp(100),
+            alignItems: 'center', justifyContent: 'center',
+        }}>
+            <ActivityIndicator size="large" color={color.brandColor} />
+        </View>
+    );
+};
 
   render() {
     const headerOpacity = this.scrollY.interpolate({
@@ -274,7 +294,7 @@ class ProductDetails extends React.Component {
       extrapolate: 'clamp',
     });
 
-    const { productDetailsStateData } = this.state
+    const { productDetailsStateData,weight } = this.state
 
     let url = urls.imageUrl + (productDetailsStateData !== undefined && productDetailsStateData.zoom_image)
 
@@ -324,7 +344,7 @@ class ProductDetails extends React.Component {
                   <View style={styles.mainContainerStyle}>
                     <View style={styles.topTitleContainer}>
                       <View style={{ width: wp(78) }}>
-                        <Text style={{ fontSize: 20, color: color.brandColor }}>{productDetailsStateData.product_name}</Text>
+                        <Text style={{ fontSize: 19, color: color.brandColor }}>{productDetailsStateData.product_name}</Text>
                       </View>
                       <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
                         <Image
@@ -342,7 +362,7 @@ class ProductDetails extends React.Component {
                     <View style={styles.topBorderStyle}></View>
                     <View style={styles.quantityContainer}>
                       <View>
-                        <Text style={{ fontSize: 20, color: 'gray' }}>Quantity</Text>
+                        <Text style={{ fontSize: 19, color: 'gray' }}>Quantity</Text>
                       </View>
                       <View style={styles.quantitySubcontainer}>
                         <TouchableOpacity onPress={() => this._decrementCount()}>
@@ -385,7 +405,7 @@ class ProductDetails extends React.Component {
                       <TouchableOpacity
                         onPress={() => this.toggleDescriptionDetails()}>
                         <View style={styles.descriptionRowContainer}>
-                          <Text style={{ fontSize: 20, color: 'gray' }}>Description</Text>
+                          <Text style={{ fontSize: 19, color: 'gray' }}>Description</Text>
                           <Image
                             source={IconPack.GRAY_DOWN_ARROW}
                             style={styles.downArrow}
@@ -398,14 +418,14 @@ class ProductDetails extends React.Component {
                             <View style={styles.descriptionSubContainer}>
                               <View style={{ flexDirection: 'column' }}>
                                 {(productDetailsStateData.key_label).map((key, i) => {
-                                  return <Text style={{ marginTop: 10, fontSize: 17, color: 'gray' }}>{key.replace('_', ' ')}</Text>
+                                  return <Text style={{ marginTop: 10, fontSize: 16, color: 'gray' }}>{key.replace('_', ' ')}</Text>
                                 })
                                 }
                               </View>
 
                               <View style={{ flexDirection: 'column', }}>
                                 {(productDetailsStateData.key_value).map((value, j) => {
-                                  return <Text style={{ marginTop: 10, fontSize: 17, color: 'gray' }}>{value}</Text>
+                                  return <Text style={{ marginTop: 10, fontSize: 16, color: 'gray' }}>{value}</Text>
                                 })
                                 }
                               </View>
@@ -418,7 +438,7 @@ class ProductDetails extends React.Component {
                       <View style={styles.customerDetailTopborder}></View>
                       <Text
                         style={{
-                          fontSize: 20, color: 'gray',
+                          fontSize: 19, color: 'gray',
                           marginBottom: 10,
                           marginHorizontal: 10,
                         }}>
@@ -433,7 +453,7 @@ class ProductDetails extends React.Component {
                           justifyContent: 'space-between',
                         }}>
                         <View style={styles.customizableContainer}>
-                          <Text style={{ fontSize: 17, color: 'gray' }} >Melting</Text>
+                          <Text style={{ fontSize: 16, color: 'gray' }} >Melting</Text>
                         </View>
                         <PickerDropDown />
                       </View>
@@ -450,10 +470,10 @@ class ProductDetails extends React.Component {
                           justifyContent: 'space-between',
                         }}>
                         <View style={styles.customizableContainer}>
-                          <Text style={{ fontSize: 17, color: 'gray' }}>Weight</Text>
+                          <Text style={{ fontSize: 16, color: 'gray' }}>Weight</Text>
                         </View>
                         <View>
-                          <PickerWeightDropDown weight={productDetailsStateData.weight[0]} />
+                          <PickerWeightDropDown weight={ weight} />
                         </View>
                       </View>
 
@@ -466,7 +486,8 @@ class ProductDetails extends React.Component {
                         <View
                           style={{
                             width: '80%',
-                            marginLeft: 110,
+                            marginLeft: 100,
+                            marginRight:10
                           }}>
                           <TextInput
                             style={styles.lengthTextInput}
@@ -477,7 +498,7 @@ class ProductDetails extends React.Component {
                         </View>
                       </View>
                       <View style={styles.bottomTextContainer}>
-                        <Text style={{ fontSize: 18, color: 'gray', textAlign: 'left' }}>
+                        <Text style={{ fontSize: 17, color: 'gray', textAlign: 'left' }}>
                           Note: * There may be 10% variation (+/-) in the actual
                       weight.{' '}
                         </Text>
@@ -530,7 +551,7 @@ class ProductDetails extends React.Component {
 
           </Container>
           :
-          null
+          this.renderLoader()
         }
       </SafeAreaView>
 
@@ -567,7 +588,7 @@ const styles = StyleSheet.create({
 
   headerTextStyle: {
     color: color.brandColor,
-    fontSize: 22,
+    fontSize: 21,
     //top: 3,
     marginLeft: 12
   },
@@ -633,16 +654,16 @@ const styles = StyleSheet.create({
     height: hp(9),
   },
   remarkIcon: {
-    width: hp(4),
-    height: hp(4),
+    width: hp(3.5),
+    height: hp(3.5),
     resizeMode: 'contain',
   },
   remarksInput: {
     borderBottomWidth: 1,
     height: 50,
     marginHorizontal: 15,
-    width: wp(80),
-    fontSize: 20,
+    width: wp(78),
+    fontSize: 18,
     color: color.brandColor
   },
   descriptionContainer: {
@@ -658,8 +679,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   downArrow: {
-    width: 15,
-    height: 15,
+    width: hp(2),
+    height: hp(2),
     top: 5,
     resizeMode: 'contain',
     marginRight: 10,

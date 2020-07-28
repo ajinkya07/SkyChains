@@ -427,7 +427,8 @@ class ProductGrid extends Component {
                 onPress={() => this.props.navigation.navigate('ProductDetails', { productItemDetails: item })}>
                 <View style={{
                     backgroundColor: color.white,
-                    height: item.value[2] && (item.value[2]).length > 11 ? hp(44) : hp(42), width: wp(46),
+                    height: hp(38),width: wp(46),
+                    // height:  (item.value[2]).length > 10 ? hp(43) : hp(40), width: wp(46),
                     borderColor: color.gray,
                     borderWidth: 0.4, borderRadius: 15,
                     marginHorizontal: hp(1),
@@ -473,11 +474,11 @@ class ProductGrid extends Component {
                         <View style={border}></View>
 
                         <View style={latestTextView2}>
-                            <View style={{ width: wp(16), marginLeft: 5 }}>
-                                <_Text numberOfLines={1} fsSmall >Name</_Text>
+                            <View style={{ marginLeft: 5 }}>
+                            <_Text numberOfLines={1} fsSmall >Name { }</_Text>
                             </View>
-                            <View style={{ marginRight: 10, width: wp(26), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <_Text numberOfLines={2} fsPrimary textColor={color.brandColor}>{item.value[2]}</_Text>
+                            <View style={{ marginRight: 10, width: wp(28), justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                <_Text numberOfLines={1} fsPrimary textColor={color.brandColor}>{item.value[2]}</_Text>
                             </View>
                         </View>
                         <View style={border}></View>
@@ -487,14 +488,14 @@ class ProductGrid extends Component {
                                 <TouchableOpacity onPress={() => this.addProductToWishlist(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/Heart.png')}
-                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
+                                        style={{ height: hp(3.1), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.addProductToCart(item)}>
                                     <Image
                                         source={require('../../../assets/image/BlueIcons/DarkCart.png')}
-                                        style={{ height: hp(3), width: hp(3), marginTop: 2 }}
+                                        style={{ height: hp(3.1), width: hp(3), marginTop: 2 }}
                                         resizeMode='contain'
                                     />
                                 </TouchableOpacity>
